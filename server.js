@@ -1,29 +1,43 @@
-// *********************************************************************************
-// Server.js - This file is the initial starting point for the Node/Express server.
-// *********************************************************************************
+// DEPENDENCIES
+require("dotenv").config();
 
-// Dependencies
-// =============================================================
 var express = require("express");
+var compression = require('compression')
+var session = require("express-session");
+var passport = require("./config/passport");
+// =====================================
 
-// Sets up the Express App
-// =============================================================
-var app = express();
+// Sets up the Express app
 var PORT = process.env.PORT || 8080;
+var db = require("./models");
+var app = express();
+// =====================================
+
+app.use(compression());
 
 // Sets up the Express app to handle data parsing
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json());
+// =====================================
 
-// Static directory to be served
-app.use(express.static("app/public"));
+// Static directory
+app.use(express.static("public"));
+// =====================================
+
+app.use(session({ secret: "keyboard cat", resave: true, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
-// =============================================================
-require("./app/routes/api-routes.js")(app);
+require("./routes/html-routes.js")(app);
+require("./routes/api-routes.js")(app);
+// =====================================
 
-// Starts the server to begin listening
-// =============================================================
-app.listen(PORT, function() {
-  console.log("App listening on PORT " + PORT);
-});
+
+// Starts the server to begin Listening:
+db.sequelize.sync().then(function() {
+    app.listen(PORT, function() {
+      console.log("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
+    });
+  });
+// =====================================
