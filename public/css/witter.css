@@ -143,3 +143,9 @@ div {
 .footer {
     color: white;
 }
+
+/* NEW CODE */
+
+.wit-image {
+    max-width: 100%;
+}

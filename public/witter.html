@@ -32,12 +32,13 @@
 
       <div class="new-wit-row row justify-content-center">
         <div class="col-12 text-center">
-          <form class="new-wit">
+          <form class="new-wit" enctype="multipart/form-data">
             <p class="make-wit-text">Make a Wit!</p>
             <p class="wit-input-text">@<span class="member-name"></span>'s thoughts:</p>
-            <input class="wit-input" id="wit-input" placeholder="Feeling Witty?" autocomplete="off">
+            <input class="wit-input" id="wit-input" name="body" placeholder="Feeling Witty?" autocomplete="off">
+            <input type="file" id="image-input" name="image">
             <button class="wit-button" type="submit">Wit!</button>
-          </form>
+        </form>
           <br><br>
         </div>
       </div>
