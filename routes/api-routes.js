@@ -50,24 +50,30 @@ module.exports = function(app) {
         });
     });
 
-    // Witter route with image upload using multer
-    app.post("/api/witter", upload.single("image"), function(req, res) {
+    app.post("/api/witter", upload.single("image"), function (req, res) {
         console.log("Received Data:", req.body);  // Log other form data
         console.log("Received File:", req.file);  // Log the file data
-
+    
         const { author, body } = req.body;
-        const image = req.file ? req.file.filename : null;  // Adjust based on how multer saves the file
-
+        const image = req.file;
+    
+        console.log("Author:", author);
+        console.log("Body:", body);
+        console.log("Image:", image);
+    
         db.Wit.create({
             author: author,
             body: body,
-            image: image  // Adjust based on your model
+            image: image ? image.filename : null // Store the filename in the database if it exists
         })
-        .then(function(results) {
-            res.end();
+        .then(function (results) {
+            console.log("Wit Created:", results);
+            res.json(results); // Send the created wit back as JSON
         })
-        .catch(function(err) {
+        .catch(function (err) {
+            console.log("Error creating wit:", err);
             res.status(401).json(err);
         });
     });
+    
 };
