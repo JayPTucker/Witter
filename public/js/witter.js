@@ -7,23 +7,31 @@ $(document).ready(function() {
       var bodyInput = $("input#wit-input");
       var imageInput = $("#image-input");
 
-      newWitForm.on("submit", function(event) {
-          event.preventDefault();
+        newWitForm.on("submit", function(event) {
+            event.preventDefault();
 
-          // Create FormData object
-          var formData = new FormData();
-          formData.append("author", authorInput);
-          formData.append("body", bodyInput.val().trim());
+            if (bodyInput.val().trim() === "" && imageInput[0].files[0] == null) {
+                console.log("no body OR photo")
+                alert("Please enter something into the text box or choose an image.")
 
-          // Get the selected file from the input
-          if (imageInput[0].files.length > 0) {
-              formData.append("image", imageInput[0].files[0]);
-          }
+            } else {
+                console.log("has body OR photo")
+            
+                // Create FormData object
+                var formData = new FormData();
+                formData.append("author", authorInput);
+                formData.append("body", bodyInput.val().trim());
 
-          createWitFunction(formData);
-          bodyInput.val("");
-          imageInput.val(""); // Clear the file input
-      });
+                // Get the selected file from the input
+                if (imageInput[0].files.length > 0) {
+                    formData.append("image", imageInput[0].files[0]);
+                }
+
+                    createWitFunction(formData);
+                    bodyInput.val("");
+                    imageInput.val(""); // Clear the file input
+            }
+        });
 
       function createWitFunction(formData) {
         $.ajax({
