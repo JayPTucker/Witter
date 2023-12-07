@@ -3,20 +3,42 @@ $(document).ready(function () {
     var usernameInput = $("input#username-input");
     var passwordInput = $("input#password-input");
 
+    var usernameInputBox = document.getElementById("username-input")
+    var passwordInputBox = document.getElementById("password-input")
+
     loginForm.on("submit", function (event) {
         event.preventDefault();
-
+    
         var userData = {
             username: usernameInput.val().trim(),
             password: passwordInput.val().trim()
         };
-
+    
+        // Reset styles before checking again
+        usernameInputBox.style.backgroundColor = "";
+        usernameInputBox.style.color = "";
+        passwordInputBox.style.backgroundColor = "";
+        passwordInputBox.style.color = "";
+    
         if (!userData.username || !userData.password) {
             console.log("Username or password is missing");
+    
+            if (!userData.username) {
+                usernameInputBox.style.backgroundColor = "#a20000";
+                usernameInputBox.style.color = "white";
+                alert("Please type in a valid username.")
+            }
+    
+            if (!userData.password) {
+                passwordInputBox.style.backgroundColor = "#a20000";
+                passwordInputBox.style.color = "white";
+                alert("Please type in a valid password.")
+            }
+    
             // Handle the case where either username or password is missing
             return;
         }
-
+    
         loginUser(userData.username, userData.password);
         usernameInput.val("");
         passwordInput.val("");

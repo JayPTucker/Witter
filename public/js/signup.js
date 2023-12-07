@@ -18,13 +18,13 @@ $(document).ready(function() {
         if (!userData.username) {
             console.log("There is no Username")
             $('#username-input').tooltip('show')
-            document.getElementById("username-input").style.backgroundColor = 'darkred';
+            document.getElementById("username-input").style.backgroundColor = '#a20000';
             document.getElementById("username-input").style.color = 'white';
             return;
         } else if (!userData.password) {
             console.log("There is no Password")
             $('#password-input').tooltip('show')
-            document.getElementById("password-input").style.backgroundColor = 'darkred';
+            document.getElementById("password-input").style.backgroundColor = '#a20000';
             document.getElementById("password-input").style.color = 'white';
             return;
         }
