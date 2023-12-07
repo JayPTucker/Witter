@@ -5,9 +5,53 @@ const multer = require("multer");
 const upload = multer({ dest: "public/uploads/" });
 
 module.exports = function(app) {
-    // Login route
-    app.post("/api/login", passport.authenticate("local"), function(req, res) {
-        res.json(req.user);
+
+    // Login route if the login is successful
+    app.post("/api/login", function(req, res, next) {
+        passport.authenticate("local", function(err, user, info) {
+            if (err) {
+                // Handle unexpected errors
+                console.error("Error during authentication:", err);
+                return res.status(500).json({ error: "Internal Server Error" });
+            }
+    
+            if (!user) {
+                // Handle authentication failure (invalid username or password)
+                console.log("Authentication failed");
+                return res.status(401).json({ error: "Invalid username or password" });
+            }
+    
+            // Authentication successful, log in the user
+            req.logIn(user, function(err) {
+                if (err) {
+                    // Handle login error
+                    console.error("Error during login:", err);
+                    return res.status(500).json({ error: "Internal Server Error" });
+                }
+    
+                // Return the user data
+                return res.json(req.user);
+            });
+        })(req, res, next);
+    });
+    
+    // Check if a username exists
+    app.post("/api/check_username", function(req, res) {
+        const usernameToCheck = req.body.username;
+
+        // Query the database to check if the username exists
+        db.User.findOne({
+            where: {
+                username: usernameToCheck
+            }
+        })
+        .then(function(user) {
+            res.json({ exists: !!user }); // Send whether the username exists as JSON
+        })
+        .catch(function(err) {
+            console.error("Error checking username:", err);
+            res.status(500).json({ error: "Internal Server Error" });
+        });
     });
 
     // Signup route
