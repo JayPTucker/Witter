@@ -26,8 +26,15 @@ module.exports = function(app) {
 
     // Logout route
     app.get("/logout", function(req, res) {
-        req.logout();
-        res.redirect("/");
+        req.logout(function(err) {
+            if (err) {
+                // Handle error, e.g., send an error response
+                return res.status(500).json({ error: "Logout failed" });
+            }
+    
+            // Successful logout, redirect or send a success response
+            res.redirect("/");
+        });
     });
 
     // User data route
