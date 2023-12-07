@@ -26,6 +26,7 @@ module.exports = function(app) {
 
     // Logout route
     app.get("/logout", function(req, res) {
+        // req.logout is used by passport.js - commonly used with express.js
         req.logout(function(err) {
             if (err) {
                 // Handle error, e.g., send an error response
