@@ -2,6 +2,7 @@ $(document).ready(function() {
 
     // Referencing from our signup.html
     var signUpForm = $("form.signup")
+    var emailInput = $("input#email-input")
     var usernameInput = $("input#username-input")
     var passwordInput = $("input#password-input")
 
@@ -10,6 +11,7 @@ $(document).ready(function() {
         event.preventDefault();
 
         var userData = {
+            email: emailInput.val().trim(),
             username: usernameInput.val().trim(),
             password: passwordInput.val().trim()
         }
@@ -29,13 +31,15 @@ $(document).ready(function() {
             return;
         }
 
-        signUpFunction(userData.username, userData.password)
+        signUpFunction(userData.email, userData.username, userData.password)
+        emailInput.val("")
         usernameInput.val("");
         passwordInput.val("");
-    })
+    });
 
-    function signUpFunction(username, password) {
+    function signUpFunction(email, username, password) {
         $.post("/api/signup", {
+            email: email,
             username: username,
             password: password
         })
@@ -43,21 +47,10 @@ $(document).ready(function() {
                 window.location.replace("/login");
             })
         .catch(handleLoginErr);
-    }
+    };
 
     function handleLoginErr(err) {
         console.log(err.responseJSON)
         console.log(500)
-    }
-
-
-
-
-
-
-
-
-
-
-})
-
+    };
+});
