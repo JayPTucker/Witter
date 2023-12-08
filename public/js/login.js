@@ -1,6 +1,6 @@
 $(document).ready(function () {
     var loginForm = $("form.login");
-    var usernameInput = $("input#username-input");
+    var usernameOrEmailInput = $("input#username-input");
     var passwordInput = $("input#password-input");
 
     var usernameInputBox = document.getElementById("username-input")
@@ -10,7 +10,7 @@ $(document).ready(function () {
         event.preventDefault();
     
         var userData = {
-            username: usernameInput.val().trim(),
+            username: usernameOrEmailInput.val().trim(),
             password: passwordInput.val().trim()
         };
     
@@ -40,7 +40,7 @@ $(document).ready(function () {
         }
     
         loginUser(userData.username, userData.password);
-        usernameInput.val("");
+        usernameOrEmailInput.val("");
         passwordInput.val("");
     });
 

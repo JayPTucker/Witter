@@ -54,6 +54,25 @@ module.exports = function(app) {
         });
     });
 
+    // Check if a username exists
+    app.post("/api/check_email", function(req, res) {
+        const emailToCheck = req.body.email;
+
+        // Query the database to check if the username exists
+        db.User.findOne({
+            where: {
+                email: emailToCheck
+            }
+        })
+        .then(function(email) {
+            res.json({ exists: !!email }); // Send whether the username exists as JSON
+        })
+        .catch(function(err) {
+            console.error("Error checking email:", err);
+            res.status(500).json({ error: "Internal Server Error" });
+        });
+    });
+
     // Signup route
     app.post("/api/signup", function(req, res) {
         db.User.create({

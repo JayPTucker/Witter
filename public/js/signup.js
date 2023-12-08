@@ -24,7 +24,7 @@ $(document).ready(function() {
         if (userData.password.length < 8) {
             console.log("Password too short")
             alert("Password must be more than 8 characters long")
-            return
+            return;
         }
     
         // Reset styles before checking again
@@ -67,19 +67,54 @@ $(document).ready(function() {
     });
 
     function signUpFunction(email, username, password) {
-        $.post("/api/signup", {
-            email: email,
-            username: username,
-            password: password
-        })
-            .then(function() {
-                window.location.replace("/login");
-            })
-        .catch(handleLoginErr);
-    };
+    //     $.post("/api/signup", {
+    //         email: email,
+    //         username: username,
+    //         password: password
+    //     })
+    //         .then(function() {
+    //             window.location.replace("/login");
+    //         })
+    //     .catch(handleLoginErr);
+    // };
 
-    function handleLoginErr(err) {
-        console.log(err.responseJSON)
-        console.log(500)
-    };
+    // function handleLoginErr(err) {
+    //     console.log(err.responseJSON)
+    //     console.log(500)
+    // };
+            // Check if the username exists in the database
+        $.ajax({
+            url: "/api/check_email",
+            method: "POST",
+            data: { email: email },
+            success: function (response) {
+                if (response.exists) {
+
+                    console.log("Email exists already")
+                    alert("An account with that email address already exists")
+
+                } else {
+                    // Email does not exist, show an alert or handle it accordingly
+                    console.log("Email does not exist");
+
+                    // Now, proceed with the login request
+                    $.post("/api/signup", {
+                        email: email,
+                        username: username,
+                        password: password
+                    })
+                        .then(function () {
+                            window.location.replace("/login");
+                        })
+                        .catch(function (err) {
+                            console.log("Error during login:", err);
+                        });
+                }
+            },
+            error: function (err) {
+                // Handle any error that occurred during the request
+                console.error("Error checking if email exists:", err);
+            }
+        })
+    }
 });
