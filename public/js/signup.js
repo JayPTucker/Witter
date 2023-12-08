@@ -2,37 +2,60 @@ $(document).ready(function() {
 
     // Referencing from our signup.html
     var signUpForm = $("form.signup")
-    var emailInput = $("input#email-input")
-    var usernameInput = $("input#username-input")
-    var passwordInput = $("input#password-input")
+
+    var emailinput = $("input#email-input");
+    var usernameInput = $("input#username-input");
+    var passwordInput = $("input#password-input");
+
+    var emailInputBox = document.getElementById("email-input")
+    var usernameInputBox = document.getElementById("username-input")
+    var passwordInputBox = document.getElementById("password-input")
 
     // When the Submit button is click, we validate the username and password are not blank
     signUpForm.on("submit", function(event) {
         event.preventDefault();
-
+    
         var userData = {
-            email: emailInput.val().trim(),
+            email: emailinput.val().trim(),
             username: usernameInput.val().trim(),
             password: passwordInput.val().trim()
-        }
+        };
+    
+        // Reset styles before checking again
+        emailInputBox.style.backgroundColor = "";
+        emailInputBox.style.color = "";
+        usernameInputBox.style.backgroundColor = "";
+        usernameInputBox.style.color = "";
+        passwordInputBox.style.backgroundColor = "";
+        passwordInputBox.style.color = "";
+    
+        if (!userData.email || !userData.username || !userData.password) {
+            console.log("Username or password is missing");
 
-        // If there is NOT a username OR a password
-        if (!userData.username) {
-            console.log("There is no Username")
-            $('#username-input').tooltip('show')
-            document.getElementById("username-input").style.backgroundColor = '#a20000';
-            document.getElementById("username-input").style.color = 'white';
-            return;
-        } else if (!userData.password) {
-            console.log("There is no Password")
-            $('#password-input').tooltip('show')
-            document.getElementById("password-input").style.backgroundColor = '#a20000';
-            document.getElementById("password-input").style.color = 'white';
+            if (!userData.email) {
+                emailInputBox.style.backgroundColor = "#a20000";
+                emailInputBox.style.color = "white";
+                alert("Please type in a valid email address.")
+            }
+    
+            if (!userData.username) {
+                usernameInputBox.style.backgroundColor = "#a20000";
+                usernameInputBox.style.color = "white";
+                alert("Please type in a valid username.")
+            }
+    
+            if (!userData.password) {
+                passwordInputBox.style.backgroundColor = "#a20000";
+                passwordInputBox.style.color = "white";
+                alert("Please type in a valid password.")
+            }
+    
+            // Handle the case where either username or password is missing
             return;
         }
-
-        signUpFunction(userData.email, userData.username, userData.password)
-        emailInput.val("")
+    
+        signUpFunction(userData.email, userData.username, userData.password);
+        emailinput.val("");
         usernameInput.val("");
         passwordInput.val("");
     });
