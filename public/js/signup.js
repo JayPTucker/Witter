@@ -20,6 +20,12 @@ $(document).ready(function() {
             username: usernameInput.val().trim(),
             password: passwordInput.val().trim()
         };
+
+        if (userData.password.length < 8) {
+            console.log("Password too short")
+            alert("Password must be more than 8 characters long")
+            return
+        }
     
         // Reset styles before checking again
         emailInputBox.style.backgroundColor = "";
