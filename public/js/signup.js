@@ -67,37 +67,45 @@ $(document).ready(function() {
     });
 
     function signUpFunction(email, username, password) {
-    //     $.post("/api/signup", {
-    //         email: email,
-    //         username: username,
-    //         password: password
-    //     })
-    //         .then(function() {
-    //             window.location.replace("/login");
-    //         })
-    //     .catch(handleLoginErr);
-    // };
-
-    // function handleLoginErr(err) {
-    //     console.log(err.responseJSON)
-    //     console.log(500)
-    // };
-            // Check if the username exists in the database
+        // Check if the username exists in the database
         $.ajax({
             url: "/api/check_email",
             method: "POST",
             data: { email: email },
             success: function (response) {
+
                 if (response.exists) {
 
                     console.log("Email exists already")
                     alert("An account with that email address already exists")
+                    return;
 
                 } else {
-                    // Email does not exist, show an alert or handle it accordingly
+
                     console.log("Email does not exist");
 
-                    // Now, proceed with the login request
+                    $.ajax({
+                        url: "/api/check_username",
+                        method: "POST",
+                        data: { username: username },
+                        success: function (response) {
+                            if (response.exists) {
+
+                                // Username exists, proceed with login
+                                alert("Username is already registered to an account, please log in or choose another.")
+                                console.log("Username already exists, please choose another");
+                                return;
+
+                            } else {
+
+                                console.log("Username does not exist.");
+
+                            }
+                        }
+                    });
+
+                    // Email does not exist, show an alert or handle it accordingly
+                    // Now, proceed with the signup request
                     $.post("/api/signup", {
                         email: email,
                         username: username,
@@ -107,13 +115,13 @@ $(document).ready(function() {
                             window.location.replace("/login");
                         })
                         .catch(function (err) {
-                            console.log("Error during login:", err);
+                            console.log("Error during signup:", err);
                         });
                 }
             },
             error: function (err) {
                 // Handle any error that occurred during the request
-                console.error("Error checking if email exists:", err);
+                console.error("Error checking if email or username exists:", err);
             }
         })
     }
