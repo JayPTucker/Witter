@@ -26,6 +26,12 @@ module.exports = function(app) {
     res.sendFile(path.join(__dirname, "../public/signup.html"));
   });
 
+  app.get("/verificationCode", function(req, res) {
+    // Add any logic you need for the verificationCode route
+    // For example, you might want to check if the user is already verified
+    res.sendFile(path.join(__dirname, "../public/verificationCode.html"));
+  });
+
   // Here we've add our isAuthenticated middleware to this route.
   // If a user who is not logged in tries to access this route they will be redirected to the signup page
   app.get("/witter", isAuthenticated, function(req, res) {

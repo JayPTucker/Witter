@@ -4,10 +4,49 @@ var passport = require("../config/passport.js");
 const multer = require("multer");
 const upload = multer({ dest: "public/uploads/" });
 
+const nodemailer = require('nodemailer');
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+const port = 3000;
+
+// Dummy database
+const users = [];
+
+// Middleware to parse JSON
+app.use(bodyParser.json());
+
+// Dummy function to generate a random verification code
+function generateVerificationCode() {
+    return Math.floor(1000 + Math.random() * 9000);
+}
+
 module.exports = function(app) {
 
     // Login route if the login is successful
-    app.post("/api/login", function(req, res, next) {
+    app.post("/api/login", async function(req, res, next) {
+
+        try {
+            const user = await db.User.findOne({
+                where: {
+                    username: req.body.username,
+                    isVerified: true
+                }
+            });
+    
+            if (user) {
+                // Mark the user as verified
+                console.log("User is verified")
+            } else {
+                console.log("user is not verified")
+                return;
+            }
+        } catch (error) {
+            console.error("Error validating if Email is verified:", error);
+            res.status(500).json({ error: "Error verifying email" });
+        }
+        
         passport.authenticate("local", function(err, user, info) {
             if (err) {
                 // Handle unexpected errors
@@ -34,7 +73,74 @@ module.exports = function(app) {
             });
         })(req, res, next);
     });
+
+    app.post("/api/verify_email", async function(req, res) {
+        try {
+            const user = await db.User.findOne({
+                where: {
+                    email: req.body.email,
+                    verificationCode: req.body.verificationCode
+                }
+            });
     
+            if (user) {
+                // Mark the user as verified
+                await user.update({ isVerified: true, verificationCode: null });
+                res.json({ success: true, message: "Email verified successfully" });
+            } else {
+                res.status(401).json({ success: false, error: "Invalid verification code" });
+            }
+        } catch (error) {
+            console.error("Error verifying email:", error);
+            res.status(500).json({ error: "Error verifying email" });
+        }
+    });
+    
+
+    app.post("/api/signup", async function(req, res) {
+    try {
+        // Generate a verification code
+        const verificationCode = generateVerificationCode();
+
+        // Create a new user with the verification code
+        const newUser = await db.User.create({
+            email: req.body.email,
+            username: req.body.username,
+            password: req.body.password,
+            verificationCode: verificationCode // Set the verification code during user creation
+        });
+
+        // Send verification email
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'jaypaultucker@gmail.com',
+                pass: process.env.GMAIL_PW
+            }
+        });
+
+        const mailOptions = {
+            from: 'jaypaultucker@gmail.com',
+            to: req.body.email,
+            subject: 'Email Verification',
+            text: `Your verification code is: ${verificationCode}`
+        };
+
+        transporter.sendMail(mailOptions, function(error, info) {
+            if (error) {
+                console.error("Error sending verification email:", error);
+                res.status(500).json({ error: "Error sending verification email" });
+            } else {
+                console.log("Verification email sent:", info.response);
+                res.json({ success: true, redirect: `/verificationCode?email=${req.body.email}` });
+            }
+        });
+    } catch (error) {
+        console.error("Error creating user:", error);
+        res.status(401).json({ error: "Error creating user", details: error });
+    }
+});
+
     // Check if a username exists
     app.post("/api/check_username", function(req, res) {
         const usernameToCheck = req.body.username;
@@ -54,37 +160,22 @@ module.exports = function(app) {
         });
     });
 
-    // Check if a username exists
+    // Check if an email exists
     app.post("/api/check_email", function(req, res) {
         const emailToCheck = req.body.email;
 
-        // Query the database to check if the username exists
+        // Query the database to check if the email exists
         db.User.findOne({
             where: {
                 email: emailToCheck
             }
         })
-        .then(function(email) {
-            res.json({ exists: !!email }); // Send whether the username exists as JSON
+        .then(function(user) {
+            res.json({ exists: !!user }); // Send whether the email exists as JSON
         })
         .catch(function(err) {
             console.error("Error checking email:", err);
             res.status(500).json({ error: "Internal Server Error" });
-        });
-    });
-
-    // Signup route
-    app.post("/api/signup", function(req, res) {
-        db.User.create({
-            email: req.body.email,
-            username: req.body.username,
-            password: req.body.password
-        })
-        .then(function() {
-            res.redirect("/login");
-        })
-        .catch(function(err) {
-            res.status(401).json(err);
         });
     });
 
@@ -147,5 +238,4 @@ module.exports = function(app) {
             res.status(401).json(err);
         });
     });
-    
 };
