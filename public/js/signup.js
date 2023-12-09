@@ -22,6 +22,9 @@ $(document).ready(function() {
         };
 
         if (userData.password.length < 8) {
+            passwordInputBox.style.backgroundColor = "#a20000";
+            passwordInputBox.style.color = "white";    
+
             console.log("Password too short")
             alert("Password must be more than 8 characters long")
             return;
@@ -61,9 +64,6 @@ $(document).ready(function() {
         }
     
         signUpFunction(userData.email, userData.username, userData.password);
-        emailinput.val("");
-        usernameInput.val("");
-        passwordInput.val("");
     });
 
     function signUpFunction(email, username, password) {
@@ -77,7 +77,9 @@ $(document).ready(function() {
                 if (response.exists) {
 
                     console.log("Email exists already")
-                    alert("An account with that email address already exists")
+                    emailInputBox.style.backgroundColor = "#a20000";
+                    emailInputBox.style.color = "white";    
+                    alert("An account with that email address already exists, please try another Email.")
                     return;
 
                 } else {
@@ -91,7 +93,8 @@ $(document).ready(function() {
                         success: function (response) {
                             if (response.exists) {
 
-                                // Username exists, proceed with login
+                                usernameInputBox.style.backgroundColor = "#a20000";
+                                usernameInputBox.style.color = "white";                
                                 alert("Username is already registered to an account, please log in or choose another.")
                                 console.log("Username already exists, please choose another");
                                 return;
