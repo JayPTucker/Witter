@@ -21,7 +21,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     verificationCode: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     }
   });
 

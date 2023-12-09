@@ -71,7 +71,7 @@ module.exports = function(app) {
             service: 'gmail',
             auth: {
                 user: 'jaypaultucker@gmail.com',
-                pass: process.env.GMAILPASS
+                pass: process.env.GMAIL_PW
             }
         });
 
