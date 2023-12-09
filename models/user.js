@@ -22,6 +22,10 @@ module.exports = function(sequelize, DataTypes) {
     verificationCode: {
       type: DataTypes.STRING,
       allowNull: true
+    },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   });
 

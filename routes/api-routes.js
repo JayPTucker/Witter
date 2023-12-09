@@ -25,7 +25,28 @@ function generateVerificationCode() {
 module.exports = function(app) {
 
     // Login route if the login is successful
-    app.post("/api/login", function(req, res, next) {
+    app.post("/api/login", async function(req, res, next) {
+
+        try {
+            const user = await db.User.findOne({
+                where: {
+                    username: req.body.username,
+                    isVerified: true
+                }
+            });
+    
+            if (user) {
+                // Mark the user as verified
+                console.log("User is verified")
+            } else {
+                console.log("user is not verified")
+                return;
+            }
+        } catch (error) {
+            console.error("Error validating if Email is verified:", error);
+            res.status(500).json({ error: "Error verifying email" });
+        }
+        
         passport.authenticate("local", function(err, user, info) {
             if (err) {
                 // Handle unexpected errors
@@ -52,6 +73,29 @@ module.exports = function(app) {
             });
         })(req, res, next);
     });
+
+    app.post("/api/verify_email", async function(req, res) {
+        try {
+            const user = await db.User.findOne({
+                where: {
+                    email: req.body.email,
+                    verificationCode: req.body.verificationCode
+                }
+            });
+    
+            if (user) {
+                // Mark the user as verified
+                await user.update({ isVerified: true, verificationCode: null });
+                res.json({ success: true, message: "Email verified successfully" });
+            } else {
+                res.status(401).json({ success: false, error: "Invalid verification code" });
+            }
+        } catch (error) {
+            console.error("Error verifying email:", error);
+            res.status(500).json({ error: "Error verifying email" });
+        }
+    });
+    
 
     app.post("/api/signup", async function(req, res) {
     try {
@@ -96,28 +140,6 @@ module.exports = function(app) {
         res.status(401).json({ error: "Error creating user", details: error });
     }
 });
-
-    app.post("/api/verify_email", async function(req, res) {
-        try {
-            const user = await db.User.findOne({
-                where: {
-                    email: req.body.email,
-                    verificationCode: req.body.verificationCode
-                }
-            });
-    
-            if (user) {
-                // Mark the user as verified
-                await user.update({ verified: true, verificationCode: null });
-                res.json({ success: true, message: "Email verified successfully" });
-            } else {
-                res.status(401).json({ success: false, error: "Invalid verification code" });
-            }
-        } catch (error) {
-            console.error("Error verifying email:", error);
-            res.status(500).json({ error: "Error verifying email" });
-        }
-    });
 
     // Check if a username exists
     app.post("/api/check_username", function(req, res) {

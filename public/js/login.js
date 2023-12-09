@@ -8,10 +8,11 @@ $(document).ready(function () {
 
     loginForm.on("submit", function (event) {
         event.preventDefault();
+        
     
         var userData = {
             username: usernameOrEmailInput.val().trim(),
-            password: passwordInput.val().trim()
+            password: passwordInput.val().trim(),
         };
     
         // Reset styles before checking again
