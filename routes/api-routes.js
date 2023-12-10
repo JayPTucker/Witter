@@ -114,13 +114,13 @@ module.exports = function(app) {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'jaypaultucker@gmail.com',
+                user: 'wittersocial@gmail.com',
                 pass: process.env.GMAIL_PW
             }
         });
 
         const mailOptions = {
-            from: 'jaypaultucker@gmail.com',
+            from: 'wittersocial@gmail.com',
             to: req.body.email,
             subject: 'Email Verification',
             text: `Your verification code is: ${verificationCode}`
@@ -140,6 +140,52 @@ module.exports = function(app) {
         res.status(401).json({ error: "Error creating user", details: error });
     }
 });
+
+app.post("/api/resendCode", async function(req, res) {
+    try {
+        // Generate a new verification code
+        const verificationCode = generateVerificationCode();
+
+        // Update the user's verification code in the database
+        const user = await db.User.findOne({ where: { email: req.body.email } });
+
+        if (user) {
+            await user.update({ verificationCode: verificationCode });
+        } else {
+            return res.status(404).json({ success: false, error: "User not found" });
+        }
+
+        // Send the new verification email
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'wittersocial@gmail.com',
+                pass: process.env.GMAIL_PW
+            }
+        });
+
+        const mailOptions = {
+            from: 'wittersocial@gmail.com',
+            to: req.body.email,
+            subject: 'Email Verification',
+            text: `Your new verification code is: ${verificationCode}`
+        };
+
+        transporter.sendMail(mailOptions, function(error, info) {
+            if (error) {
+                console.error("Error sending verification email:", error);
+                res.status(500).json({ success: false, error: "Error sending verification email" });
+            } else {
+                console.log("Verification email sent:", info.response);
+                res.json({ success: true });
+            }
+        });
+    } catch (error) {
+        console.error("Error resending the verification email:", error);
+        res.status(500).json({ success: false, error: "Error resending verification", details: error });
+    }
+});
+
 
     // Check if a username exists
     app.post("/api/check_username", function(req, res) {
