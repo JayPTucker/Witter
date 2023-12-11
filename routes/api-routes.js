@@ -8,6 +8,8 @@ const nodemailer = require('nodemailer');
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const bcrypt = require("bcryptjs");
+
 const app = express();
 const port = 3000;
 
@@ -73,20 +75,20 @@ module.exports = function(app) {
             });
         })(req, res, next);
     });
-
+    
     app.post("/api/resetPassword", async function(req, res) {
         try {
             // Generate a new verification code
             const verificationCode = generateVerificationCode();
     
-        // Update the user's verification code in the database
-        const user = await db.User.findOne({ where: { email: req.body.email } });
+            // Update the user's verification code in the database
+            const user = await db.User.findOne({ where: { email: req.body.email } });
 
-        if (user) {
-            await user.update({ verificationCode: verificationCode.toString() });
-        } else {
-            return res.status(404).json({ success: false, error: "User not found" });
-        }
+            if (user) {
+                await user.update({ verificationCode: verificationCode.toString() });
+            } else {
+                return res.status(404).json({ success: false, error: "User not found" });
+            }
             
             // Send the new verification email
             const transporter = nodemailer.createTransport({
@@ -118,6 +120,52 @@ module.exports = function(app) {
             res.status(500).json({ success: false, error: "Error resetting password", details: error });
         }
     })
+
+    app.post("/api/passwordResetVerifyCode", async function(req, res) {
+        try {
+            // Update the user's verification code in the database
+            const user = await db.User.findOne({ where: { verificationCode: req.body.verificationCode } });
+
+            if (user) {
+                return res.json({ success: true });
+            } else {
+                return res.status(404).json({ success: false, error: "User not found" });
+            }
+        } catch (error) {
+            console.error("Error resetting password on pwresetverifycode:", error);
+            res.status(500).json({ success: false, error: "Error resetting password", details: error });
+        }
+    })
+
+    app.post("/api/newPasswordResponse", async function(req, res) {
+        try {
+            const { email, verificationCode, newPassword } = req.body;
+    
+            // Find the user by email and verification code
+            const user = await db.User.findOne({
+                where: {
+                    email: email,
+                    verificationCode: verificationCode,
+                },
+            });
+    
+            if (!user) {
+                return res.status(404).json({ success: false, error: "User not found or verification code is invalid" });
+            }
+    
+            // Update the password and clear the verification code
+            await user.update({
+                password: bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10)),
+                verificationCode: null,
+            });
+    
+            return res.json({ success: true, message: "Password updated successfully" });
+        } catch (error) {
+            console.error("Error updating password:", error);
+            return res.status(500).json({ success: false, error: "Error updating password", details: error });
+        }
+    })
+
 
     app.post("/api/verify_email", async function(req, res) {
         try {

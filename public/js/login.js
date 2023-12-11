@@ -91,58 +91,102 @@ function getEmailParameter() {
     return prompt("Please type in your email address for your account")
 }
 
+function verifyCode() {
+    return prompt("Please enter the verification code sent to your email address you provided.")
+}
+
 function getNewPasswordParameter() {
     return prompt("Please enter a new password");
 }
 
-function resetPassword() {
+async function resetPassword() {
     const email = getEmailParameter();
 
-    // Perform an AJAX request to the server to check if the user exists
-    fetch("/api/check_user_existence", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            email: email
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
+    try {
+        // Check if the user exists
+        const response = await fetch("/api/check_user_existence", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: email,
+            }),
+        });
+
+        const data = await response.json();
+
         if (!data.exists) {
             alert("Account doesn't exist. Please try another.");
-        } else {
-            // User exists, continue with your verification process
-            console.log("Account Exists, proceed with reset");
+            return;
+        }
 
-            // Proceed with the password reset request
-            fetch("/api/resetPassword", {
+        // User exists, proceed with the password reset request
+        const resetResponse = await fetch("/api/resetPassword", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: email,
+            }),
+        });
+
+        const resetData = await resetResponse.json();
+
+        if (resetData.success) {
+            console.log("Password reset email sent successfully");
+
+            // Get verification code and new password
+            const verificationCode = verifyCode();
+
+            // Verify the code
+            const verifyCodeResponse = await fetch("/api/passwordResetVerifyCode", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    email: email
+                    verificationCode: verificationCode,
                 }),
-            })
-            .then(response => response.json())
-            .then(res => {
-                if (res.success === true) {
-                    console.log("Password email sent successfully");
-
-                } else {
-                    console.log("Password email reset failed to send");
-                }
-            })
-            .catch(error => {
-                console.error("Error during password reset:", error);
-                alert("Error resetting password");
             });
+
+            const verifyCodeData = await verifyCodeResponse.json();
+
+            if (verifyCodeData.success) {
+                console.log("Verification Code approved, proceed with password reset");
+                
+                // Get the new password
+                const newPassword = getNewPasswordParameter();
+            
+                // Proceed with updating the password
+                const newPasswordResponse = await fetch("/api/newPasswordResponse", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        verificationCode: verificationCode,
+                        newPassword: newPassword,
+                    }),
+                });
+            
+                const passwordResetAlert = await newPasswordResponse.json();
+            
+                if (passwordResetAlert.success) {
+                    console.log("Password Reset Successful!");
+                } else {
+                    console.log("Password change unsuccessful");
+                }
+            } else {
+                console.log("Verification Code not approved");
+            }
+        } else {
+            console.log("Password reset email failed to send");
         }
-    })
-    .catch(error => {
-        console.error("Error checking user existence:", error);
-        alert("Error checking user existence. Please try again.");
-    });
+    } catch (error) {
+        console.error("Error during password reset:", error);
+        alert("Error resetting password");
+    }
 }
