@@ -87,6 +87,31 @@ module.exports = function(app) {
                 // Mark the user as verified
                 await user.update({ isVerified: true, verificationCode: null });
                 res.json({ success: true, message: "Email verified successfully" });
+                const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: 'wittersocial@gmail.com',
+                        pass: process.env.GMAIL_PW
+                    }
+                });
+        
+                const mailOptions = {
+                    from: 'wittersocial@gmail.com',
+                    to: req.body.email,
+                    subject: 'Witter Account Verified',
+                    html: `<p>Thank you for verifying your account, you may now login!</p>`        
+                };
+        
+                transporter.sendMail(mailOptions, function(error, info) {
+                    if (error) {
+                        console.error("Error sending verification email:", error);
+                        res.status(500).json({ error: "Error sending verification email" });
+                    } else {
+                        console.log(":", info.response);
+                        res.json({ success: true, redirect: `/verificationCode?email=${req.body.email}` });
+                    }
+                })
+
             } else {
                 res.status(401).json({ success: false, error: "Invalid verification code" });
             }
