@@ -1,3 +1,68 @@
+checkUserExistence();
+
+function startVerificationTimer() {
+    // Set the initial time
+    let seconds = 60;
+
+    // Update the timer every second
+    const timerInterval = setInterval(function() {
+        seconds--;
+        $('#timer').text("You have " + seconds + " remaining to verify your account using the verification code.");
+
+        // Check if the timer has reached zero
+        if (seconds === 0) {
+            clearInterval(timerInterval); // Stop the timer
+
+            fetch("/api/verificationTimeout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: getEmailParameter()
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log("Successfully deleted account")
+                    window.location.replace("/signup");
+                }
+            })
+        }
+    }, 1000);
+}
+
+function checkUserExistence() {
+    const email = getEmailParameter();
+
+    // Perform an AJAX request to the server to check if the user exists
+    fetch("/api/check_user_existence", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            email: email,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.exists) {
+            alert("Account doesn't exist. Redirecting to signup page.");
+            window.location.replace("/signup");
+        } else {
+            // User exists, continue with your verification process
+            // For example, you can start the timer or any other logic here
+            startVerificationTimer();
+        }
+    })
+    .catch(error => {
+        console.error("Error checking user existence:", error);
+        alert("Error checking user existence. Please try again.");
+    });
+}
+
 document.getElementById("verificationForm").addEventListener("submit", function(event) {
     event.preventDefault();
     sendVerificationCode();

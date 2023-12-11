@@ -122,9 +122,10 @@ module.exports = function(app) {
         const mailOptions = {
             from: 'wittersocial@gmail.com',
             to: req.body.email,
-            subject: 'Email Verification',
-            text: `Your verification code is: ${verificationCode}`
-        };
+            subject: 'Witter Email Verification Code',
+            html: `<p>Your verification code is: <strong>${verificationCode}</strong></p>
+            <p>Please use this link to get back to the verification page: 
+            <a href="https://localhost:8080/verificationCode?email=${req.body.email}">Verification Page</a></p>`        };
 
         transporter.sendMail(mailOptions, function(error, info) {
             if (error) {
@@ -133,11 +134,27 @@ module.exports = function(app) {
             } else {
                 console.log("Verification email sent:", info.response);
                 res.json({ success: true, redirect: `/verificationCode?email=${req.body.email}` });
+
             }
         });
     } catch (error) {
         console.error("Error creating user:", error);
         res.status(401).json({ error: "Error creating user", details: error });
+    }
+});
+
+app.post("/api/check_user_existence", async function (req, res) {
+    try {
+        const user = await db.User.findOne({
+            where: {
+                email: req.body.email,
+            },
+        });
+
+        res.json({ exists: !!user }); // Send whether the user exists as JSON
+    } catch (error) {
+        console.error("Error checking user existence:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
@@ -167,9 +184,11 @@ app.post("/api/resendCode", async function(req, res) {
         const mailOptions = {
             from: 'wittersocial@gmail.com',
             to: req.body.email,
-            subject: 'Email Verification',
-            text: `Your new verification code is: ${verificationCode}`
-        };
+            subject: 'Witter Email Verification Code',
+            html: `<p>Your verification code is: <strong>${verificationCode}</strong></p>
+            <p>Please use this link to get back to the verification page: 
+            <a href="https://localhost:8080/verificationCode?email=${req.body.email}">Verification Page</a></p>`
+            };
 
         transporter.sendMail(mailOptions, function(error, info) {
             if (error) {
@@ -186,6 +205,23 @@ app.post("/api/resendCode", async function(req, res) {
     }
 });
 
+    app.post("/api/verificationTimeout", async function(req, res) {
+        try {
+            // Update the user's verification code in the database
+            const user = await db.User.findOne({ where: { email: req.body.email } });
+
+            if (user) {
+                await user.destroy();
+                return res.json({ success: true, message: "Account deleted successfully" });
+            } else {
+                return res.status(404).json({ success: false, error: "User not found" });
+            }
+
+        } catch (error) {
+            console.error("Error deleting account", error);
+            res.status(500).json({ success: false, error: "Error removing account", details: error });
+        }
+    })
 
     // Check if a username exists
     app.post("/api/check_username", function(req, res) {
