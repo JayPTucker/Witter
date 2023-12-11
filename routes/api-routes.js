@@ -74,6 +74,51 @@ module.exports = function(app) {
         })(req, res, next);
     });
 
+    app.post("/api/resetPassword", async function(req, res) {
+        try {
+            // Generate a new verification code
+            const verificationCode = generateVerificationCode();
+    
+        // Update the user's verification code in the database
+        const user = await db.User.findOne({ where: { email: req.body.email } });
+
+        if (user) {
+            await user.update({ verificationCode: verificationCode.toString() });
+        } else {
+            return res.status(404).json({ success: false, error: "User not found" });
+        }
+            
+            // Send the new verification email
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'wittersocial@gmail.com',
+                    pass: process.env.GMAIL_PW
+                }
+            });
+    
+            const mailOptions = {
+                from: 'wittersocial@gmail.com',
+                to: req.body.email,
+                subject: 'Password Reset Verification Code',
+                html: `<p>Your verification code is: <strong>${verificationCode}</strong></p>`
+                };
+    
+            transporter.sendMail(mailOptions, function(error, info) {
+                if (error) {
+                    console.error("Error sending password reset verification email:", error);
+                    res.status(500).json({ success: false, error: "Error sending password reset verification email" });
+                } else {
+                    console.log("Password reset Verification email sent:", info.response);
+                    res.json({ success: true });
+                }
+            });
+        } catch (error) {
+            console.error("Error resetting password:", error);
+            res.status(500).json({ success: false, error: "Error resetting password", details: error });
+        }
+    })
+
     app.post("/api/verify_email", async function(req, res) {
         try {
             const user = await db.User.findOne({

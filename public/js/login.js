@@ -6,9 +6,13 @@ $(document).ready(function () {
     var usernameInputBox = document.getElementById("username-input")
     var passwordInputBox = document.getElementById("password-input")
 
-    loginForm.on("submit", function (event) {
+    document.getElementById("resetButton").addEventListener("click", function(event) {
         event.preventDefault();
-        
+        resetPassword();
+    });
+
+    loginForm.on("submit", function (event) {
+        event.preventDefault();        
     
         var userData = {
             username: usernameOrEmailInput.val().trim(),
@@ -82,3 +86,63 @@ $(document).ready(function () {
     }
     
 });
+
+function getEmailParameter() {
+    return prompt("Please type in your email address for your account")
+}
+
+function getNewPasswordParameter() {
+    return prompt("Please enter a new password");
+}
+
+function resetPassword() {
+    const email = getEmailParameter();
+
+    // Perform an AJAX request to the server to check if the user exists
+    fetch("/api/check_user_existence", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            email: email
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.exists) {
+            alert("Account doesn't exist. Please try another.");
+        } else {
+            // User exists, continue with your verification process
+            console.log("Account Exists, proceed with reset");
+
+            // Proceed with the password reset request
+            fetch("/api/resetPassword", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email
+                }),
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.success === true) {
+                    console.log("Password email sent successfully");
+
+                } else {
+                    console.log("Password email reset failed to send");
+                }
+            })
+            .catch(error => {
+                console.error("Error during password reset:", error);
+                alert("Error resetting password");
+            });
+        }
+    })
+    .catch(error => {
+        console.error("Error checking user existence:", error);
+        alert("Error checking user existence. Please try again.");
+    });
+}
