@@ -16,12 +16,21 @@ const port = 3000;
 // Dummy database
 const users = [];
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'wittersocial@gmail.com',
+        pass: process.env.GMAIL_PW
+    }
+});
+
+
 // Middleware to parse JSON
 app.use(bodyParser.json());
 
 // Dummy function to generate a random verification code
 function generateVerificationCode() {
-    return Math.floor(1000 + Math.random() * 9000);
+    return Math.floor(100000 + Math.random() * 900000);
 }
 
 module.exports = function(app) {
@@ -89,15 +98,6 @@ module.exports = function(app) {
             } else {
                 return res.status(404).json({ success: false, error: "User not found" });
             }
-            
-            // Send the new verification email
-            const transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: 'wittersocial@gmail.com',
-                    pass: process.env.GMAIL_PW
-                }
-            });
     
             const mailOptions = {
                 from: 'wittersocial@gmail.com',
@@ -157,7 +157,23 @@ module.exports = function(app) {
             await user.update({
                 password: bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10)),
                 verificationCode: null,
-            });
+            })
+
+            const mailOptions = {
+                from: 'wittersocial@gmail.com',
+                to: req.body.email,
+                subject: 'Witter Account Password Reset',
+                html: `<p>Your password has been reset.  If this was not you, please report it to our service team by sending us an email back.  Thanks!</p>`        
+            };
+    
+            transporter.sendMail(mailOptions, function(error, info) {
+                if (error) {
+                    console.error("Error sending password reset confirmation:", error);
+                    res.status(500).json({ error: "Error sending password reset confirmation email" });
+                } else {
+                    console.log(":", info.response);
+                }
+            })
     
             return res.json({ success: true, message: "Password updated successfully" });
         } catch (error) {
@@ -180,13 +196,6 @@ module.exports = function(app) {
                 // Mark the user as verified
                 await user.update({ isVerified: true, verificationCode: null });
                 res.json({ success: true, message: "Email verified successfully" });
-                const transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    auth: {
-                        user: 'wittersocial@gmail.com',
-                        pass: process.env.GMAIL_PW
-                    }
-                });
         
                 const mailOptions = {
                     from: 'wittersocial@gmail.com',
@@ -226,15 +235,6 @@ module.exports = function(app) {
             username: req.body.username,
             password: req.body.password,
             verificationCode: verificationCode // Set the verification code during user creation
-        });
-
-        // Send verification email
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: 'wittersocial@gmail.com',
-                pass: process.env.GMAIL_PW
-            }
         });
 
         const mailOptions = {
@@ -289,15 +289,6 @@ app.post("/api/resendCode", async function(req, res) {
         } else {
             return res.status(404).json({ success: false, error: "User not found" });
         }
-
-        // Send the new verification email
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: 'wittersocial@gmail.com',
-                pass: process.env.GMAIL_PW
-            }
-        });
 
         const mailOptions = {
             from: 'wittersocial@gmail.com',

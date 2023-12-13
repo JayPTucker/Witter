@@ -11,7 +11,11 @@ module.exports = function(sequelize, DataTypes) {
       image: {
         type: DataTypes.STRING,
         allowNull: true
-      }
+      },
+      // likes: {
+      //   type: DataTypes.STRING,
+      //   allowNull: true
+      // }
     });
     
     return Wit;
