@@ -12,10 +12,19 @@ module.exports = function(sequelize, DataTypes) {
         type: DataTypes.STRING,
         allowNull: true
       },
-      // likes: {
-      //   type: DataTypes.STRING,
-      //   allowNull: true
-      // }
+      likes: {
+        type: DataTypes.TEXT, // Use TEXT for storing JSON string
+        allowNull: true,
+        get() {
+          // Parse the stored JSON string when retrieving data
+          const likes = this.getDataValue('likes');
+          return likes ? JSON.parse(likes) : null;
+        },
+        set(likes) {
+          // Stringify the array when storing data
+          this.setDataValue('likes', likes ? JSON.stringify(likes) : null);
+        },
+      }
     });
     
     return Wit;
