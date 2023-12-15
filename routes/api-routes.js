@@ -447,7 +447,17 @@ app.post("/api/resendCode", async function(req, res) {
     
             // Check if the user has already liked the wit
             if (existingLikes.includes(username)) {
-                return res.status(400).json({ success: false, error: "User already liked this wit" });
+                console.log("USER ALREADY LIKED THIS WIT")
+
+                // Remove the username from the array
+                const updatedLikes = existingLikes.filter(user => user !== username);
+
+                // Update the wit with the new likes array
+                await wit.update({ likes: JSON.stringify(updatedLikes) });
+                
+                // return res.status(400).json({ success: false, error: "User already liked this wit" });
+                console.log("USERNAME REMOVED FROM LIKES SUCCESSFULLY")
+                return;
             }
     
             // Add the username to the likes array
@@ -459,7 +469,7 @@ app.post("/api/resendCode", async function(req, res) {
             // Return the updated wit with the number of likes
             const updatedWit = await db.Wit.findByPk(witId);
             const numLikes = existingLikes.length;
-            
+
     
             return res.json({ success: true, message: "Wit liked successfully", numLikes });
         } catch (error) {
