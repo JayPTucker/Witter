@@ -71,13 +71,12 @@ $.get("/api/user_data").then(function(data) {
 });
 
 function displayWit(wit) {
-
     $.get("/api/user_data").then(function (data) {
         var row = $(`<div class="wit row">`);
         row.append(`<div class="col-6"><p class="wit-author">@${wit.author}</p></div>`);
         row.append(`<div class="col-6"><p class="wit-date">${moment(wit.createdAt).format("h:mma on dddd")} </p></div>`);
         row.append(`<button class="like-button" data-wit-id="${wit.id}">Like</button>`);
-        row.append(`<p>Likes: ${getLikeCount(wit.likes)} -</p>`); // Container for like count
+        row.append(`<p class="like-count">Likes: ${getLikeCount(wit.likes)} -</p>`); // Container for like count
         row.append(`</div>`);
         row.append(`<p>${wit.body}</p>`);
 
@@ -85,6 +84,15 @@ function displayWit(wit) {
         if (wit.image) {
             // Display the image in the new row
             displayImage(wit.image, row);
+        }
+
+        // && Checks to see if the array is empty or not or if it includes the username
+        if (wit.likes && wit.likes.includes(data.username)) {
+            console.log("TEST: USER HAS LIKED THIS POST");
+            row.find('.like-button').css('background-color', 'red');
+            row.find('.like-button').css('color', 'white');
+        } else {
+            console.log("TEST: USER HASN'T LIKED THIS POST");
         }
 
         $("#wits-area").prepend(row);
@@ -97,10 +105,13 @@ function displayWit(wit) {
     });
 }
 
+
 // Function to get the number of likes from the JSON string
 function getLikeCount(likes) {
     try {
+
         const likesArray = JSON.parse(likes);
+
         return likesArray ? likesArray.length : 0;
     } catch (error) {
         console.error("Error parsing likes:", error);
