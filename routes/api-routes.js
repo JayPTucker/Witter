@@ -454,7 +454,7 @@ app.post("/api/resendCode", async function(req, res) {
 
                 // Update the wit with the new likes array
                 await wit.update({ likes: JSON.stringify(updatedLikes) });
-                
+
                 // return res.status(400).json({ success: false, error: "User already liked this wit" });
                 console.log("USERNAME REMOVED FROM LIKES SUCCESSFULLY")
                 return;
@@ -473,8 +473,29 @@ app.post("/api/resendCode", async function(req, res) {
     
             return res.json({ success: true, message: "Wit liked successfully", numLikes });
         } catch (error) {
-            console.error("Error liking wit:", error);
+            console.error("Error liking wit in API-route:", error);
             return res.status(500).json({ success: false, error: "Internal Server Error" });
         }
-    });    
+    });  
+    
+    app.post("/api/wits/:witId/delete", async function (req, res) {
+        const witId = req.params.witId;
+        const username = req.body.username;
+
+        try {
+            const wit = await db.Wit.findByPk(witId);
+
+            if (!wit) {
+                return res.status(404).json({ success: false, error: "Wit not found" });
+            } else {
+                await wit.destroy({
+                    where: { id: witId }
+                })
+            }
+        } catch (error) {
+            console.error("Error removing wit in API-route:", error);
+            return res.status(500).json({ success: false, error: "Internal Server Error" });
+
+        }
+    })
 };
