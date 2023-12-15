@@ -58,13 +58,16 @@ $.get("/api/user_data").then(function(data) {
             success: function (response) {
                 // Display the wit immediately after creating it
                 displayWit(response);
+    
+                // Reload all wits to include the new one
+                loadWits();
             },
             error: function (err) {
                 console.log(err.responseJSON);
                 console.log(500);
             }
         });
-    }
+    }    
 });
 
 function displayWit(wit) {
