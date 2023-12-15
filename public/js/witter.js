@@ -71,11 +71,13 @@ $.get("/api/user_data").then(function(data) {
 });
 
 function displayWit(wit) {
+
     $.get("/api/user_data").then(function (data) {
         var row = $(`<div class="wit row">`);
-        row.append(`<div class="col-6"><p class="wit-author">@${data.username}</p></div>`);
+        row.append(`<div class="col-6"><p class="wit-author">@${wit.author}</p></div>`);
         row.append(`<div class="col-6"><p class="wit-date">${moment(wit.createdAt).format("h:mma on dddd")} </p></div>`);
         row.append(`<button class="like-button" data-wit-id="${wit.id}">Like</button>`);
+        row.append(`<p>Likes: ${getLikeCount(wit.likes)} -</p>`); // Container for like count
         row.append(`</div>`);
         row.append(`<p>${wit.body}</p>`);
 
@@ -90,10 +92,21 @@ function displayWit(wit) {
         // Attach click event handler to the like button
         row.find('.like-button').on('click', function () {
             // Call the function to handle the like button click
-            handleLikeButtonClick(wit.id, data.username);
+            handleLikeButtonClick(wit.id, data.username, row);
         });
     });
-}    
+}
+
+// Function to get the number of likes from the JSON string
+function getLikeCount(likes) {
+    try {
+        const likesArray = JSON.parse(likes);
+        return likesArray ? likesArray.length : 0;
+    } catch (error) {
+        console.error("Error parsing likes:", error);
+        return 0; // Return 0 if there is an error parsing the likes
+    }
+}
 
 function displayImage(imageFilename, row) {
     // Assuming images are stored in the "public/uploads/" directory
@@ -110,7 +123,6 @@ function handleNewWitErr(err) {
     // Ensure the displayImage function is globally available
     window.displayImage = displayImage;
 });
-
 
 function handleLikeButtonClick(witId, username) {
     $.ajax({

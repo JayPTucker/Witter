@@ -456,10 +456,15 @@ app.post("/api/resendCode", async function(req, res) {
             // Update the wit with the new likes array
             await wit.update({ likes: JSON.stringify(existingLikes) });
     
-            return res.json({ success: true, message: "Wit liked successfully" });
+            // Return the updated wit with the number of likes
+            const updatedWit = await db.Wit.findByPk(witId);
+            const numLikes = existingLikes.length;
+            
+    
+            return res.json({ success: true, message: "Wit liked successfully", numLikes });
         } catch (error) {
             console.error("Error liking wit:", error);
             return res.status(500).json({ success: false, error: "Internal Server Error" });
         }
-    });
+    });    
 };
