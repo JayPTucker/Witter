@@ -26,13 +26,9 @@ $.get("/api/user_data").then(function(data) {
         event.preventDefault();
 
         if (bodyInput.val().trim() === "" && imageInput[0].files[0] == null) {
-            console.log("no body OR photo")
             alert("Please enter something into the text box or choose an image.")
 
-        } else 
-        {
-            console.log("has body OR photo")
-        
+        } else {        
             // Create FormData object
             var formData = new FormData();
             formData.append("author", authorInput);
@@ -95,12 +91,9 @@ function displayWit(wit) {
 
         // && Checks to see if the array is empty or not or if it includes the username
         if (wit.likes && wit.likes.includes(data.username)) {
-            console.log("TEST: USER HAS LIKED THIS POST");
             row.find('.like-button').css('background-color', 'red');
             row.find('.like-button').css('color', 'white');
-        } else {
-            console.log("TEST: USER HASN'T LIKED THIS POST");
-        }
+        } 
 
         $("#wits-area").prepend(row);
 
@@ -111,7 +104,6 @@ function displayWit(wit) {
         });
     });
 }
-
 
 // Function to get the number of likes from the JSON string
 function getLikeCount(likes) {
@@ -130,10 +122,8 @@ function renderDropDown(wit, row) {
         var authorInput = data.username;
 
         if (authorInput !== wit.author) {
-            console.log(wit.id + " does not match the logged-in user.")
             return ""; // Return an empty string if not matching user
         } else if (authorInput === wit.author) {
-            console.log(wit.id + " was made by the logged-in user")
             return `
                 <div class="dropdown">
                     <button class="dropbtn">Options</button>
@@ -151,11 +141,6 @@ function displayImage(imageFilename, row) {
     var imageUrl = `/uploads/${imageFilename}`;
     var imageElement = $(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
     row.append(imageElement);
-}
-
-function handleNewWitErr(err) {
-    console.log(err.responseJSON);
-    console.log(500);
 }
 
     // Ensure the displayImage function is globally available
@@ -193,7 +178,6 @@ function handleDeleteButtonClick(witId, username) {
         // You can choose to do nothing or provide feedback to the user
     }
 
-    console.log("delete button clicked")
     $.ajax({
         method: 'POST',
         url: `/api/wits/${witId}/delete`,
