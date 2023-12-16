@@ -3,8 +3,17 @@ jQuery(function() {
         var imageInput = $("#image-input");
         var username = data.username;
         var newProfilePicForm = $("form.new-profilePic");
+        var profilePageInfo = $(".user-info");
 
         console.log(username);
+
+        // Posting Profile Pic on Profile Page
+        var row = $(`<div id="profilePicRow" class="profilePicRow"></div>`);
+        row.append(`<p>Username: @${username}</p>`)
+        row.append(`<p>Profile Picture:</p>`)
+        row.append(`<img class="profilePic" src="/uploads/${data.profilePicture}">`);
+        $(".user-info").prepend(row);
+
 
         newProfilePicForm.on("submit", function(event) {
             event.preventDefault();

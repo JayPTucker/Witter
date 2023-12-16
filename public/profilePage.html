@@ -20,15 +20,30 @@
 <body>
     
     <div class="container">
+        <div class="row">
+        
+            <div class="col-md-3 text-center">
+              <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
+              <button class="home-button" onclick="window.location.href='/witter'">Home</button>
+              <button class="profile-button" onclick="window.location.href='/profilePage'">Profile</button>
+            </div>
+            
+          </div>
         <div class="row justify-content-center">
             <div class="col-12 text-center">
                 Welcome to your profile.
                 <br>
                 Edit your info below:
                 <br><br><hr>
+                <div>
+                    <h3>User's Info:</h3>
+                    <div class="user-info">
+
+                    </div>
+                </div>
 
                 <form class="new-profilePic" enctype="multipart/form-data">
-                    <p>Add new profile pic:</p>
+                    <p>Click below to change profile picture:</p>
                     <input type="file" id="image-input" name="image">
                     <button class="profilePic-button" type="submit">Save</button>
                 </form>
