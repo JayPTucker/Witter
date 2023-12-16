@@ -9,18 +9,19 @@ $.get("/api/user_data").then(function(data) {
     var imageInput = $("#image-input");
 
     function loadWits() {
-
         $.get("/api/all_wits").then(function (data) {
             if (data.length !== 0) {
+                // Sort wits by createdAt before displaying
+                data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    
                 for (var i = 0; i < data.length; i++) {
                     displayWit(data[i]);
                 }
             }
         });
-    }
+    }    
 
     loadWits();
-
 
     newWitForm.on("submit", function(event) {
         event.preventDefault();
