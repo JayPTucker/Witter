@@ -7,6 +7,18 @@
     max-width: 150px;
 }
 
+
+
+.profilePic {
+  border: 1px solid black;
+  border-radius: 50%; /* Use 50% for a perfect circle */
+  width: 100px; /* Desired width */
+  height: 100px; /* Desired height */
+  object-fit: cover; /* Maintain aspect ratio */
+}
+
+
+
 /* Dropdown Button */
 .dropbtn {
     background-color: #565656;

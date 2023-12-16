@@ -26,6 +26,10 @@ module.exports = function(sequelize, DataTypes) {
     isVerified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    profilePicture: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   });
 

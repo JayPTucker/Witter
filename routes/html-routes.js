@@ -38,4 +38,8 @@ module.exports = function(app) {
     res.sendFile(path.join(__dirname, "../public/witter.html"));
   });
 
+  app.get("/profilePage", isAuthenticated, function(req, res) {
+    res.sendFile(path.join(__dirname, "../public/profilePage.html"));
+  });
+
 };

@@ -392,7 +392,8 @@ app.post("/api/resendCode", async function(req, res) {
         } else {
             res.json({
                 username: req.user.username,
-                password: req.user.password
+                password: req.user.password,
+                profilePicture: req.user.profilePicture
             });
         }
     });
@@ -498,4 +499,55 @@ app.post("/api/resendCode", async function(req, res) {
 
         }
     })
+
+    app.post("/api/changeProfilePic", upload.single("profilePicture"), function (req, res) {
+        console.log("Received File:", req.file);  // Log the file data
+    
+        const username = req.body.username;
+        const profilePicture = req.file;
+    
+        console.log("username:", username);
+        console.log("profilePicture:", profilePicture);
+    
+        // Corrected syntax for the update method
+        db.User.update(
+            // Fields to be updated
+            {
+                profilePicture: profilePicture ? profilePicture.filename : null // Store the filename in the database if it exists
+            },
+            // Where clause
+            {
+                where: {
+                    username: username
+                }
+            }
+        )
+        .then(function (results) {
+            console.log("Profile Picture Updated:", results);
+            res.json(results); // Send the updated wit back as JSON
+        })
+        .catch(function (err) {
+            console.log("Error updating Profile Picture:", err);
+            res.status(401).json(err);
+        });
+    });
+    
+    // Example route in your server-side code
+    app.get("/api/profilePicture/:username", function (req, res) {
+        const username = req.params.username;
+
+        // Query the database to get the profile picture filename for the given username
+        db.User.findOne({
+            attributes: ['profilePicture'],
+            where: { username: username }
+        })
+        .then(function (user) {
+            res.json({ profilePicture: user ? user.profilePicture : null });
+        })
+        .catch(function (err) {
+            console.log("Error fetching profile picture:", err);
+            res.status(500).json({ error: "Internal Server Error" });
+        });
+    });
+
 };

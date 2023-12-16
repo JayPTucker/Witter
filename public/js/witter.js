@@ -1,4 +1,4 @@
-$(document).ready(function() {
+jQuery(function() {
 
 $.get("/api/user_data").then(function(data) {
     $(".member-name").text(data.username);
@@ -69,40 +69,67 @@ $.get("/api/user_data").then(function(data) {
 
 function displayWit(wit) {
     $.get("/api/user_data").then(function (data) {
-        var row = $(`<div id="wit-${wit.id}" class="wit-row"></div>`);
-        row.append(`<div class="col-6"><p class="wit-author">@${wit.author}</p></div>`);
-        row.append(`<div class="col-6"><p class="wit-date">${moment(wit.createdAt).format("h:mma on dddd")} </p></div>`);
-        row.append(`<button class="like-button" data-wit-id="${wit.id}">Like</button>`);
-        row.append(`<p class="like-count">Likes: ${getLikeCount(wit.likes)} -</p>`); // Container for like count
-        row.append(`</div>`);
-        row.append(`<p>${wit.body}</p>`);
-        // Renders our Dropdown menu if the user is logged into the account the wits belong to
-        renderDropDown(wit, row).then((dropdownHtml) => {
-            row.append(dropdownHtml);
-            row.find('.delete-button').on('click', function () {
-                handleDeleteButtonClick(wit.id, data.username, row);
+        // Call findProfilePicture and handle the promise using then
+        findProfilePicture(data, wit).then(profilePicture => {
+            var row = $(`<div id="wit-${wit.id}" class="wit-row"></div>`);
+            row.append(`<img class="profilePic" src="/uploads/${profilePicture}">`);
+            row.append(`<div class="col-6"><p class="wit-author">@${wit.author}</p></div>`);
+            row.append(`<div class="col-6"><p class="wit-date">${moment(wit.createdAt).format("h:mma on dddd")} </p></div>`);
+            row.append(`<button class="like-button" data-wit-id="${wit.id}">Like</button>`);
+            row.append(`<p class="like-count">Likes: ${getLikeCount(wit.likes)} -</p>`); // Container for like count
+            row.append(`<p>${wit.body}</p>`);
+            // Renders our Dropdown menu if the user is logged into the account the wits belong to
+            renderDropDown(wit, row).then((dropdownHtml) => {
+                row.append(dropdownHtml);
+                row.find('.delete-button').on('click', function () {
+                    handleDeleteButtonClick(wit.id, data.username, row);
+                });
+            });
+            // Check if there is an image
+            if (wit.image) {
+                // Display the image in the new row
+                displayImage(wit.image, row);
+            }
+
+            // && Checks to see if the array is empty or not or if it includes the username
+            if (wit.likes && wit.likes.includes(data.username)) {
+                row.find('.like-button').css('background-color', 'red');
+                row.find('.like-button').css('color', 'white');
+            } 
+
+            $("#wits-area").prepend(row);
+
+            // Attach click event handler to the like button
+            row.find('.like-button').on('click', function () {
+                // Call the function to handle the like button click
+                handleLikeButtonClick(wit.id, data.username, row);
             });
         });
-        // Check if there is an image
-        if (wit.image) {
-            // Display the image in the new row
-            displayImage(wit.image, row);
-        }
-
-        // && Checks to see if the array is empty or not or if it includes the username
-        if (wit.likes && wit.likes.includes(data.username)) {
-            row.find('.like-button').css('background-color', 'red');
-            row.find('.like-button').css('color', 'white');
-        } 
-
-        $("#wits-area").prepend(row);
-
-        // Attach click event handler to the like button
-        row.find('.like-button').on('click', function () {
-            // Call the function to handle the like button click
-            handleLikeButtonClick(wit.id, data.username, row);
-        });
     });
+}
+
+
+function findProfilePicture(data, wit) {
+    console.log(data)
+    console.log(wit)
+
+    return new Promise((resolve, reject) => {
+        // Check if the wit has an author
+        if (wit.author) {
+            // Fetch the profile picture for the author
+            $.get(`/api/profilePicture/${wit.author}`)
+                .then(response => {
+                    resolve(response.profilePicture);
+                })
+                .catch(error => {
+                    console.log("Error fetching profile picture:", error);
+                    reject(error);
+                });
+        } else {
+            resolve(null);
+        }
+    });
+    
 }
 
 // Function to get the number of likes from the JSON string
@@ -135,17 +162,6 @@ function renderDropDown(wit, row) {
         }
     });
 }
-
-function displayImage(imageFilename, row) {
-    // Assuming images are stored in the "public/uploads/" directory
-    var imageUrl = `/uploads/${imageFilename}`;
-    var imageElement = $(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
-    row.append(imageElement);
-}
-
-    // Ensure the displayImage function is globally available
-    window.displayImage = displayImage;
-});
 
 function handleLikeButtonClick(witId, username) {
     $.ajax({
@@ -190,4 +206,5 @@ function handleDeleteButtonClick(witId, username) {
             console.error('Error within handleDeleteButtonClick function:', error)
         }
     })
-}
+    }
+})
