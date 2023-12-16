@@ -1,0 +1,15 @@
+My Application License Agreement
+
+1. License Grant: The software, My Application, is licensed, not sold, to you for use under the terms of this license.
+
+2. Restrictions: You may not copy, modify, reverse engineer, or distribute the software without the express written consent of the licensor.
+
+3. Support: This license does not entitle you to any support services.
+
+4. Termination: This license is effective until terminated. The licensor may terminate this license at any time if you fail to comply with its terms.
+
+5. Disclaimer: The software is provided "as is," without warranty of any kind.
+
+6. Governing Law: This license is governed by the laws of the State of Tennessee.
+
+...

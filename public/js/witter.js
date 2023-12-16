@@ -111,9 +111,6 @@ function displayWit(wit) {
 
 
 function findProfilePicture(data, wit) {
-    console.log(data)
-    console.log(wit)
-
     return new Promise((resolve, reject) => {
         // Check if the wit has an author
         if (wit.author) {
