@@ -72,13 +72,29 @@ function displayWit(wit) {
     $.get("/api/user_data").then(function (data) {
         // Call findProfilePicture and handle the promise using then
         findProfilePicture(data, wit).then(profilePicture => {
-            var row = $(`<div id="wit-${wit.id}" class="wit-row"></div>`);
-            row.append(`<img class="profilePic" src="/uploads/${profilePicture}">`);
-            row.append(`<div class="col-6"><p class="wit-author">@${wit.author}</p></div>`);
-            row.append(`<div class="col-6"><p class="wit-date">${moment(wit.createdAt).format("h:mma on dddd")} </p></div>`);
-            row.append(`<button class="like-button" data-wit-id="${wit.id}">Like</button>`);
-            row.append(`<p class="like-count">Likes: ${getLikeCount(wit.likes)} -</p>`); // Container for like count
-            row.append(`<p>${wit.body}</p>`);
+            var row = $(`<div id="wit-${wit.id}" class="wit-row col-md-8"></div>`);
+            row.append(`
+
+            <div class="row">
+                <div class="col-md-3">
+                    <p class="wit-author">@${wit.author}</p>
+                    <img class="Wit-profilePic" src="/uploads/${profilePicture}">
+                </div>
+
+                <div class="col-md-6>
+                    <p class="wit-body">${wit.body}</p>
+                    <button type="button" data-wit-id="${wit.id}" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-thumbs-up"></span>${getLikeCount(wit.likes)} Like
+                    </button>
+                </div>
+
+                <div class="col-md-3">
+                    <p class="wit-date">${moment(wit.createdAt).format("h:mma on dddd")} </p>
+                </div>
+            </div>
+
+
+            `);
             // Renders our Dropdown menu if the user is logged into the account the wits belong to
             renderDropDown(wit, row).then((dropdownHtml) => {
                 row.append(dropdownHtml);

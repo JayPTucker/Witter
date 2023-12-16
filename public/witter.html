@@ -11,54 +11,46 @@
   <!-- Moment.js -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.16.0/moment.min.js"></script>
   <!-- BOOTSTRAP: -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
 
-  <section class="whole-site">
-    <header class="container-fluid">
-      <div class="row">
-        
-        <div class="col-md-3 text-center">
-          <p class="logout-text">Logged in as: @<span class="member-name"></span></p>
-          <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
-          <button class="profile-button" onclick="window.location.href='/profilePage'">Profile</button>
-        </div>
-      </div>
-    </header>
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      
+      <div class="col-md-3 text-center">
 
-
-    <article class="mainpage-container container">
-
-      <div class="new-wit-row row justify-content-center">
-        <div class="col-12 text-center">
-          <form class="new-wit" enctype="multipart/form-data">
-            <p class="make-wit-text">Make a Wit!</p>
-            <p class="wit-input-text">@<span class="member-name"></span>'s thoughts:</p>
-            <input class="wit-input" id="wit-input" name="body" placeholder="Feeling Witty?" autocomplete="off">
-            <input type="file" id="image-input" name="image">
-            <button class="wit-button" type="submit">Wit!</button>
-        </form>
-          <br><br>
-        </div>
+        <p class="logout-text">Logged in as: @<span class="member-name"></span></p>
+        <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
+        <button class="profile-button" onclick="window.location.href='/profilePage'">Profile</button>
       </div>
 
-      <div class="wits-row row justify-content-center">
-        <div class="col-11 wits-container text-center justify-content-center" id="wits-area">
-        </div>
-      </div>
+    </div>
 
-    </article>
-  </section>
+    <div class="new-wit-row row justify-content-center">
+
+      <div class="col-12 text-center">
+        <form class="new-wit" enctype="multipart/form-data">
+          <p class="make-wit-text">Make a Wit!</p>
+          <p class="wit-input-text">@<span class="member-name"></span>'s thoughts:</p>
+          <input class="wit-input" id="wit-input" name="body" placeholder="Feeling Witty?" autocomplete="off">
+          <input type="file" id="image-input" name="image">
+          <button class="wit-button" type="submit">Wit!</button>
+      </form>
+      
+        <br><br>
+      </div>
+    </div>
+
+    <div class="wits-row row justify-content-center" id="wits-area">
+
+        <!-- WITS GO HERE -->
+    </div>
+  </div>
 
 </body>
-
-<!-- BOOTSTRAP SCRIPT -->
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 
 <!-- REFERENCING OUR SCRIPT: -->
 <script src="./js/witter.js"></script>
