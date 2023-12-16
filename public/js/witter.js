@@ -8,6 +8,15 @@ $.get("/api/user_data").then(function(data) {
     var bodyInput = $("input#wit-input");
     var imageInput = $("#image-input");
 
+    var newWitProfilePic = data.profilePicture;
+
+    function loadProfilePicforNewWit() {
+        var row = $("#newWit-profilePic");
+        row.append(`<img class="Wit-profilePic" src="/uploads/${newWitProfilePic}"></img>`)
+    }
+
+    loadProfilePicforNewWit() 
+
     function loadWits() {
         $.get("/api/all_wits").then(function (data) {
             if (data.length !== 0) {
@@ -23,28 +32,30 @@ $.get("/api/user_data").then(function(data) {
 
     loadWits();
 
-    newWitForm.on("submit", function(event) {
-        event.preventDefault();
+newWitForm.on("submit", function(event) {
+    event.preventDefault();
 
-        if (bodyInput.val().trim() === "" && imageInput[0].files[0] == null) {
-            alert("Please enter something into the text box or choose an image.")
+    if (bodyInput.val().trim() === "" && imageInput[0].files[0] == null) {
+        alert("Please enter something into the text box or choose an image.")
+    } else {        
+        // Create FormData object
+        var formData = new FormData();
+        formData.append("author", authorInput);
+        formData.append("body", bodyInput.val().trim());
 
-        } else {        
-            // Create FormData object
-            var formData = new FormData();
-            formData.append("author", authorInput);
-            formData.append("body", bodyInput.val().trim());
-
-            // Get the selected file from the input
-            if (imageInput[0].files.length > 0) {
-                formData.append("image", imageInput[0].files[0]);
-            }
-
-            createWitFunction(formData);
-            bodyInput.val("");
-            imageInput.val(""); // Clear the file input
+        // Get the selected file from the input
+        if (imageInput[0].files.length > 0) {
+            formData.append("image", imageInput[0].files[0]);
         }
-    });
+
+        createWitFunction(formData);
+        bodyInput.val("");
+        imageInput.val(""); // Clear the file input
+    }
+
+    return false; // Add this line to prevent default form submission behavior
+});
+
 
     function createWitFunction(formData) {
         $.ajax({
@@ -72,32 +83,33 @@ function displayWit(wit) {
     $.get("/api/user_data").then(function (data) {
         // Call findProfilePicture and handle the promise using then
         findProfilePicture(data, wit).then(profilePicture => {
-            var row = $(`<div id="wit-${wit.id}" class="wit-row col-md-8"></div>`);
+            var row = $(`<div class="wit-row col-md-12" id="wit-${wit.id}"></div>`);
             row.append(`
-
             <div class="row">
-                <div class="col-md-3">
-                    <p class="wit-author">@${wit.author}</p>
+                <div class="col-md-1">
                     <img class="Wit-profilePic" src="/uploads/${profilePicture}">
                 </div>
 
-                <div class="col-md-6>
+                <div class="col-md-9">
+                    <h4 class="wit-author">@${wit.author}</h4>
                     <p class="wit-body">${wit.body}</p>
-                    <button type="button" data-wit-id="${wit.id}" class="btn btn-default btn-sm">
-                        <span class="glyphicon glyphicon-thumbs-up"></span>${getLikeCount(wit.likes)} Like
+                    <button type="button" data-wit-id="${wit.id}" class="like-button wit-like-btn btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-thumbs-up"></span> 
+                        ${getLikeCount(wit.likes)} Likes
                     </button>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <p class="wit-date">${moment(wit.createdAt).format("h:mma on dddd")} </p>
+                    <div class="dropdown-container"></div> <!-- Container for dropdown -->
                 </div>
-            </div>
+            </div>`);
 
+            $("#wits-area").prepend(row);
 
-            `);
             // Renders our Dropdown menu if the user is logged into the account the wits belong to
             renderDropDown(wit, row).then((dropdownHtml) => {
-                row.append(dropdownHtml);
+                row.find('.dropdown-container').html(dropdownHtml);
                 row.find('.delete-button').on('click', function () {
                     handleDeleteButtonClick(wit.id, data.username, row);
                 });
@@ -113,8 +125,6 @@ function displayWit(wit) {
                 row.find('.like-button').css('background-color', 'red');
                 row.find('.like-button').css('color', 'white');
             } 
-
-            $("#wits-area").prepend(row);
 
             // Attach click event handler to the like button
             row.find('.like-button').on('click', function () {

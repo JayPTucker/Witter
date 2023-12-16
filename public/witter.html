@@ -17,36 +17,48 @@
 </head>
 <body>
 
-  <div class="container-fluid">
+  <div class="main-container justify-content-center container-fluid">
+
+    <!-- NEW ROW  -->
+
     <div class="row justify-content-center">
-      
       <div class="col-md-3 text-center">
 
         <p class="logout-text">Logged in as: @<span class="member-name"></span></p>
         <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
         <button class="profile-button" onclick="window.location.href='/profilePage'">Profile</button>
-      </div>
 
+      </div>
     </div>
+
+    <!-- NEW ROW -->
 
     <div class="new-wit-row row justify-content-center">
+      <div class="col-md-12 text-center">
 
-      <div class="col-12 text-center">
-        <form class="new-wit" enctype="multipart/form-data">
-          <p class="make-wit-text">Make a Wit!</p>
-          <p class="wit-input-text">@<span class="member-name"></span>'s thoughts:</p>
-          <input class="wit-input" id="wit-input" name="body" placeholder="Feeling Witty?" autocomplete="off">
-          <input type="file" id="image-input" name="image">
-          <button class="wit-button" type="submit">Wit!</button>
-      </form>
+      <p class="make-wit-text">Make a Wit!</p>
+      <p class="wit-input-text">@<span class="member-name"></span>'s thoughts:</p>
+
+      <div class="row new-wit-section">
+        <div class="col-md-1" id="newWit-profilePic">
+          
+        </div>
+        <div class="col-md-11">
+
+          <form class="new-wit" enctype="multipart/form-data">
+            <input class="wit-input" id="wit-input" name="body" placeholder="Feeling Witty?" autocomplete="off">
+            <input type="file" id="image-input" name="image">
+            <button class="wit-button" type="submit">Wit!</button>
+          </form>
+
+        </div>
+      </div>
       
-        <br><br>
       </div>
     </div>
 
-    <div class="wits-row row justify-content-center" id="wits-area">
-
-        <!-- WITS GO HERE -->
+    <div class="row" id="wits-area">
+      <!-- WITS GO HERE -->
     </div>
   </div>
 
