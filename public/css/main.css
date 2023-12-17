@@ -1,33 +1,38 @@
+body {
+  background-color: rgb(0, 23, 47) !important;
+  color: white !important;
+}
+
 /* Gets rid of resize option on input */
 .form-control {
   resize: none;
 }
 
-#wits-area {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-}
-
 .new-wit-section {
-  max-width: 600px;
-  border: 1px solid black !important;
-  border-radius: 20px !important;
+  border: 1px solid rgb(245, 245, 245) !important;
   padding: 10px;
 }
+
+.wit-input {
+  border: 0px solid rgba(0, 0, 0, 0)!important;
+  margin: 5px;
+  box-shadow: 0px 0px 0px !important;
+}
+
+/* =================================================== */
+/* POSTED WITS */
+/* =================================================== */
 
 .wit-author {
   margin: 0px !important;
 }
 
 .wit-row {
-  border: 1px solid black;
-  border-radius: 20px;
+  border: 1px solid rgb(107, 107, 107);
+  background-color: rgb(0, 35, 73);
   padding: 20px;
+  margin: auto;
   transition: all 0.2s ease-in-out;
-  max-width: 600px; /* Adjust the max-width as needed */
-  margin: 25px 80px; /* Center the row horizontally with auto margins */
 }
 
 .wit-row:hover {
@@ -35,7 +40,7 @@
 }
 
 .wit-image {
-    max-width: 150px;
+  max-width: 150px;
 }
 
 .wit-profilePic {
@@ -44,13 +49,6 @@
   width: 50px; /* Desired width */
   height: 50px; /* Desired height */
   object-fit: cover; /* Maintain aspect ratio */
-
-}
-
-.wit-input {
-  border: 0px solid rgba(0, 0, 0, 0)!important;
-  margin: 5px;
-  box-shadow: 0px 0px 0px !important;
 }
 
 .wit-body {

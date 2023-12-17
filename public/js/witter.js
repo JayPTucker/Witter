@@ -83,7 +83,7 @@ function displayWit(wit) {
     $.get("/api/user_data").then(function (data) {
         // Call findProfilePicture and handle the promise using then
         findProfilePicture(data, wit).then(profilePicture => {
-            var row = $(`<div class="wit-row col-md-12" id="wit-${wit.id}"></div>`);
+            var row = $(`<div class="wit-row col-md-8" id="wit-${wit.id}"></div>`);
             row.append(`
             <div class="row">
                 <div class="col-md-1">
@@ -103,7 +103,8 @@ function displayWit(wit) {
                     <p class="wit-date">${moment(wit.createdAt).format("h:mma on dddd")} </p>
                     <div class="dropdown-container"></div> <!-- Container for dropdown -->
                 </div>
-            </div>`);
+            </div>
+            `);
 
             $("#wits-area").prepend(row);
 
