@@ -5,7 +5,7 @@ $.get("/api/user_data").then(function(data) {
 
     var newWitForm = $("form.new-wit");
     var authorInput = data.username;
-    var bodyInput = $("input#wit-input");
+    var bodyInput = $("#wit-input");
     var imageInput = $("#image-input");
 
     var newWitProfilePic = data.profilePicture;
