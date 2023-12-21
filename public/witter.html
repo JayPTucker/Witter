@@ -21,8 +21,8 @@
 
     <!-- NEW ROW  -->
 
-    <div class="row">
-      <div class="col-md-3 text-center">
+    <div class="row justify-content-center">
+      <div class="col-8 text-center">
 
         <p class="logout-text">Logged in as: @<span class="member-name"></span></p>
         <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
@@ -33,22 +33,25 @@
 
     <!-- NEW ROW -->
 
-    <p class="make-wit-text">Make a Wit!</p>
-    <p class="wit-input-text">@<span class="member-name"></span>'s thoughts:</p>
+    <div class="row justify-content-center">
 
-    <!-- NEW ROW -->
+      <div class="col-8 new-wit-row">
+        <form class="new-wit row form-group" enctype="multipart/form-data">
+          <div class="col-1" id="newWit-profilePic">
+           <!-- PROFILE PIC COL -->
+          </div>
+          <div class="col-11">
+            <textarea class="form-control wit-input" rows="3" id="wit-input" name="body" placeholder="Type your thoughts here..." autocomplete="off"></textarea>
+            <label for="image-input">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-image-fill image-icon" viewBox="0 0 16 16">
+                <path d="M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2V3zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12zm5-6.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/>
+              </svg>  
+            </label>
+            <input type="file" id="image-input" name="image" class="hidden-input">
 
-    <div class="row justify-content-center new-wit-row ">
-
-      <div class="col-1" id="newWit-profilePic">
-        <!-- PROFILE PIC COL -->
-      </div>
-
-      <div class="col-4">
-        <form class="new-wit form-group" enctype="multipart/form-data">
-          <textarea class="form-control wit-input" rows="3" id="wit-input" name="body" placeholder="Feeling Witty?" autocomplete="off"></textarea>
-          <input type="file" id="image-input" name="image">
-          <button class="wit-button" type="submit">Wit!</button>
+            
+            <button class="wit-button" type="submit">Wit!</button>  
+          </div>
         </form>
       </div>
     </div>

@@ -7,15 +7,59 @@ body {
   resize: none;
 }
 
+.new-wit-row {
+  border: 1px solid black;
+  padding: 15px;
+}
+
 .wit-input {
-  width: 400px !important;
   height: 150px;
+  font-size: 25px !important;
   padding: 12px 20px;
   box-sizing: border-box;
-  border: 2px solid #ccc;
+  border: 2px solid #cccccc00 !important;
   border-radius: 4px;
-  background-color: #f8f8f8;
+  background-color: #56565600 !important;
   resize: none;
+}
+
+.wit-input:focus {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent; /* For Safari */
+}
+
+.hidden-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.image-icon {
+  color: rgb(59, 100, 114);
+  width: 30px;
+  height: auto;
+  transition: all 0.2s ease-in-out;
+}
+
+.image-icon:hover {
+  color: black;
+  width: 35px;
+}
+
+.wit-button {
+  float: right;
+  font-weight: bold;
+  padding: 5px 15px;
+  background-color: lightblue;
+  border-radius: 15px;
+  border: 2px solid black;
+  transition: all 0.2s ease-in-out;
+}
+
+.wit-button:hover {
+  background-color: rgb(133, 164, 174);
 }
 
 /* =================================================== */
@@ -41,7 +85,7 @@ body {
 }
 
 .wit-profilePic {
-  border: 1px solid black;
+  border: 2px solid black;
   border-radius: 50%; /* Use 50% for a perfect circle */
   width: 50px; /* Desired width */
   height: 50px; /* Desired height */
@@ -83,13 +127,10 @@ body {
 
 /* Dropdown Button */
 .dropbtn {
-    background-color: #565656;
-    color: white;
+    color: black;
     padding: 10px;
-    font-size: 16px;
-    border: 1px solid black;
-    border-radius: 20px;
-
+    border: none !important;
+    background-color: rgba(255, 0, 0, 0) !important;
   }
   
   /* The container <div> - needed to position the dropdown content */
