@@ -1,11 +1,3 @@
-body {
-  background-color: rgb(180, 180, 180) !important;
-}
-
-/* Gets rid of resize option on input */
-.form-control {
-  resize: none;
-}
 
 .new-wit-row {
   border: 1px solid black;

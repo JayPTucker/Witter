@@ -6,7 +6,8 @@
     <title>Login | Witter</title>
 
     <!-- DEPENDENCIES: -->
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/allpages.css">
+    <link rel="stylesheet" href="css/login.css">
     <link rel="shortcut icon" href="img/favicon.png">
     <!-- BOOTSTRAP: -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -16,20 +17,20 @@
 <body>
     
     <div class="login-container container">
-        <div class="login-row row justify-content-center">
+        <div class="row justify-content-center">
 
-            <div class="login-col col-12 text-center">
-                <p class="login-text">Login</p>
+            <div class="login-col col-6 text-center">
+                <h1 class="login-text">Login</h1>
                 <form class="login">
-                    <i class="fa fa-user icon"></i>
+
                     <input type="username" autocomplete="on" id="username-input" placeholder="Username">
                     <br><br>
-                    <i class="fa fa-key icon"></i>
                     <input type="password" autocomplete="on" id="password-input" placeholder="Password">
                     <br><br>
                     <button class="login-button" type="submit">Submit</button>
                     <p class="no-account">Don't have an account? <a href="/signup">Sign Up!</a></p>
                     <p id="resetLink">Forgot Password? <a href="#" id="resetButton">Click here to reset.</a></p>
+
                 </form>
             </div>
         </div>
