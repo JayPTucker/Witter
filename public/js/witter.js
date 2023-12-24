@@ -112,6 +112,7 @@ function displayWit(wit) {
             // Renders our Dropdown menu if the user is logged into the account the wits belong to
             renderDropDown(wit, row).then((dropdownHtml) => {
                 row.find('.dropdown-container').html(dropdownHtml);
+
                 row.find('.edit-button').on('click', function () {
                     handleEditButtonClick(wit.id, data.username, row);
                 });
@@ -177,9 +178,15 @@ function renderDropDown(wit, row) {
     return $.get("/api/user_data").then(function(data) {
         var authorInput = data.username;
 
+        var currentDate = moment();
+        var witCreationTime = moment(wit.createdAt);
+        var timeDifference = currentDate.diff(witCreationTime, 'minutes'); // Difference in minutes
+
         if (authorInput !== wit.author) {
             return ""; // Return an empty string if not matching user
-        } else if (authorInput === wit.author) {
+
+        // Edit button disappears if time is less than 2 minutes.
+        } else if (timeDifference > 2) {
             return `
                 <div class="dropdown">
                     <button class="dropbtn">
@@ -188,10 +195,22 @@ function renderDropDown(wit, row) {
                         </svg>
                     </button>
                     <div class="dropdown-content">
-                        <a class="edit-button" href="#">Edit</a>
                         <a class="delete-button" href="#">Delete</a>
                     </div>
                 </div>`;
+        } else if (authorInput === wit.author) {
+            return `
+            <div class="dropdown">
+                <button class="dropbtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+                    </svg>
+                </button>
+                <div class="dropdown-content">
+                    <a class="edit-button" href="#">Edit</a>
+                    <a class="delete-button" href="#">Delete</a>
+                </div>
+            </div>`;
         }
     });
 }

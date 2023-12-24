@@ -481,7 +481,6 @@ app.post("/api/resendCode", async function(req, res) {
     
     app.post("/api/wits/:witId/delete", async function (req, res) {
         const witId = req.params.witId;
-        const username = req.body.username;
 
         try {
             const wit = await db.Wit.findByPk(witId);
