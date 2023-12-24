@@ -489,9 +489,7 @@ app.post("/api/resendCode", async function(req, res) {
             if (!wit) {
                 return res.status(404).json({ success: false, error: "Wit not found" });
             } else {
-                await wit.destroy({
-                    where: { id: witId }
-                })
+                await wit.destroy()
             }
         } catch (error) {
             console.error("Error removing wit in API-route:", error);
@@ -500,6 +498,27 @@ app.post("/api/resendCode", async function(req, res) {
         }
     })
 
+    app.post("/api/wits/:witId/edit", async function (req, res) {
+        const witId = req.params.witId;
+        const newBodyInput = req.body.editPrompt;
+    
+        try {
+            const wit = await db.Wit.findByPk(witId);
+    
+            if (!wit) {
+                return res.status(404).json({ success: false, error: "Wit not found" });
+            } else {
+                await wit.update({ body: newBodyInput });
+    
+                // Send a response indicating the successful update
+                return res.status(200).json({ success: true, message: "Wit updated successfully" });
+            }
+        } catch (error) {
+            console.error("Error updating wit in API route:", error);
+            return res.status(500).json({ success: false, error: "Internal Server Error" });
+        }
+    });
+    
     app.post("/api/changeProfilePic", upload.single("profilePicture"), function (req, res) {
         console.log("Received File:", req.file);  // Log the file data
     

@@ -3,11 +3,12 @@
     border-radius: 10%;
     margin-top: 7%;
     padding: 110px;
+    background-color: rgb(45, 93, 127);
     transition: all 0.2s ease-in-out;
 }
 
 .login-col:hover {
-    background-color: rgb(45, 93, 127);
+    background-color: rgb(36, 76, 109);
 }
 
 #username-input, #password-input {

@@ -112,6 +112,9 @@ function displayWit(wit) {
             // Renders our Dropdown menu if the user is logged into the account the wits belong to
             renderDropDown(wit, row).then((dropdownHtml) => {
                 row.find('.dropdown-container').html(dropdownHtml);
+                row.find('.edit-button').on('click', function () {
+                    handleEditButtonClick(wit.id, data.username, row);
+                });
                 row.find('.delete-button').on('click', function () {
                     handleDeleteButtonClick(wit.id, data.username, row);
                 });
@@ -238,3 +241,35 @@ function handleDeleteButtonClick(witId, username) {
     })
     }
 })
+
+function handleEditButtonClick(witId, username) {
+    console.log("edit button");
+
+    // Use a confirm dialog for user confirmation
+    var editPrompt = prompt("What would you like to change this wit to?")
+
+    // Check if the user clicked "OK" (result is true) or "Cancel" (result is false)
+    if (editPrompt) {
+        // User clicked "OK," proceed with the delete action
+        console.log("User confirmed edit");
+        // Call the function to handle the delete button click
+    } else {
+        // User clicked "Cancel" or closed the dialog, do nothing or provide feedback
+        console.log("User canceled editing");
+        return;
+        // You can choose to do nothing or provide feedback to the user
+    }
+
+    $.ajax({
+        method: 'POST',
+        url: `/api/wits/${witId}/edit`,
+        data: {editPrompt},
+        success: function (response) {
+            console.log("Wit has been edited successfully")
+            alert("Wit has been edited successfully")
+        }, 
+        error: function(error) {
+            console.error('Error within handleEditButton function:', error)
+        }
+    })
+}
