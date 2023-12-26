@@ -9,11 +9,16 @@
 .menu-left-col {
   top: 0;
   left: 0;
+  padding: 50px 0px !important;
 }
 
-.right-col {
-  top: 0;
-  right: 0;
+.pageLogo {
+  width: 60%;
+  height: auto;
+}
+
+.pageTitle {
+  color: white;
 }
 
 /* ======================================= */
@@ -83,7 +88,7 @@
 }
 
 .wit-row {
-  border: 1px solid rgb(0, 0, 0);
+  border: 0.2px solid rgb(0, 0, 0);
   padding: 20px;
   transition: all 0.2s ease-in-out;
   background-color: rgb(43, 81, 117);
@@ -92,6 +97,7 @@
 
 .wit-row:hover {
   background-color: rgb(37, 71, 102);
+  border: 0.2px solid white;
 }
 
 .wit-image {
@@ -182,3 +188,43 @@
   .dropdown:hover .dropbtn {background-color: #292929;}
 
   /* =================================================== */
+
+  /* RIGHT MENU */
+
+
+.right-col {
+  top: 0;
+  right: 0;
+  padding: 50px 0px !important;
+}
+
+  .currentProfilePic {
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 50%; /* Use 50% for a perfect circle */
+    width: 120px; /* Desired width */
+    height: 120px; /* Desired height */
+    object-fit: cover; /* Maintain aspect ratio */
+  }
+
+  .logout-text {
+    color: white;
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 25px;
+  }
+
+  .profile-button, .logout-button, .home-button {
+    border: 0.2px solid black;
+    background-color: rgb(43, 81, 117);
+    color: white;
+    width: 100%;
+    padding: 10px;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .profile-button:hover, .logout-button:hover, .home-button:hover {
+    background-color: rgb(34, 67, 97);
+    border: 0.2px solid white;
+
+  }

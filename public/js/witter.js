@@ -10,12 +10,16 @@ $.get("/api/user_data").then(function(data) {
 
     var newWitProfilePic = data.profilePicture;
 
-    function loadProfilePicforNewWit() {
+    function loadCurrentProfilePic() {
         var row = $("#newWit-profilePic");
         row.append(`<img class="Wit-profilePic" src="/uploads/${newWitProfilePic}"></img>`)
+
+        var rightProfileMenu = $("#rightProfileMenu");
+        rightProfileMenu.append(`<img class="currentProfilePic" src="/uploads/${newWitProfilePic}"></img>`)
+
     }
 
-    loadProfilePicforNewWit() 
+    loadCurrentProfilePic() 
 
     function loadWits() {
         $.get("/api/all_wits").then(function (data) {
