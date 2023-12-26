@@ -1,7 +1,27 @@
+.menu-left-col, .right-col {
+  background-color: rgb(10, 48, 84) ;
+  height: 100%;
+  position: fixed !important;
+  width: 100% !important;
+  z-index: 1000 !important;
+}
+
+.menu-left-col {
+  top: 0;
+  left: 0;
+}
+
+.right-col {
+  top: 0;
+  right: 0;
+}
+
+/* ======================================= */
 
 .new-wit-row {
-  border: 1px solid black;
   padding: 15px;
+  background-color: rgb(43, 81, 117) !important;
+  height: 300px;
 }
 
 .wit-input {
@@ -9,7 +29,7 @@
   font-size: 25px !important;
   padding: 12px 20px;
   box-sizing: border-box;
-  border: 2px solid #cccccc00 !important;
+  border: 1px solid #cccccc00 !important;
   border-radius: 4px;
   background-color: #56565600 !important;
   resize: none;
@@ -29,7 +49,7 @@
 }
 
 .image-icon {
-  color: rgb(59, 100, 114);
+  color: rgb(255, 255, 255);
   width: 30px;
   height: auto;
   transition: all 0.2s ease-in-out;
@@ -44,9 +64,9 @@
   float: right;
   font-weight: bold;
   padding: 5px 15px;
-  background-color: lightblue;
-  border-radius: 15px;
-  border: 2px solid black;
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+  border: 1px solid black;
   transition: all 0.2s ease-in-out;
 }
 
@@ -63,13 +83,15 @@
 }
 
 .wit-row {
-  border: 1px solid rgb(107, 107, 107);
+  border: 1px solid rgb(0, 0, 0);
   padding: 20px;
   transition: all 0.2s ease-in-out;
+  background-color: rgb(43, 81, 117);
+  color: white;
 }
 
 .wit-row:hover {
-  background-color: rgb(202, 202, 202);
+  background-color: rgb(37, 71, 102);
 }
 
 .wit-image {
@@ -77,7 +99,7 @@
 }
 
 .wit-profilePic {
-  border: 2px solid black;
+  border: 1px solid rgb(255, 255, 255);
   border-radius: 50%; /* Use 50% for a perfect circle */
   width: 50px; /* Desired width */
   height: 50px; /* Desired height */
@@ -104,14 +126,14 @@
 /* PROFILE PIC */
 /* =================================================== */
 
-
-.profilePic {
+/* .profilePic {
   border: 1px solid black;
-  border-radius: 50%; /* Use 50% for a perfect circle */
-  width: 100px; /* Desired width */
-  height: 100px; /* Desired height */
-  object-fit: cover; /* Maintain aspect ratio */
-}
+  border-radius: 50%; 
+  width: 100px;
+  height: 100px;
+  object-fit: cover; 
+  transition: all 0.2s ease-in-out;
+} */
 
 /* =================================================== */
 /* DROPDOWN MENU */
@@ -119,7 +141,7 @@
 
 /* Dropdown Button */
 .dropbtn {
-    color: black;
+    color: rgb(255, 255, 255);
     padding: 10px;
     border: none !important;
     background-color: rgba(255, 0, 0, 0) !important;
@@ -136,11 +158,9 @@
     display: none;
     position: absolute;
     background-color: #f1f1f1;
-    min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
+    z-index: 10000;
     border-radius: 20px;
-
   }
   
   /* Links inside the dropdown */

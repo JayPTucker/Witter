@@ -18,23 +18,29 @@
 </head>
 <body>
 
-  <div class="main-container justify-content-center container">
+  <div class="main-container justify-content-center container-fluid">
 
     <!-- NEW ROW  -->
 
-    <div class="row justify-content-center">
+    <!-- <div class="row justify-content-center">
       <div class="col-8 text-center">
 
-        <p class="logout-text">Logged in as: @<span class="member-name"></span></p>
-        <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
-        <button class="profile-button" onclick="window.location.href='/profilePage'">Profile</button>
 
       </div>
-    </div>
+    </div> -->
 
     <!-- NEW ROW -->
 
     <div class="row justify-content-center">
+      <div class="col-2 menu-left-col">
+        <div class="row">
+          <div class="col">
+            <p class="logout-text">Logged in as: @<span class="member-name"></span></p>
+            <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
+            <button class="profile-button" onclick="window.location.href='/profilePage'">Profile</button>
+          </div>
+        </div>
+      </div>
 
       <div class="col-8 new-wit-row">
         <form class="new-wit row form-group" enctype="multipart/form-data">
@@ -54,15 +60,21 @@
             <button class="wit-button" type="submit">Wit!</button>  
           </div>
         </form>
+
+        <div class="row justify-content-center" id="wits-area"> <!-- Add inline style for centering -->
+          <!-- WITS GO HERE -->
+        </div>
+    
+      </div>
+
+      <div class="col-2 right-col">
+        <p>testifffng</p>
       </div>
     </div>
 
     <!-- NEW ROW -->
 
 
-    <div class="row justify-content-center" id="wits-area"> <!-- Add inline style for centering -->
-      <!-- WITS GO HERE -->
-    </div>
 
   </div>
 
