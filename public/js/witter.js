@@ -184,7 +184,6 @@ function displayTrendingWits(wit) {
                     </button>
                 </div>
             </div>
-            <hr>
             `);
 
             $("#trendingWits").prepend(row);
