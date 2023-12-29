@@ -1,5 +1,4 @@
 .menu-left-col, .right-col {
-  height: 100%;
   position: fixed !important;
   width: 100% !important;
   z-index: 1000 !important;
@@ -7,8 +6,8 @@
 
 .menu-left-col {
   top: 0;
-  left: 0;
-  padding:  20px 10px !important;
+  left: 10%;
+  padding: 50px 0px !important;
 }
 
 .pageLogo {
@@ -25,7 +24,7 @@
 
 .new-wit-row {
   padding: 15px;
-  border: 0.1px solid rgb(50, 50, 50);
+  border: 1px solid rgb(50, 50, 50);
 }
 
 .wit-input {
@@ -37,6 +36,7 @@
   border-radius: 4px;
   background-color: #56565600 !important;
   resize: none;
+  color: white !important;
 }
 
 .wit-input:focus {
@@ -89,12 +89,12 @@
   padding: 20px;
   transition: all 0.2s ease-in-out;
   color: white;
-  border: 0.1px solid rgb(50, 50, 50);
+  border: 1px solid rgb(50, 50, 50);
 }
 
 .wit-row:hover {
   background-color: rgb(37, 71, 102);
-  border: 0.2px solid white;
+  border: 1px solid white;
 }
 
 .wit-image {
@@ -102,7 +102,6 @@
 }
 
 .wit-profilePic {
-  border: 1px solid rgb(255, 255, 255);
   border-radius: 50%; /* Use 50% for a perfect circle */
   width: 50px; /* Desired width */
   height: 50px; /* Desired height */
@@ -124,19 +123,6 @@
   background-color: rgb(113, 113, 113) !important;
 }
 
-
-/* =================================================== */
-/* PROFILE PIC */
-/* =================================================== */
-
-/* .profilePic {
-  border: 1px solid black;
-  border-radius: 50%; 
-  width: 100px;
-  height: 100px;
-  object-fit: cover; 
-  transition: all 0.2s ease-in-out;
-} */
 
 /* =================================================== */
 /* DROPDOWN MENU */
@@ -188,15 +174,36 @@
 
   /* RIGHT MENU */
 
+.search-container {
+  position: relative;
+  margin-top: -30px;
+  margin-bottom: 30px;
+}
+
+.search-input {
+  padding-left: 30px; /* Adjust as needed */
+  padding: 10px 50px;
+  background-color: rgb(41, 41, 41);
+  border-radius: 20px;
+  border: 1px solid rgb(41, 41, 41);
+  color: white !important;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 30px;
+  transform: translateY(-50%);
+  color: white;
+}
 
 .right-col {
   top: 0;
-  right: 0;
+  right: 10%;
   padding: 50px 0px !important;
 }
 
 .currentProfilePic {
-  border: 1px solid rgb(255, 255, 255);
   border-radius: 50%; /* Use 50% for a perfect circle */
   width: 120px; /* Desired width */
   height: 120px; /* Desired height */
@@ -211,7 +218,7 @@
 }
 
 .profile-button, .logout-button, .home-button, .favorites-button {
-  border: 0.1px solid rgba(125, 125, 125, 0);
+  border: 1px solid rgba(0, 0, 0, 0);
   background-color: rgba(219, 219, 219, 0) !important;
   font-size: 22px;
   color: white;
@@ -223,5 +230,65 @@
 
 .profile-button:hover, .logout-button:hover, .home-button:hover, .favorites-button:hover {
   background-color: rgb(34, 67, 97);
-  border: 0.2px solid white;
+  border: 1px solid white;
+}
+
+/* =========== */
+
+.trending-section {
+  background-color: rgb(41, 41, 41);
+  border-radius: 25px;
+  color: white;
+  text-align: left !important;
+  padding: 10px;
+}
+
+.trending-title {
+  font-size: 25px;
+  text-align: center;
+}
+
+.T-wit-row {
+  border-radius: 25px;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+  padding: 10px !important;
+}
+
+.T-wit-row:hover {
+  background-color: rgba(110, 110, 110, 0.562);
+  border: 1px solid rgba(255, 255, 255, 0.418);
+}
+
+.T-wit-profilePic {
+  border-radius: 50%; /* Use 50% for a perfect circle */
+  width: 50px; /* Desired width */
+  height: 50px; /* Desired height */
+  object-fit: cover; /* Maintain aspect ratio */
+}
+
+.T-wit-author {
+  font-size: 15px;
+}
+
+.T-wit-date {
+  margin-top: -5px;
+  font-size: 10px;
+}
+
+.T-wit-body {
+  font-size: 12px;
+  margin-top: -5px;
+}
+
+.T-wit-like-btn {
+  margin-top: -10px;
+  border-radius: 20px !important;
+  transition: all 0.2s ease-in-out;
+  font-size: 10px !important;
+  font-weight: bold !important;
+}
+
+.T-wit-like-btn:hover {
+  background-color: rgb(113, 113, 113) !important;
 }

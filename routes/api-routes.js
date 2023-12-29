@@ -431,6 +431,15 @@ app.post("/api/resendCode", async function(req, res) {
         });
     });
 
+    app.get("/api/top_wits", function(req, res) {
+        db.Wit.findAll({
+            limit: 3,
+            order: [['likes', 'DESC']]
+        }).then(function(results) {
+            res.json(results);
+        });
+    });
+
     app.post("/api/wits/:witId/like", async function (req, res) {
         const witId = req.params.witId;
         const username = req.body.username;

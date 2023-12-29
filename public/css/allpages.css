@@ -1,8 +1,8 @@
 body {
-    background-color: rgb(0, 5, 18) !important;
-  }
+  background-color: #0b1023 !important;
+}
   
 /* Gets rid of resize option on input */
 .form-control {
-resize: none;
+  resize: none;
 }  
