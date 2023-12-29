@@ -1,23 +1,7 @@
-.menu-left-col, .right-col {
-  position: fixed !important;
-  width: 100% !important;
-  z-index: 1000 !important;
-}
-
-.menu-left-col {
-  top: 0;
-  left: 10%;
-  padding: 50px 0px !important;
-}
-
 .pageLogo {
-  width: 25%;
+  width: 15%;
   height: auto;
-  margin-bottom: 30px;
-}
-
-.pageTitle {
-  color: white;
+  margin: 30px 10px;
 }
 
 /* ======================================= */
@@ -176,7 +160,6 @@
 
 .search-container {
   position: relative;
-  margin-top: -30px;
   margin-bottom: 30px;
 }
 
@@ -195,12 +178,6 @@
   left: 30px;
   transform: translateY(-50%);
   color: white;
-}
-
-.right-col {
-  top: 0;
-  right: 10%;
-  padding: 50px 0px !important;
 }
 
 .currentProfilePic {
@@ -226,6 +203,11 @@
   padding: 10px;
   font-weight: bold;
   transition: all 0.2s ease-in-out;
+}
+
+.home-button, .favorites-button {
+  float: left !important;
+  text-align: left !important;
 }
 
 .profile-button:hover, .logout-button:hover, .home-button:hover, .favorites-button:hover {
