@@ -3,15 +3,11 @@ var db = require("../models");
 var passport = require("../config/passport.js");
 const multer = require("multer");
 const upload = multer({ dest: "public/uploads/" });
-
 const nodemailer = require('nodemailer');
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const bcrypt = require("bcryptjs");
-
 const app = express();
-const port = 3000;
 
 // Dummy database
 const users = [];
@@ -24,7 +20,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-
 // Middleware to parse JSON
 app.use(bodyParser.json());
 
@@ -35,7 +30,9 @@ function generateVerificationCode() {
 
 module.exports = function(app) {
 
-    // Login route if the login is successful
+    // ============================================================
+    // LOGIN ROUTE    
+    // ============================================================
     app.post("/api/login", async function(req, res, next) {
 
         try {
@@ -84,7 +81,10 @@ module.exports = function(app) {
             });
         })(req, res, next);
     });
-    
+
+    // ============================================================
+    // PASSWORD RESET ROUTE    
+    // ============================================================
     app.post("/api/resetPassword", async function(req, res) {
         try {
             // Generate a new verification code
@@ -121,6 +121,9 @@ module.exports = function(app) {
         }
     })
 
+    // ============================================================
+    // RESET PASSWORD VERIFICATION CODE CHECKER ROUTE    
+    // ============================================================
     app.post("/api/passwordResetVerifyCode", async function(req, res) {
         try {
             // Update the user's verification code in the database
@@ -137,6 +140,9 @@ module.exports = function(app) {
         }
     })
 
+    // ============================================================
+    // RESET PASSWORD RESPONSE ROUTE   
+    // ============================================================
     app.post("/api/newPasswordResponse", async function(req, res) {
         try {
             const { email, verificationCode, newPassword } = req.body;
@@ -182,7 +188,9 @@ module.exports = function(app) {
         }
     })
 
-
+    // ============================================================
+    // VERIFY EMAIL DURING SIGN UP ROUTE   
+    // ============================================================
     app.post("/api/verify_email", async function(req, res) {
         try {
             const user = await db.User.findOne({
@@ -223,7 +231,9 @@ module.exports = function(app) {
         }
     });
     
-
+    // ============================================================
+    // SIGN UP ROUTE   
+    // ============================================================
     app.post("/api/signup", async function(req, res) {
     try {
         // Generate a verification code
@@ -255,65 +265,74 @@ module.exports = function(app) {
 
             }
         });
-    } catch (error) {
-        console.error("Error creating user:", error);
-        res.status(401).json({ error: "Error creating user", details: error });
-    }
-});
-
-app.post("/api/check_user_existence", async function (req, res) {
-    try {
-        const user = await db.User.findOne({
-            where: {
-                email: req.body.email,
-            },
-        });
-
-        res.json({ exists: !!user }); // Send whether the user exists as JSON
-    } catch (error) {
-        console.error("Error checking user existence:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-});
-
-app.post("/api/resendCode", async function(req, res) {
-    try {
-        // Generate a new verification code
-        const verificationCode = generateVerificationCode();
-
-        // Update the user's verification code in the database
-        const user = await db.User.findOne({ where: { email: req.body.email } });
-
-        if (user) {
-            await user.update({ verificationCode: verificationCode });
-        } else {
-            return res.status(404).json({ success: false, error: "User not found" });
+        } catch (error) {
+            console.error("Error creating user:", error);
+            res.status(401).json({ error: "Error creating user", details: error });
         }
+    });
 
-        const mailOptions = {
-            from: 'wittersocial@gmail.com',
-            to: req.body.email,
-            subject: 'Witter Email Verification Code',
-            html: `<p>Your verification code is: <strong>${verificationCode}</strong></p>
-            <p>Please use this link to get back to the verification page: 
-            <a href="https://localhost:8080/verificationCode?email=${req.body.email}">Verification Page</a></p>`
-            };
+    // ============================================================
+    // CHECK IF USER EXISTS ROUTE   
+    // ============================================================
+    app.post("/api/check_user_existence", async function (req, res) {
+        try {
+            const user = await db.User.findOne({
+                where: {
+                    email: req.body.email,
+                },
+            });
 
-        transporter.sendMail(mailOptions, function(error, info) {
-            if (error) {
-                console.error("Error sending verification email:", error);
-                res.status(500).json({ success: false, error: "Error sending verification email" });
+            res.json({ exists: !!user }); // Send whether the user exists as JSON
+        } catch (error) {
+            console.error("Error checking user existence:", error);
+            res.status(500).json({ error: "Internal Server Error" });
+        }
+    });
+
+    // ============================================================
+    // RESEND VERIFICATION CODE ROUTE   
+    // ============================================================
+    app.post("/api/resendCode", async function(req, res) {
+        try {
+            // Generate a new verification code
+            const verificationCode = generateVerificationCode();
+
+            // Update the user's verification code in the database
+            const user = await db.User.findOne({ where: { email: req.body.email } });
+
+            if (user) {
+                await user.update({ verificationCode: verificationCode });
             } else {
-                console.log("Verification email sent:", info.response);
-                res.json({ success: true });
+                return res.status(404).json({ success: false, error: "User not found" });
             }
-        });
-    } catch (error) {
-        console.error("Error resending the verification email:", error);
-        res.status(500).json({ success: false, error: "Error resending verification", details: error });
-    }
-});
 
+            const mailOptions = {
+                from: 'wittersocial@gmail.com',
+                to: req.body.email,
+                subject: 'Witter Email Verification Code',
+                html: `<p>Your verification code is: <strong>${verificationCode}</strong></p>
+                <p>Please use this link to get back to the verification page: 
+                <a href="https://localhost:8080/verificationCode?email=${req.body.email}">Verification Page</a></p>`
+                };
+
+            transporter.sendMail(mailOptions, function(error, info) {
+                if (error) {
+                    console.error("Error sending verification email:", error);
+                    res.status(500).json({ success: false, error: "Error sending verification email" });
+                } else {
+                    console.log("Verification email sent:", info.response);
+                    res.json({ success: true });
+                }
+            });
+        } catch (error) {
+            console.error("Error resending the verification email:", error);
+            res.status(500).json({ success: false, error: "Error resending verification", details: error });
+        }
+    });
+    
+    // ============================================================
+    // DELETE ACCOUNT AFTER VERIFICATION TIMEOUT ROUTE 
+    // ============================================================
     app.post("/api/verificationTimeout", async function(req, res) {
         try {
             // Update the user's verification code in the database
@@ -332,7 +351,9 @@ app.post("/api/resendCode", async function(req, res) {
         }
     })
 
-    // Check if a username exists
+    // ============================================================
+    // CHECK FOR EXISTING USERNAME ROUTE 
+    // ============================================================
     app.post("/api/check_username", function(req, res) {
         const usernameToCheck = req.body.username;
 
@@ -351,7 +372,9 @@ app.post("/api/resendCode", async function(req, res) {
         });
     });
 
-    // Check if an email exists
+    // ============================================================
+    // CHECK IF EMAIL EXISTS ROUTE   
+    // ============================================================
     app.post("/api/check_email", function(req, res) {
         const emailToCheck = req.body.email;
 
@@ -370,7 +393,9 @@ app.post("/api/resendCode", async function(req, res) {
         });
     });
 
-    // Logout route
+    // ============================================================
+    // LOGOUT ROUTE
+    // ============================================================
     app.get("/logout", function(req, res) {
         // req.logout is used by passport.js - commonly used with express.js
         req.logout(function(err) {
@@ -384,7 +409,9 @@ app.post("/api/resendCode", async function(req, res) {
         });
     });
 
-    // User data route
+    // ============================================================
+    // GET USER DATA ROUTE 
+    // ============================================================
     app.get("/api/user_data", function(req, res) {
         if (!req.user) {
             console.log("Not logged in");
@@ -398,13 +425,18 @@ app.post("/api/resendCode", async function(req, res) {
         }
     });
 
-    // All wits route
+    // ============================================================
+    // FETCH ALL WITS ROUTE   
+    // ============================================================
     app.get("/api/all_wits", function(req, res) {
         db.Wit.findAll({}).then(function(results) {
             res.json(results);
         });
     });
 
+    // ============================================================
+    // FETCH ALL WITS BY USER ROUTE FOR IMAGES  
+    // ============================================================
     app.post("/api/witter", upload.single("image"), function (req, res) {
         console.log("Received Data:", req.body);  // Log other form data
         console.log("Received File:", req.file);  // Log the file data
@@ -431,6 +463,9 @@ app.post("/api/resendCode", async function(req, res) {
         });
     });
 
+    // ============================================================
+    // FETCH TOP TRENDING WITS ROUTE 
+    // ============================================================
     app.get("/api/top_wits", function(req, res) {
         db.Wit.findAll({
             limit: 3,
@@ -440,6 +475,9 @@ app.post("/api/resendCode", async function(req, res) {
         });
     });
 
+    // ============================================================
+    // LIKE WIT ROUTE
+    // ============================================================
     app.post("/api/wits/:witId/like", async function (req, res) {
         const witId = req.params.witId;
         const username = req.body.username;
@@ -486,8 +524,11 @@ app.post("/api/resendCode", async function(req, res) {
             console.error("Error liking wit in API-route:", error);
             return res.status(500).json({ success: false, error: "Internal Server Error" });
         }
-    });  
-    
+    }); 
+
+    // ============================================================
+    // DELETE WIT ROUTE
+    // ============================================================
     app.post("/api/wits/:witId/delete", async function (req, res) {
         const witId = req.params.witId;
 
@@ -506,6 +547,9 @@ app.post("/api/resendCode", async function(req, res) {
         }
     })
 
+    // ============================================================
+    // EDIT WIT ROUTE
+    // ============================================================
     app.post("/api/wits/:witId/edit", async function (req, res) {
         const witId = req.params.witId;
         const newBodyInput = req.body.editPrompt;
@@ -527,6 +571,9 @@ app.post("/api/resendCode", async function(req, res) {
         }
     });
     
+    // ============================================================
+    // CHANGE PROFILE PIC ROUTE
+    // ============================================================
     app.post("/api/changeProfilePic", upload.single("profilePicture"), function (req, res) {
         console.log("Received File:", req.file);  // Log the file data
     
@@ -559,7 +606,9 @@ app.post("/api/resendCode", async function(req, res) {
         });
     });
     
-    // Example route in your server-side code
+    // ============================================================
+    // CHANGE PROFILE PIC WHEN SAVE BUTTON IS PRESSED ROUTE
+    // ============================================================
     app.get("/api/profilePicture/:username", function (req, res) {
         const username = req.params.username;
 
@@ -576,5 +625,4 @@ app.post("/api/resendCode", async function(req, res) {
             res.status(500).json({ error: "Internal Server Error" });
         });
     });
-
 };
