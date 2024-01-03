@@ -18,11 +18,11 @@ module.exports = function(sequelize, DataTypes) {
         get() {
           // Parse the stored JSON string when retrieving data
           const likes = this.getDataValue('likes');
-          return likes ? JSON.parse(likes) : null;
+          return likes ? JSON.parse(likes) : 0;
         },
         set(likes) {
           // Stringify the array when storing data
-          this.setDataValue('likes', likes ? JSON.stringify(likes) : null);
+          this.setDataValue('likes', likes ? JSON.stringify(likes) : 0);
         },
       }
     });
