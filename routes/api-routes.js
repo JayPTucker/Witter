@@ -478,7 +478,53 @@ module.exports = function(app) {
     // ============================================================
     // LIKE WIT ROUTE
     // ============================================================
+    app.post("/api/wits/:witId/like", async function (req, res) {
+        const witId = req.params.witId;
+        const username = req.body.username;
+    
+        try {
+            // Find the wit by ID
+            const wit = await db.Wit.findByPk(witId);
+    
+            if (!wit) {
+                return res.status(404).json({ success: false, error: "Wit not found" });
+            }
+    
+            // Get the existing likes array or initialize it if it doesn't exist
+            const existingLikes = wit.likes ? JSON.parse(wit.likes) : [];
+    
+            // Check if the user has already liked the wit
+            if (existingLikes.includes(username)) {
+                console.log("USER ALREADY LIKED THIS WIT")
 
+                // Remove the username from the array
+                const updatedLikes = existingLikes.filter(user => user !== username);
+
+                // Update the wit with the new likes array
+                await wit.update({ likes: JSON.stringify(updatedLikes) });
+
+                // return res.status(400).json({ success: false, error: "User already liked this wit" });
+                console.log("USERNAME REMOVED FROM LIKES SUCCESSFULLY")
+                return;
+            }
+    
+            // Add the username to the likes array
+            existingLikes.push(username);
+    
+            // Update the wit with the new likes array
+            await wit.update({ likes: JSON.stringify(existingLikes) });
+    
+            // Return the updated wit with the number of likes
+            const updatedWit = await db.Wit.findByPk(witId);
+            const numLikes = existingLikes.length;
+
+    
+            return res.json({ success: true, message: "Wit liked successfully", numLikes });
+        } catch (error) {
+            console.error("Error liking wit in API-route:", error);
+            return res.status(500).json({ success: false, error: "Internal Server Error" });
+        }
+    }); 
 
     // ============================================================
     // DELETE WIT ROUTE

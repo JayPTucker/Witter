@@ -62,6 +62,7 @@ $.get("/api/user_data").then(function(user) {
                             console.log(user);
                             // THIS BELOW WILL LOG THE ID OF THE WIT YOU ARE CLICKING ON
                             console.log(this.dataset.witId);
+                            likePost(this.dataset.witId, user.username, row);
                         });
 
                         // Check if there is an image
@@ -201,6 +202,23 @@ function findProfilePicture(author) {
                 reject(error);
             });
     });
+}
+
+function likePost(witId, username, row) {
+    $.ajax({
+        method: 'POST',
+        url: `/api/wits/${witId}/like`,
+        data: {username: username},
+        success: function (response) {
+            console.log("Wit has been liked successfully")
+            alert("Wit has been liked successfully")
+            row.find('.wit-like-btn').css('background-color', 'red');
+            row.find('.wit-like-btn').css('color', 'white');
+        },
+        error: function(error) {
+            console.error('Error within likePost function:', error)
+        }
+    })
 }
 
 function renderDropDown(data, row) {
