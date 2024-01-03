@@ -607,14 +607,13 @@ module.exports = function(app) {
     });
     
     // ============================================================
-    // CHANGE PROFILE PIC WHEN SAVE BUTTON IS PRESSED ROUTE
+    // FIND PROFILE PIC FOR WITTER.JS PAGE ROUTE
     // ============================================================
     app.get("/api/profilePicture/:username", function (req, res) {
         const username = req.params.username;
 
         // Query the database to get the profile picture filename for the given username
         db.User.findOne({
-            attributes: ['profilePicture'],
             where: { username: username }
         })
         .then(function (user) {
