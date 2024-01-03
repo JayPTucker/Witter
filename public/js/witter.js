@@ -30,6 +30,7 @@ $.get("/api/user_data").then(function(user) {
                 Promise.all(profilePicturePromises)
                 .then(profilePictures => {
                     for (var i = 0; i < data.length; i++) {
+                        var mainData = data[i];
                         var row = $(`<div class="wit-row col-md-12" id="wit-${data[i].id}"></div>`);
                         row.append(`
                         <div class="row">
@@ -55,23 +56,27 @@ $.get("/api/user_data").then(function(user) {
                         // Append profile pic to the page
                         row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/uploads/${profilePictures[i]}"></img>`);
 
+                        // Attach click event handler to the like button
+                        row.find('.wit-like-btn').on('click', function () {
+                        // Call the function to handle the like button click
+                            console.log(user);
+                            // THIS BELOW WILL LOG THE ID OF THE WIT YOU ARE CLICKING ON
+                            console.log(this.dataset.witId);
+                        });
+
                         // Check if there is an image
-                        if (data.image) {
+                        if (data[i].image) {
                             // Display the image in the new row
-                            displayImage(data.image, row);
+                            displayImage(data[i].image, row);
                         }
 
                         // && Checks to see if the array is empty or not or if it includes the username
-                        if (data.likes && data.likes.includes(data.username)) {
+                        if (data[i].likes && Array.isArray(data[i].likes) && data[i].likes.includes(user.username)) {
                             row.find('.wit-like-btn').css('background-color', 'red');
                             row.find('.wit-like-btn').css('color', 'white');
-                        } 
+                        }
 
-                        // Attach click event handler to the like button
-                        row.find('.wit-like-btn').on('click', function () {
-                            // Call the function to handle the like button click
-                            handleLikeButtonClick(data.id, data.username, row);
-                        });
+
                     }
                 })
             .catch(error => {
@@ -160,8 +165,7 @@ $.get("/api/user_data").then(function(user) {
     }
 
     return false; // Add this line to prevent default form submission behavior
-    });
-
+});
 
     function createWitFunction(formData) {
         $.ajax({
@@ -197,19 +201,6 @@ function findProfilePicture(author) {
                 reject(error);
             });
     });
-}
-
-
-// Function to get the number of likes from the JSON string
-function getLikeCount(likes) {
-    try {
-        const likesArray = JSON.parse(likes);
-
-        return likesArray ? likesArray.length : 0;
-    } catch (error) {
-        console.error("Error parsing likes:", error);
-        return 0; // Return 0 if there is an error parsing the likes
-    }
 }
 
 function renderDropDown(data, row) {
@@ -253,20 +244,6 @@ function renderDropDown(data, row) {
     });
 }
 
-function handleLikeButtonClick(witId, username) {
-    $.ajax({
-        method: 'POST',
-        url: `/api/wits/${witId}/like`,
-        data: { username: username },
-        success: function (response) {
-            // Optionally update the UI to reflect the like action
-            console.log(`User ${username} liked wit with ID ${witId}`);
-        },
-        error: function (error) {
-            console.error('Error liking wit:', error);
-        }
-    });
-}
 
 function handleDeleteButtonClick(witId, username) {
     // Use a confirm dialog for user confirmation
