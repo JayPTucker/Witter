@@ -477,27 +477,27 @@ module.exports = function(app) {
         });
     });
 
-    // ============================================================
-    // LIKE WIT ROUTE
-    // ============================================================
+// ============================================================
+// LIKE WIT ROUTE
+// ============================================================
 app.post("/api/wits/:witId/like", async function (req, res) {
     const witId = req.params.witId;
     const username = req.body.username;
 
     try {
-        // Find the wit by ID
-        const wit = await db.Wit.findByPk(witId);
+        // Find the wit by ID and include the likes field
+        const wit = await db.Wit.findByPk(witId, { attributes: ['id', 'likes'] });
 
         if (!wit) {
             return res.status(404).json({ success: false, error: "Wit not found" });
         }
 
         // Get the existing likes array or initialize it if it doesn't exist
-        const existingLikes = wit.likes;
+        const existingLikes = JSON.parse(wit.likes || '[]');
 
         // Check if the user has already liked the wit
         if (existingLikes.includes(username)) {
-            console.log("USER ALREADY LIKED THIS WIT")
+            console.log("USER ALREADY LIKED THIS WIT");
 
             // Remove the username from the array
             const updatedLikes = existingLikes.filter(user => user !== username);
@@ -506,7 +506,6 @@ app.post("/api/wits/:witId/like", async function (req, res) {
             await wit.update({ likes: JSON.stringify(updatedLikes) });
 
             // Return the updated wit with the number of likes and userAlreadyLiked flag
-            const updatedWit = await db.Wit.findByPk(witId);
             const numLikes = updatedLikes.length;
 
             return res.json({ success: true, message: "User already liked this wit", numLikes, userAlreadyLiked: false });
@@ -519,15 +518,17 @@ app.post("/api/wits/:witId/like", async function (req, res) {
         await wit.update({ likes: JSON.stringify(existingLikes) });
 
         // Return the updated wit with the number of likes and userAlreadyLiked flag
-        const updatedWit = await db.Wit.findByPk(witId);
         const numLikes = existingLikes.length;
 
-        return res.json({ success: true, message: "Wit liked successfully", numLikes, userAlreadyLiked: true });
+        const userAlreadyLiked = existingLikes.includes(username);
+
+        return res.json({ success: true, message: "Wit liked successfully", numLikes, userAlreadyLiked });
     } catch (error) {
         console.error("Error liking wit in API-route:", error);
         return res.status(500).json({ success: false, error: "Internal Server Error" });
     }
 });
+
 
     // ============================================================
     // DELETE WIT ROUTE
