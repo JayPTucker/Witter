@@ -254,6 +254,7 @@ $.get("/api/user_data").then(function(user) {
     }    
 });
 
+
 function findProfilePicture(author) {
     return new Promise((resolve, reject) => {
         // Fetch the profile picture for the author
@@ -266,7 +267,8 @@ function findProfilePicture(author) {
                 reject(error);
             });
     });
-}
+};
+
 
 function likePost(witId, username) {
     console.log("Like button has been pressed");
@@ -303,7 +305,8 @@ function likePost(witId, username) {
             console.error('Error within likePost function:', error)
         }
     })
-}
+};
+
 
 function renderDropDown(witData, row) {
     console.log("Rendering dropdown for wit:", witData);
@@ -349,8 +352,6 @@ function renderDropDown(witData, row) {
        }
     });
 }
-
-
 
 
 function handleDeleteButtonClick(witData, username) {

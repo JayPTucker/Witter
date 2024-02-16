@@ -488,12 +488,15 @@ app.post("/api/wits/:witId/like", async function (req, res) {
         // Find the wit by ID and include the likes field
         const wit = await db.Wit.findByPk(witId, { attributes: ['id', 'likes'] });
 
+        // console.log("Test:")
+        // console.log(wit.dataValues.likes)
+
         if (!wit) {
             return res.status(404).json({ success: false, error: "Wit not found" });
         }
 
         // Get the existing likes array or initialize it if it doesn't exist
-        const existingLikes = JSON.parse(wit.likes || '[]');
+        const existingLikes = JSON.parse(wit.dataValues.likes || '[]');
 
         // Check if the user has already liked the wit
         if (existingLikes.includes(username)) {
