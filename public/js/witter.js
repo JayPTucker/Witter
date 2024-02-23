@@ -43,6 +43,7 @@ $.get("/api/user_data").then(function(user) {
 
                             var mainData = data[i];
                             var row = $(`<div class="wit-row col-md-12" id="wit-${data[i].id}"></div>`);
+                            
                             row.append(`
                             <div class="row">
                                 <div class="col-md-3" id="witProfilePic">
@@ -243,6 +244,9 @@ $.get("/api/user_data").then(function(user) {
                 // Display the wit immediately after creating it
                 // displayWit(response);
     
+                // Clears out page so Wits are no doubled
+                $("#wits-area").html("")
+                
                 // Reload all wits to include the new one
                 loadWits();
             },
