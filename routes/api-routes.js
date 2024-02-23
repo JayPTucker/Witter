@@ -477,51 +477,74 @@ module.exports = function(app) {
         });
     });
 
-    // ============================================================
-    // LIKES ROUTE
-    // ============================================================
-    app.post("/api/wits/:witId/like", async function (req, res) {
-        const witId = req.params.witId;
-        const username = req.body.username;
-    
-        try {
-            // Find the wit by ID
-            const wit = await db.Wit.findByPk(witId);
-    
-            if (!wit) {
-                return res.status(404).json({ success: false, error: "Wit not found" });
-            }
-    
-            // Parse the existing likes array from the string
-            let existingLikes = JSON.parse(wit.likes);
-    
-            // Check if the user has already liked the wit
-            if (existingLikes.includes(username)) {
+// ============================================================
+// LIKE WIT ROUTE
+// ============================================================
+app.post("/api/wits/:witId/like", async function (req, res) {
+    const witId = req.params.witId;
+    const username = req.body.username;
+
+    try {
+        // Find the wit by ID and include the likes field
+        const wit = await db.Wit.findByPk(witId, { attributes: ['id', 'likes'] });
+
+        if (!wit) {
+            return res.status(404).json({ success: false, error: "Wit not found" });
+        }
+
+        // Get the existing likes array or initialize it if it doesn't exist
+        const existingLikes = wit.likes;
+
+        // REMOVING A LIKE
+        if (existingLikes.includes(username)) {
+            console.log("USER ALREADY LIKED THIS WIT");
+
+            function removeFromLikes(likesString, usernameToRemove) {
+                // Parse the string into an array
+                let likesArray = JSON.parse(likesString);
+            
                 // Remove the username from the array
-                existingLikes = existingLikes.filter(user => user !== username);
-    
-                // Update the wit with the new likes array (stringify it)
-                await wit.update({ likes: JSON.stringify(existingLikes) });
-    
-                // Return success response
-                return res.json({ success: true, message: "Wit unliked successfully" });
-            } else {
-
-                // Add the username to the likes array
-                existingLikes.push(username);
-
-                // Update the wit with the new likes array
-                await wit.update({ likes: JSON.stringify(existingLikes) });
-
-                const numLikes = existingLikes.length;
-                const userAlreadyLiked = existingLikes.includes(username);
-
-                return res.json({ success: true, message: "Wit liked successfully", numLikes, userAlreadyLiked });
-
-                
-
+                likesArray = likesArray.filter(user => user !== usernameToRemove);
+            
+                // Stringify the array back into a string
+                let updatedLikesString = likesArray;
+            
+                return updatedLikesString;
             }
-        } catch (error) {
+
+            let likesString = existingLikes;
+            let usernameToRemove = username;
+
+            let updatedLikesString = removeFromLikes(likesString, usernameToRemove);
+            console.log(updatedLikesString); // This will print: "[]"
+
+            // ========================
+
+            // Remove the username from the array
+            const updatedLikes = updatedLikesString; 
+
+            // Update the wit with the new likes array
+            await wit.update({ likes: updatedLikes });
+
+            // Return the updated wit with the number of likes and userAlreadyLiked flag
+            const numLikes = updatedLikes.length;
+
+            return res.json({ success: true, message: "User already liked this wit", numLikes, userAlreadyLiked: false });
+        }
+
+        // Add the username to the likes array
+        existingLikes.push(username);
+
+        // Update the wit with the new likes array
+        await wit.update({ likes: JSON.stringify(existingLikes) });
+
+        const numLikes = existingLikes.length;
+
+        const userAlreadyLiked = existingLikes.includes(username);
+
+        return res.json({ success: true, message: "Wit liked successfully", numLikes, userAlreadyLiked });  
+
+        }  catch (error) {
             console.error("Error liking wit in API-route:", error);
             return res.status(500).json({ success: false, error: "Internal Server Error" });
         }
