@@ -31,7 +31,6 @@ $.get("/api/user_data").then(function(user) {
                         console.error("Error parsing likes:", error);
                         likesArray = [];
                     }
-
                     var likesCount = likesArray.length;
 
                     var row = $(`<div class="wit-row col-md-12" id="wit-${data[i].id}"></div>`);
@@ -65,8 +64,6 @@ $.get("/api/user_data").then(function(user) {
                     row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/uploads/${await findProfilePicture(data[i].author)}"></img>`);
 
                     row.find('.wit-like-btn').on('click', function () {
-                        console.log(user);
-                        console.log(this.dataset.witId);
                         likePost(this.dataset.witId, user.username, row);
                     });
 
@@ -86,12 +83,12 @@ $.get("/api/user_data").then(function(user) {
                     row.find('.dropdown-container').html(dropdownHtml);
 
                     row.find('.edit-button').on('click', function () {
-                        handleEditButtonClick(data[i], user.username, row);
+                        handleEditButtonClick(this.dataset.witId, user.username, row);
                     });
 
                     row.find('.delete-button').on('click', function () {
+                        console.log(this.dataset.witId)
                         handleDeleteButtonClick(this.dataset.witId, user.username, row);
-                        console.log(this)
                     });
                 }
             } else {
@@ -158,9 +155,8 @@ $.get("/api/user_data").then(function(user) {
                         // Attach click event handler to the like button
                         row.find('.T-wit-like-btn').on('click', function () {
                         // Call the function to handle the like button click
-                            console.log(user);
                             // THIS BELOW WILL LOG THE ID OF THE WIT YOU ARE CLICKING ON
-                            console.log(this.dataset.witId);
+                            // console.log(this.dataset.witId);
                             likePost(this.dataset.witId, user.username, row);
                         });
 
@@ -312,7 +308,7 @@ function renderDropDown(witData, row) {
                         </svg>
                     </button>
                     <div class="dropdown-content">
-                        <a class="delete-button" href="#">Delete</a>
+                        <a class="delete-button" data-wit-id="${witData.id}" href="#">Delete</a>
                     </div>
                 </div>`;
         } else if (authorInput === witData.author) {
@@ -325,8 +321,8 @@ function renderDropDown(witData, row) {
                     </svg>
                 </button>
                 <div class="dropdown-content">
-                    <a class="edit-button" href="#">Edit</a>
-                    <a class="delete-button" href="#">Delete</a>
+                    <a class="edit-button" data-wit-id="${witData.id}" href="#">Edit</a>
+                    <a class="delete-button" data-wit-id="${witData.id}" href="#">Delete</a>
                 </div>
             </div>`;
        }
@@ -337,6 +333,7 @@ function renderDropDown(witData, row) {
 
 
 function handleDeleteButtonClick(witData, username) {
+    // console.log("THIS IS THE WITDATA: " + witData)
     // Use a confirm dialog for user confirmation
     var userConfirmation = confirm("Are you sure you want to delete this Wit?");
 
