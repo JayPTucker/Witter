@@ -10,11 +10,26 @@ $.get("/api/user_data").then(function(user) {
     var newWitProfilePic = user.profilePicture;
 
     function loadCurrentProfilePic() {
-        var row = $("#newWit-profilePic");
-        row.append(`<img class="Wit-profilePic" src="/uploads/${newWitProfilePic}"></img>`)
 
-        var rightProfileMenu = $("#rightProfileMenu");
-        rightProfileMenu.append(`<img class="currentProfilePic" src="/uploads/${newWitProfilePic}"></img>`)
+        if (newWitProfilePic === null) {
+            console.log("No Profile Pic Set in the DB, using Default")
+            var row = $("#newWit-profilePic");
+            row.append(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png"></img>`)
+
+            var rightProfileMenu = $("#rightProfileMenu");
+            rightProfileMenu.append(`<img class="currentProfilePic" src="/img/defaultProfilePic.png"></img>`)
+    
+    
+        } else {
+            console.log("Profile Pic is Set in the DB")
+
+            var row = $("#newWit-profilePic");
+            row.append(`<img class="Wit-profilePic" src="/uploads/${newWitProfilePic}"></img>`);
+
+            var rightProfileMenu = $("#rightProfileMenu");
+            rightProfileMenu.append(`<img class="currentProfilePic" src="/uploads/${newWitProfilePic}"></img>`)
+
+        }
     }
 
     loadCurrentProfilePic() 

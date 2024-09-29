@@ -239,15 +239,17 @@ module.exports = function(app) {
         // Generate a verification code
         const verificationCode = generateVerificationCode();
 
+        const defaultProfilePicture = "./defaultProfilePic.png";
+
         // Create a new user with the verification code
         const newUser = await db.User.create({
             email: req.body.email,
             username: req.body.username,
             password: req.body.password,
             verificationCode: verificationCode, // Set the verification code during user creation
+            // profilePicture: defaultProfilePicture 
             // Set profile picture to noProfilePic.png by default
-            profilePicture: "profilePic.png"
-        });
+        })
 
         const mailOptions = {
             from: 'wittersocial@gmail.com',
@@ -256,6 +258,9 @@ module.exports = function(app) {
             html: `<p>Your verification code is: <strong>${verificationCode}</strong></p>
             <p>Please use this link to get back to the verification page: 
             <a href="https://localhost:8080/verificationCode?email=${req.body.email}">Verification Page</a></p>`        };
+
+
+        
 
         transporter.sendMail(mailOptions, function(error, info) {
             if (error) {
