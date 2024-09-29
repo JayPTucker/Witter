@@ -1,120 +1,143 @@
 jQuery(function() {
+    $.get("/api/user_data").then(function(user) {
+        $(".member-name").text(user.username);
+        var newWitForm = $("form.new-wit");
+        var authorInput = user.username;
+        var bodyInput = $("#wit-input");
+        var imageInput = $("#image-input");
+        var newWitProfilePic = user.profilePicture;
 
-$.get("/api/user_data").then(function(user) {
-    $(".member-name").text(user.username);
-
-    var newWitForm = $("form.new-wit");
-    var authorInput = user.username;
-    var bodyInput = $("#wit-input");
-    var imageInput = $("#image-input");
-    var newWitProfilePic = user.profilePicture;
-
-    function loadCurrentProfilePic() {
-
-        if (newWitProfilePic === null) {
-            console.log("No Profile Pic Set in the DB, using Default")
+        async function loadCurrentProfilePic() {
             var row = $("#newWit-profilePic");
-            row.append(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png"></img>`)
-
             var rightProfileMenu = $("#rightProfileMenu");
-            rightProfileMenu.append(`<img class="currentProfilePic" src="/img/defaultProfilePic.png"></img>`)
-    
-    
-        } else {
-            console.log("Profile Pic is Set in the DB")
 
-            var row = $("#newWit-profilePic");
-            row.append(`<img class="Wit-profilePic" src="/uploads/${newWitProfilePic}"></img>`);
+            // Clear any existing profile pictures to avoid duplicates
+            row.empty();
+            rightProfileMenu.empty();
 
-            var rightProfileMenu = $("#rightProfileMenu");
-            rightProfileMenu.append(`<img class="currentProfilePic" src="/uploads/${newWitProfilePic}"></img>`)
-
-        }
-    }
-
-    loadCurrentProfilePic() 
-
-    async function loadWits() {
-        try {
-            const data = await $.get("/api/all_wits");
-            if (data.length !== 0) {
-                for (var i = 0; i < data.length; i++) {
-                    var likesArray;
-                    try {
-                        likesArray = JSON.parse(data[i].likes || '[]');
-                    } catch (error) {
-                        console.error("Error parsing likes:", error);
-                        likesArray = [];
-                    }
-                    var likesCount = likesArray.length;
-
-                    var row = $(`<div class="wit-row col-md-12" id="wit-${data[i].id}"></div>`);
-
-                    row.append(`
-                        <div class="row">
-                            <div class="col-md-3" id="witProfilePic">
-
-                            </div>
-
-                            <div class="col-md-9">
-                                <h4 class="wit-author">@${data[i].author}</h4><p class="wit-date">${moment(data[i].createdAt).format("h:mma on dddd")} </p>
-                                <p class="wit-body">${data[i].body}</p>
-
-                                <button type="button" data-wit-id="${data[i].id}" class="wit-like-btn wit-like-btn-${data[i].id} btn btn-default btn-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
-                                        <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
-                                    </svg>
-                                    ${likesCount}
-                                </button>
-                            </div>
-
-                            <div class="col-md-1">
-                                <div class="dropdown-container"></div> <!-- Container for dropdown -->
-                            </div>
-                        </div>
-                    `);
-
-                    $("#wits-area").prepend(row);
-
-                    row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/uploads/${await findProfilePicture(data[i].author)}"></img>`);
-
-                    row.find('.wit-like-btn').on('click', function () {
-                        likePost(this.dataset.witId, user.username, row);
-                    });
-
-                    if (data[i].image) {
-                        displayImage(data[i].image, row);
-                    }
-
-                    const lowercaseUsername = user.username.toLowerCase();
-
-                    if (data[i].likes && data[i].likes.includes(lowercaseUsername)) {
-                        console.log('User liked the wit!');
-                        row.find('.wit-like-btn').css('background-color', 'red');
-                        row.find('.wit-like-btn').css('color', 'white');
-                    }
-
-                    const dropdownHtml = await renderDropDown(data[i], row);
-                    row.find('.dropdown-container').html(dropdownHtml);
-
-                    row.find('.edit-button').on('click', function () {
-                        handleEditButtonClick(this.dataset.witId, user.username, row);
-                    });
-
-                    row.find('.delete-button').on('click', function () {
-                        console.log(this.dataset.witId)
-                        handleDeleteButtonClick(this.dataset.witId, user.username, row);
-                    });
-                }
+            if (!newWitProfilePic) {
+                console.log("No Profile Pic Set in the DB, using Default");
+                row.append(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png"></img>`);
+                rightProfileMenu.append(`<img class="currentProfilePic" src="/img/defaultProfilePic.png"></img>`);
             } else {
-                console.log("No wits found");
+                console.log("Profile Pic is Set in the DB");
+                row.append(`<img class="Wit-profilePic" src="/uploads/${newWitProfilePic}"></img>`);
+                rightProfileMenu.append(`<img class="currentProfilePic" src="/uploads/${newWitProfilePic}"></img>`);
             }
-        } catch (error) {
-            console.error("Error loading wits:", error);
         }
-    }
 
-    loadWits();
+        // Call the function to load the current profile picture
+        loadCurrentProfilePic(); 
+
+        // Function to change profile picture
+        function changeProfilePic(newProfilePic) {
+            var formData = new FormData();
+            formData.append("username", user.username);
+            formData.append("profilePicture", newProfilePic);
+
+            $.ajax({
+                url: '/api/changeProfilePic',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(updatedUser) {
+                    // Update the local user data
+                    newWitProfilePic = updatedUser.profilePicture;
+                    
+                    // Reload the profile picture to reflect changes
+                    loadCurrentProfilePic();
+                },
+                error: function(err) {
+                    console.log("Error changing profile picture:", err);
+                }
+            });
+        }
+
+        // Example of using the changeProfilePic function
+        $("#profilePicInput").on("change", function() {
+            var selectedFile = this.files[0];
+            if (selectedFile) {
+                changeProfilePic(selectedFile);
+            }
+        });
+
+        async function loadWits() {
+            try {
+                const data = await $.get("/api/all_wits");
+                if (data.length !== 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        var likesArray;
+                        try {
+                            likesArray = JSON.parse(data[i].likes || '[]');
+                        } catch (error) {
+                            console.error("Error parsing likes:", error);
+                            likesArray = [];
+                        }
+                        var likesCount = likesArray.length;
+
+                        var row = $(`<div class="wit-row col-md-12" id="wit-${data[i].id}"></div>`);
+
+                        row.append(`
+                            <div class="row">
+                                <div class="col-md-3" id="witProfilePic"></div>
+                                <div class="col-md-9">
+                                    <h4 class="wit-author">@${data[i].author}</h4>
+                                    <p class="wit-date">${moment(data[i].createdAt).format("h:mma on dddd")} </p>
+                                    <p class="wit-body">${data[i].body}</p>
+                                    <button type="button" data-wit-id="${data[i].id}" class="wit-like-btn wit-like-btn-${data[i].id} btn btn-default btn-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+                                            <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+                                        </svg>
+                                        ${likesCount}
+                                    </button>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="dropdown-container"></div>
+                                </div>
+                            </div>
+                        `);
+
+                        $("#wits-area").prepend(row);
+
+                        // Load profile pictures for each wit
+                        row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/uploads/${await findProfilePicture(data[i].author)}"></img>`);
+
+                        row.find('.wit-like-btn').on('click', function () {
+                            likePost(this.dataset.witId, user.username, row);
+                        });
+
+                        if (data[i].image) {
+                            displayImage(data[i].image, row);
+                        }
+
+                        const lowercaseUsername = user.username.toLowerCase();
+                        if (data[i].likes && data[i].likes.includes(lowercaseUsername)) {
+                            console.log('User liked the wit!');
+                            row.find('.wit-like-btn').css('background-color', 'red');
+                            row.find('.wit-like-btn').css('color', 'white');
+                        }
+
+                        const dropdownHtml = await renderDropDown(data[i], row);
+                        row.find('.dropdown-container').html(dropdownHtml);
+
+                        row.find('.edit-button').on('click', function () {
+                            handleEditButtonClick(this.dataset.witId, user.username, row);
+                        });
+
+                        row.find('.delete-button').on('click', function () {
+                            handleDeleteButtonClick(this.dataset.witId, user.username, row);
+                        });
+                    }
+                } else {
+                    console.log("No wits found");
+                }
+            } catch (error) {
+                console.error("Error loading wits:", error);
+            }
+        }
+
+        loadWits();
 
 
     function loadTrendingWits() {

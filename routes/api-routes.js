@@ -603,7 +603,7 @@ app.post("/api/wits/:witId/like", async function (req, res) {
     // ============================================================
     // CHANGE PROFILE PIC ROUTE
     // ============================================================
-    app.post("/api/changeProfilePic", upload.single("profilePicture"), function (req, res) {
+    app.post("/api/changeProfilePic", upload.single("profilePicture"), async function (req, res) {
         console.log("Received File:", req.file);  // Log the file data
     
         const username = req.body.username;
@@ -612,29 +612,32 @@ app.post("/api/wits/:witId/like", async function (req, res) {
         console.log("username:", username);
         console.log("profilePicture:", profilePicture);
     
-        // Corrected syntax for the update method
-        db.User.update(
-            // Fields to be updated
-            {
-                profilePicture: profilePicture ? profilePicture.filename : null // Store the filename in the database if it exists
-            },
-            // Where clause
-            {
-                where: {
-                    username: username
+        try {
+            // Update the profile picture in the database
+            await db.User.update(
+                {
+                    profilePicture: profilePicture ? profilePicture.filename : null
+                },
+                {
+                    where: {
+                        username: username
+                    }
                 }
-            }
-        )
-        .then(function (results) {
-            console.log("Profile Picture Updated:", results);
-            res.json(results); // Send the updated wit back as JSON
-        })
-        .catch(function (err) {
+            );
+    
+            // Fetch the updated user object
+            const updatedUser = await db.User.findOne({ where: { username: username } });
+    
+            // Update the session user object
+            req.user.profilePicture = updatedUser.profilePicture;
+    
+            console.log("Profile Picture Updated:", updatedUser);
+            res.json(updatedUser); // Send the updated user object back as JSON
+        } catch (err) {
             console.log("Error updating Profile Picture:", err);
             res.status(401).json(err);
-        });
+        }
     });
-    
     // ============================================================
     // FIND PROFILE PIC FOR WITTER.JS PAGE ROUTE
     // ============================================================
