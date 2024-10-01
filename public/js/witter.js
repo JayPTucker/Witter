@@ -54,7 +54,6 @@ jQuery(function() {
             });
         }
 
-        // Example of using the changeProfilePic function
         $("#profilePicInput").on("change", function() {
             var selectedFile = this.files[0];
             if (selectedFile) {
