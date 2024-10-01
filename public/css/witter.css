@@ -23,9 +23,10 @@
   color: white !important;
 }
 
-.wit-input:focus {
-  outline: none !important;
-  -webkit-tap-highlight-color: transparent; /* For Safari */
+input:focus {
+  outline: none; /* Remove the default outline */
+  border: 2px solid #007BFF; /* Custom border */
+  background-color: #f0f8ff; /* Optional: change background color */
 }
 
 .hidden-input {
@@ -164,28 +165,28 @@
 
   /* RIGHT MENU */
 
-.search-container {
+/* .search-container {
   position: relative;
   margin-bottom: 30px;
-}
+} */
 
-.search-input {
-  padding-left: 30px; /* Adjust as needed */
+/* .search-input {
+  padding-left: 30px; 
   padding: 10px 0px;
   width: 100%;
   background-color: rgb(41, 41, 41);
   border-radius: 20px;
   border: 1px solid rgb(41, 41, 41);
   color: white !important;
-}
+} */
 
-.search-icon {
+/* .search-icon {
   position: absolute;
   top: 50%;
   left: 0%;
   transform: translateY(-50%);
   color: white;
-}
+} */
 
 .logout-text {
   color: white;
