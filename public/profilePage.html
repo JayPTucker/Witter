@@ -7,6 +7,7 @@
 
     <!-- DEPENDENCIES: -->
     <link rel="stylesheet" href="css/allpages.css">
+    <link rel="stylesheet" href="css/profilepage.css">
     <link rel="shortcut icon" href="img/favicon.png">
     <!-- BOOTSTRAP: -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -18,21 +19,17 @@
     <div class="container">
         <div class="row">
         
-            <div class="col-md-3 text-center">
-              <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
-              <button class="home-button" onclick="window.location.href='/witter'">Home</button>
-              <button class="profile-button" onclick="window.location.href='/profilePage'">Profile</button>
-            </div>
-            
-          </div>
+            <div class="col-md-12 text-center">
+              <button class="default-button logout-button" onclick="window.location.href='/logout'">Logout</button>
+              <button class="default-button home-button" onclick="window.location.href='/witter'">Home</button>
+              <button class="default-button profile-button" onclick="window.location.href='/profilePage'">Profile</button>
+            </div>    
+        </div>
+
         <div class="row justify-content-center">
             <div class="col-12 text-center">
-                Welcome to your profile.
-                <br>
-                Edit your info below:
-                <br><br><hr>
                 <div>
-                    <h3>User's Info:</h3>
+                    <h3>User Info:</h3>
                     <div class="user-info">
 
                     </div>
@@ -40,8 +37,8 @@
 
                 <form class="new-profilePic" enctype="multipart/form-data">
                     <p>Click below to change profile picture:</p>
-                    <input type="file" id="image-input" name="image">
-                    <button class="profilePic-button" type="submit">Save</button>
+                    <input CLASS="default-button" type="file" id="image-input" name="image">
+                    <button class="default-button profilePic-button" type="submit">Save</button>
                 </form>
 
             </div>

@@ -13,3 +13,30 @@ body {
 .form-control {
   resize: none;
 }  
+
+.profile-button, .logout-button, .home-button, .favorites-button, .default-button {
+  border: 1px solid rgba(0, 0, 0, 0);
+  background-color: rgba(219, 219, 219, 0.096) !important;
+  border: 1px solid rgba(255, 255, 255, 0.116);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 22px;
+  color: white;
+  width: 50%;
+  padding: 10px;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
+
+.profile-button:hover, .logout-button:hover, .home-button:hover, .favorites-button:hover, .default-button:hover {
+  background-color: rgb(34, 67, 97) !important;
+  border: 1px solid white;
+  width: 53%;
+}
+
+.currentProfilePic {
+  border-radius: 50%; /* Use 50% for a perfect circle */
+  width: 120px; /* Desired width */
+  height: 120px; /* Desired height */
+  object-fit: cover; /* Maintain aspect ratio */
+}
