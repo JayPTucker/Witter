@@ -1,5 +1,5 @@
 .pageLogo {
-  width: 15%;
+  width: 28%;
   height: auto;
   margin: 30px 10px;
 }
@@ -7,18 +7,18 @@
 /* ======================================= */
 
 .new-wit-row {
-  padding: 15px;
-  border: 1px solid rgb(50, 50, 50);
+  background-color: rgba(0, 35, 68, 0.808);
+  border: 1px solid rgba(255, 255, 255, 0.315);
 }
 
 .wit-input {
+  background-color: #56565600 !important;
   height: 150px;
   font-size: 25px !important;
   padding: 12px 20px;
   box-sizing: border-box;
   border: 1px solid #cccccc00 !important;
   border-radius: 4px;
-  background-color: #56565600 !important;
   resize: none;
   color: white !important;
 }
@@ -76,7 +76,13 @@
   border: 1px solid rgb(50, 50, 50);
 }
 
-.wit-row:hover {
+.new-wit {
+  transition: all 0.3s ease-in-out;
+  margin-bottom: 0px !important; /* to fix random spacing issue */
+  padding-bottom: 15px;
+}
+
+.wit-row:hover , .new-wit:hover {
   background-color: rgb(37, 71, 102);
   border: 1px solid white;
 }
@@ -87,9 +93,10 @@
 
 .wit-profilePic {
   border-radius: 50%; /* Use 50% for a perfect circle */
-  width: 50px; /* Desired width */
-  height: 50px; /* Desired height */
+  width: 80px; /* Desired width */
+  height: 80px; /* Desired height */
   object-fit: cover; /* Maintain aspect ratio */
+  float: right;
 }
 
 .wit-body {
@@ -106,7 +113,6 @@
 .wit-like-btn:hover {
   background-color: rgb(113, 113, 113) !important;
 }
-
 
 /* =================================================== */
 /* DROPDOWN MENU */
@@ -197,33 +203,34 @@
 
 .profile-button, .logout-button, .home-button, .favorites-button {
   border: 1px solid rgba(0, 0, 0, 0);
-  background-color: rgba(219, 219, 219, 0) !important;
+  background-color: rgba(219, 219, 219, 0.096) !important;
+  border: 1px solid rgba(255, 255, 255, 0.116);
+  border-radius: 10px;
+  margin-bottom: 10px;
   font-size: 22px;
   color: white;
-  width: 100%;
+  width: 50%;
   padding: 10px;
   font-weight: bold;
   transition: all 0.2s ease-in-out;
 }
 
-.home-button, .favorites-button {
-  float: left !important;
-  text-align: left !important;
-}
-
 .profile-button:hover, .logout-button:hover, .home-button:hover, .favorites-button:hover {
-  background-color: rgb(34, 67, 97);
+  background-color: rgb(34, 67, 97) !important;
   border: 1px solid white;
+  width: 60%;
 }
 
 /* =========== */
 
 .trending-section {
-  background-color: rgb(41, 41, 41);
-  border-radius: 25px;
+  background-color: rgba(41, 41, 41, 0.767);
+  border: 1px solid rgba(255, 255, 255, 0.315);
+  border-radius: 15px;
   color: white;
   text-align: left !important;
   padding: 10px;
+
 }
 
 .trending-title {
@@ -245,8 +252,8 @@
 
 .T-wit-profilePic {
   border-radius: 50%; /* Use 50% for a perfect circle */
-  width: 50px; /* Desired width */
-  height: 50px; /* Desired height */
+  width: 60px; /* Desired width */
+  height: 60px; /* Desired height */
   object-fit: cover; /* Maintain aspect ratio */
 }
 
