@@ -16,11 +16,11 @@ jQuery(function() {
             rightProfileMenu.empty();
 
             if (!newWitProfilePic) {
-                console.log("No Profile Pic Set in the DB, using Default");
+                // console.log("No Profile Pic Set in the DB, using Default");
                 row.append(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png"></img>`);
                 rightProfileMenu.append(`<img class="currentProfilePic" src="/img/defaultProfilePic.png"></img>`);
             } else {
-                console.log("Profile Pic is Set in the DB");
+                // console.log("Profile Pic is Set in the DB");
                 row.append(`<img class="Wit-profilePic" src="/uploads/${newWitProfilePic}"></img>`);
                 rightProfileMenu.append(`<img class="currentProfilePic" src="/uploads/${newWitProfilePic}"></img>`);
             }
@@ -102,8 +102,30 @@ jQuery(function() {
 
                         $("#wits-area").prepend(row);
 
-                        // Load profile pictures for each wit
-                        row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/uploads/${await findProfilePicture(data[i].author)}"></img>`);
+                        // ===========================================
+                        // FIND THE PROFILE PIC
+                        // ===========================================
+                        async function handleProfilePicture() {
+                            try {
+                                // Resolve the profile picture once
+                                const result = await findProfilePicture(data[i].author);
+                        
+                                if (!result) {
+                                    // console.log("No Profile Pic Set in the DB, using Default");
+                        
+                                    row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png"></img>`);
+                                } else {
+                                    // console.log("Profile Pic is Set in the DB");
+                        
+                                    row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/uploads/${result}"></img>`);
+                                }
+                            } catch (error) {
+                                console.error("Error fetching profile picture:", error);
+                            }
+                        }
+                        
+                        // Call the function
+                        handleProfilePicture();
 
                         row.find('.wit-like-btn').on('click', function () {
                             likePost(this.dataset.witId, user.username, row);
@@ -115,7 +137,7 @@ jQuery(function() {
 
                         const lowercaseUsername = user.username.toLowerCase();
                         if (data[i].likes && data[i].likes.includes(lowercaseUsername)) {
-                            console.log('User liked the wit!');
+                            // console.log('User liked the wit!');
                             row.find('.wit-like-btn').css('background-color', 'red');
                             row.find('.wit-like-btn').css('color', 'white');
                         }
@@ -140,8 +162,8 @@ jQuery(function() {
         }
 
         loadWits();
-// ========================================
-// ========================================
+    // ========================================
+    // ========================================
 
     function loadTrendingWits() {
         $.get("/api/top_wits").then(function(data) {
@@ -153,24 +175,26 @@ jQuery(function() {
                 Promise.all(profilePicturePromises)
                 .then(profilePictures => {
                     for (var i = 0; i < data.length; i++) {
-                    // Parse the likes string into a JSON array if it's not empty
-                    var likesArray;
-                    try {
-                        likesArray = JSON.parse(data[i].likes || '[]');
-                    } catch (error) {
-                        console.error("Error parsing likes:", error);
-                        likesArray = [];
-                    }
+                        // Parse the likes string into a JSON array if it's not empty
+                        var likesArray;
+                        try {
+                            likesArray = JSON.parse(data[i].likes || '[]');
+                        } catch (error) {
+                            console.error("Error parsing likes:", error);
+                            likesArray = [];
+                        }
 
-                    // Get the length of the array
-                    var likesCount = likesArray.length;
+                        // Get the length of the array
+                        var likesCount = likesArray.length;
 
                         var mainData = data[i];
                         var row = $(`<div class="T-wit-row col-md-12" id="wit-${data[i].id}"></div>`);
                         row.append(`
                         <div class="row">
 
-                            <div class="col-md-3" id="T-witProfilePic"></div>
+                            <div class="col-md-3" id="T-witProfilePic">
+                            
+                            </div>
             
                             <div class="col-md-9">
                                 <h4 class="T-wit-author">@${data[i].author}</h4><p class="T-wit-date">${moment(data[i].createdAt).format("h:mma on dddd")} </p>
@@ -190,14 +214,17 @@ jQuery(function() {
 
                         $("#trendingWits").prepend(row);
 
-                        // Append profile pic to the page
-                        row.find('#T-witProfilePic').html(`<img class="T-Wit-profilePic" src="/uploads/${profilePictures[i]}"></img>`);
+                        // Append profile pic to the page using the pre-fetched profilePictures array
+                        const profilePic = profilePictures[i];
+                        if (!profilePic) {
+                            row.find('#T-witProfilePic').html(`<img class="T-Wit-profilePic" src="/img/defaultProfilePic.png"></img>`);
+                        } else {
+                            row.find('#T-witProfilePic').html(`<img class="T-Wit-profilePic" src="/uploads/${profilePic}"></img>`);
+                        }
 
                         // Attach click event handler to the like button
                         row.find('.T-wit-like-btn').on('click', function () {
-                        // Call the function to handle the like button click
-                            // THIS BELOW WILL LOG THE ID OF THE WIT YOU ARE CLICKING ON
-                            // console.log(this.dataset.witId);
+                            // Call the function to handle the like button click
                             likePost(this.dataset.witId, user.username, row);
                         });
 
@@ -209,9 +236,8 @@ jQuery(function() {
 
                         const lowercaseUsername = user.username.toLowerCase();
 
-                        // && Checks to see if the array includes the username
+                        // Checks if the user has liked the wit
                         if (data[i].likes && data[i].likes.includes(lowercaseUsername)) {
-                            console.log('User liked the wit!');
                             row.find('.T-wit-like-btn').css('background-color', 'red');
                             row.find('.T-wit-like-btn').css('color', 'white');
                         }
@@ -224,6 +250,7 @@ jQuery(function() {
     }
 
     loadTrendingWits();
+
 
     // ==================================================
     // ==================================================
@@ -292,9 +319,9 @@ function findProfilePicture(author) {
 }
 
 function likePost(witId, username) {
-    console.log("Like button has been pressed");
-    console.log(witId)
-    console.log(username)
+    // console.log("Like button has been pressed");
+    // console.log(witId)
+    // console.log(username)
     var row = $(`#wit-${witId}`);
 
     $.ajax({
@@ -320,7 +347,6 @@ function likePost(witId, username) {
                 row.find(witBtn).css('background-color', 'white');
                 row.find(witBtn).css('color', 'black');
             }
-
         },        
         error: function(error) {
             console.error('Error within likePost function:', error)
@@ -329,10 +355,10 @@ function likePost(witId, username) {
 }
 
 function renderDropDown(witData, row) {
-    console.log("Rendering dropdown for wit:", witData);
+    // console.log("Rendering dropdown for wit:", witData);
 
     return $.get("/api/user_data").then(function(userData) {
-        console.log("User data:", userData);
+        // console.log("User data:", userData);
 
         var authorInput = userData.username;
         var currentDate = moment();
@@ -340,10 +366,10 @@ function renderDropDown(witData, row) {
         var timeDifference = currentDate.diff(witCreationTime, 'minutes'); // Difference in minutes
 
         if (authorInput !== witData.author) {
-            console.log("Author mismatch, returning empty string");
+            // console.log("Author mismatch, returning empty string");
             return "";
         } else if (timeDifference > 2) {
-            console.log("Rendering dropdown for wit created more than 2 minutes ago");
+            // console.log("Rendering dropdown for wit created more than 2 minutes ago");
             return `
                 <div class="dropdown">
                     <button class="dropbtn">

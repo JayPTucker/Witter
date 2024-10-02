@@ -107,6 +107,11 @@ input:focus {
   border: 1px solid white;
 }
 
+.wit-body {
+  font-size: 20px;
+  margin: -15px 0px 5px 0px;
+}
+
 .wit-image {
   max-width: 150px;
 }
@@ -179,6 +184,10 @@ input:focus {
 
   /* RIGHT MENU */
 
+  .rightMenu {
+    margin-top: 30px;
+  }
+
 /* .search-container {
   position: relative;
   margin-bottom: 30px;
@@ -218,7 +227,6 @@ input:focus {
   color: white;
   text-align: left !important;
   padding: 10px;
-
 }
 
 .trending-title {
