@@ -4,6 +4,19 @@
   margin: 30px 10px;
 }
 
+.favorites-button {
+  background-color: rgba(56, 56, 56, 0.699);
+}
+
+.favorites-button:hover {
+  background-color: rgba(56, 56, 56, 0.699) !important;
+}
+
+#temp {
+  color: white;
+  font-size: 20px;
+}
+
 /* ======================================= */
 
 .new-wit-row {

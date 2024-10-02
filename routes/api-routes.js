@@ -476,7 +476,7 @@ module.exports = function(app) {
     app.get("/api/top_wits", function(req, res) {
         db.Wit.findAll({
             limit: 3,
-            order: [[db.Sequelize.fn('length', db.Sequelize.col('likes')), 'DESC']]  // Sort by number of likes, greatest to least
+            order: [[db.Sequelize.fn('length', db.Sequelize.col('likes')), 'DESC']]  
         }).then(function(results) {
             res.json(results.reverse());
         }).catch(function(error) {

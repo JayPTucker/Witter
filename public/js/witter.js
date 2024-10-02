@@ -442,3 +442,48 @@ function handleEditButtonClick(witData, username) {
         }
     })
 }
+
+jQuery(function() {
+    // Check if Geolocation is supported
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error);
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+
+    // If geolocation is successful
+    function success(position) {
+        var lat = position.coords.latitude;
+        var lon = position.coords.longitude;
+        var apiKey = "46ca71a108aa34e0e63f33a3643552ba";
+        var apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`;
+
+        // AJAX request to OpenWeatherMap
+        $.ajax({
+            url: apiUrl,
+            type: "GET",
+            success: function(data) {
+                var temperature = data.main.temp;
+                var city = data.name;
+                var weatherIconCode = data.weather[0].icon; // Get the icon code
+                var weatherIconUrl = `https://openweathermap.org/img/wn/${weatherIconCode}@2x.png`; // Construct icon URL
+
+                // Display the temperature and city name
+                $("#temp").text(`The temperature in ${city} is ${temperature}°F`);
+
+                // Display the weather icon
+                $("#weather-icon").attr("src", weatherIconUrl).show();
+            },
+            error: function(error) {
+                console.log("Error fetching weather data:", error);
+                $("#temp").text("Could not retrieve weather data.");
+            }
+        });
+    }
+
+    // If geolocation fails
+    function error() {
+        alert("Unable to retrieve your location.");
+        $("#temp").text("Location access denied. Cannot fetch weather.");
+    }
+});
