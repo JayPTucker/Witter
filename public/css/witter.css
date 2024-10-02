@@ -67,11 +67,17 @@ input:focus {
 /* =================================================== */
 
 .wit-author {
-  margin: 0px !important;
+  margin-bottom: 5px;
+  color: rgb(255, 251, 215);
+}
+
+.wit-date {
+  font-size: 13px;
+  color: rgb(182, 182, 182);
 }
 
 .wit-row {
-  padding: 20px;
+  padding: 20px 0px;
   transition: all 0.2s ease-in-out;
   color: white;
   border: 1px solid rgb(50, 50, 50);
@@ -94,20 +100,15 @@ input:focus {
 
 .wit-profilePic {
   border-radius: 50%; /* Use 50% for a perfect circle */
-  width: 80px; /* Desired width */
-  height: 80px; /* Desired height */
+  width: 95px; /* Desired width */
+  height: 95px; /* Desired height */
   object-fit: cover; /* Maintain aspect ratio */
   float: right;
 }
 
-.wit-body {
-  margin-left: 13px;
-}
-
 .wit-like-btn {
-  margin-top: 30px;
   border-radius: 20px !important;
-  padding: 10px;
+  padding: 5px;
   transition: all 0.2s ease-in-out;
 }
 

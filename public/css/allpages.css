@@ -40,3 +40,18 @@ body {
   height: 120px; /* Desired height */
   object-fit: cover; /* Maintain aspect ratio */
 }
+
+.login-register-col {
+  margin-top: 10%;
+  color: white;
+  border: 1px solid #6a6a6a;
+  background-color: rgba(0, 90, 154, 0.403) !important;
+  padding: 70px 0px;
+  border-radius: 15px;
+  transition: all 0.2s ease-in-out;
+}
+
+.login-register-col:hover {
+  border: 1px solid #afafaf;
+  background-color: rgba(0, 90, 154, 0.63) !important;
+}

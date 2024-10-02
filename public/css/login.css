@@ -1,0 +1,9 @@
+.login-inputs {
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+}
+
+.login-inputs:active {
+    text-decoration: none !important;
+}

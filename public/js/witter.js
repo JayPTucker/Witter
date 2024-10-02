@@ -79,8 +79,8 @@ jQuery(function() {
 
                         row.append(`
                             <div class="row">
-                                <div class="col-md-3" id="witProfilePic"></div>
-                                <div class="col-md-9">
+                                <div class="col-md-2" id="witProfilePic"></div>
+                                <div class="col-md-8">
                                     <h4 class="wit-author">@${data[i].author}</h4>
                                     <p class="wit-date">${moment(data[i].createdAt).format("h:mma on dddd")} </p>
                                     <p class="wit-body">${data[i].body}</p>
