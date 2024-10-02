@@ -61,6 +61,9 @@ jQuery(function() {
             }
         });
 
+// =========================
+// LOADING ALL WITS
+// =========================
         async function loadWits() {
             try {
                 const data = await $.get("/api/all_wits");
@@ -80,7 +83,7 @@ jQuery(function() {
                         row.append(`
                             <div class="row">
                                 <div class="col-md-2" id="witProfilePic"></div>
-                                <div class="col-md-8">
+                                <div class="col-md-9">
                                     <h4 class="wit-author">@${data[i].author}</h4>
                                     <p class="wit-date">${moment(data[i].createdAt).format("h:mma on dddd")} </p>
                                     <p class="wit-body">${data[i].body}</p>
@@ -137,7 +140,8 @@ jQuery(function() {
         }
 
         loadWits();
-
+// ========================================
+// ========================================
 
     function loadTrendingWits() {
         $.get("/api/top_wits").then(function(data) {
@@ -220,6 +224,9 @@ jQuery(function() {
     }
 
     loadTrendingWits();
+
+    // ==================================================
+    // ==================================================
 
     newWitForm.on("submit", function(event) {
     event.preventDefault();
@@ -378,6 +385,7 @@ function handleDeleteButtonClick(witData, username) {
     if (userConfirmation) {
         // User clicked "OK," proceed with the delete action
         console.log("User confirmed deletion");
+        window.location.reload();
         // Call the function to handle the delete button click
     } else {
         // User clicked "Cancel" or closed the dialog, do nothing or provide feedback
@@ -396,6 +404,7 @@ function handleDeleteButtonClick(witData, username) {
         }, 
         error: function(error) {
             console.error('Error within handleDeleteButtonClick function:', error)
+
         }
     })
     }
@@ -426,6 +435,7 @@ function handleEditButtonClick(witData, username) {
         success: function (response) {
             console.log("Wit has been edited successfully")
             alert("Wit has been edited successfully")
+            window.location.reload();
         }, 
         error: function(error) {
             console.error('Error within handleEditButton function:', error)
