@@ -476,9 +476,12 @@ module.exports = function(app) {
     app.get("/api/top_wits", function(req, res) {
         db.Wit.findAll({
             limit: 3,
-            order: [['likes', 'DESC']]
+            order: [[db.Sequelize.fn('length', db.Sequelize.col('likes')), 'DESC']]  // Sort by number of likes, greatest to least
         }).then(function(results) {
-            res.json(results);
+            res.json(results.reverse());
+        }).catch(function(error) {
+            console.error("Error fetching top wits:", error);
+            res.status(500).json({ success: false, error: "Internal Server Error" });
         });
     });
 
