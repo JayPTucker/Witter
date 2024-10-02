@@ -6,6 +6,7 @@
     <title>Email Verification | Witter</title>
     <!-- DEPENDENCIES: -->
     <link rel="stylesheet" href="css/allpages.css">
+    <link rel="stylesheet" href="css/verificationCode.css">
     <link rel="shortcut icon" href="img/favicon.png">
     <!-- BOOTSTRAP: -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -14,15 +15,22 @@
     
 </head>
 <body>
-    <h1>Email Verification</h1>
-    <form id="verificationForm">
-        <label for="verificationCode">Enter Verification Code that was sent to your email address:</label>
-        <input type="text" id="verificationCode" name="verificationCode" required autocomplete="off">
-        <div id="timer"></div>
-        <button type="submit">Verify</button>
-    </form>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="login-register-col col-md-6 text-center">
+                <h1>Email Verification</h1>
 
-    <p id="resendLink">Didn't recieve verificaiton code? <a href="#" id="resendButton">Click here to resend.</a></p>
+                <form id="verificationForm">
+                    <label for="verificationCode">Enter Verification Code that was sent to your email address:</label><br>
+                    <input class="login-register-inputs" placeholder="Verification Code" id="verificationCode" name="verificationCode" required autocomplete="off">
+                    <div id="timer"></div>
+                    <button class="default-button" type="submit">Verify</button>
+                </form>
+
+                <p id="resendLink">Didn't recieve verificaiton code? <a href="#" id="resendButton">Click here to resend.</a></p>
+            </div>
+        </div>
+    </div>
 </body>
     
     <script src="./js/verificationCode.js"></script>

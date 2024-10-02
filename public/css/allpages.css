@@ -41,6 +41,10 @@ body {
   object-fit: cover; /* Maintain aspect ratio */
 }
 
+/* ================================ */
+/* LOGIN AND REGISTER PAGES */
+/* ================================ */
+
 .login-register-col {
   margin-top: 10%;
   color: white;
@@ -55,3 +59,17 @@ body {
   border: 1px solid #afafaf;
   background-color: rgba(0, 90, 154, 0.63) !important;
 }
+
+.login-register-inputs {
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  border: 2px solid rgb(54, 54, 54);
+}
+
+.login-register-inputs:active {
+  text-decoration: none !important;
+}
+
+/* ================================ */
+/* ================================ */

@@ -2,12 +2,12 @@ checkUserExistence();
 
 function startVerificationTimer() {
     // Set the initial time
-    let seconds = 60;
+    let seconds = 120;
 
     // Update the timer every second
     const timerInterval = setInterval(function() {
         seconds--;
-        $('#timer').text("You have " + seconds + " remaining to verify your account using the verification code.");
+        $('#timer').text(seconds + " seconds remaining to verify your account using the verification code.");
 
         // Check if the timer has reached zero
         if (seconds === 0) {

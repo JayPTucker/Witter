@@ -1,11 +1,3 @@
-.default-button {
-    width: 30% !important;
-}
-
-.default-button:hover {
-    width: 33% !important;
-}
-
 .welcome-text {
     font-weight: bold;
     font-size: 45px;
