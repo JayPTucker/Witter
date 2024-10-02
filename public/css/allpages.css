@@ -16,7 +16,7 @@ body {
 
 .profile-button, .logout-button, .home-button, .favorites-button, .default-button {
   border: 1px solid rgba(0, 0, 0, 0);
-  background-color: rgba(219, 219, 219, 0.096) !important;
+  background-color: rgba(7, 31, 53, 0.699);
   border: 1px solid rgba(255, 255, 255, 0.116);
   border-radius: 10px;
   margin-bottom: 10px;
