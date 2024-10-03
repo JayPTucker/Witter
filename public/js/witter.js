@@ -131,9 +131,17 @@ jQuery(function() {
                             likePost(this.dataset.witId, user.username, row);
                         });
 
+                        // ======================================
+                        // ADDING IMAGES TO THE PAGE
                         if (data[i].image) {
-                            displayImage(data[i].image, row);
+                            // Assuming images are stored in the "public/uploads/" directory
+                            var imageUrl = `/uploads/${data[i].image}`;
+                            row.append(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
                         }
+
+                        $("#wits-area").prepend(row);
+                        // ======================================
+                    
 
                         const lowercaseUsername = user.username.toLowerCase();
                         if (data[i].likes && data[i].likes.includes(lowercaseUsername)) {
@@ -162,7 +170,9 @@ jQuery(function() {
         }
 
         loadWits();
+
     // ========================================
+    // LOADING TRENDING WITS
     // ========================================
 
     function loadTrendingWits() {
@@ -187,7 +197,7 @@ jQuery(function() {
                         // Get the length of the array
                         var likesCount = likesArray.length;
 
-                        var mainData = data[i];
+                        // var mainData = data[i];
                         var row = $(`<div class="T-wit-row col-md-12" id="wit-${data[i].id}"></div>`);
                         row.append(`
                         <div class="row">
@@ -228,11 +238,17 @@ jQuery(function() {
                             likePost(this.dataset.witId, user.username, row);
                         });
 
-                        // Check if there is an image
+                        // ======================================
+                        // ADDING IMAGES TO THE PAGE
                         if (data[i].image) {
-                            // Display the image in the new row
-                            displayImage(data[i].image, row);
+                            // Assuming images are stored in the "public/uploads/" directory
+                            var imageUrl = `/uploads/${data[i].image}`;
+                            row.append(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
                         }
+
+                        $("#T-wits-area").prepend(row);
+                        // ======================================
+
 
                         const lowercaseUsername = user.username.toLowerCase();
 
@@ -251,7 +267,6 @@ jQuery(function() {
     }
 
     loadTrendingWits();
-
 
     // ==================================================
     // ==================================================
