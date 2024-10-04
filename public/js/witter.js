@@ -80,7 +80,7 @@ jQuery(function() {
                         try {
                             likesArray = JSON.parse(data[i].likes || '[]');
                         } catch (error) {
-                            console.error("Error parsing likes:", error);
+                            // console.error("Error parsing likes:", error);
                             likesArray = [];
                         }
                         var likesCount = likesArray.length;

@@ -4,7 +4,6 @@ body {
   background-repeat: no-repeat; /* Ensures the image doesn't repeat */
   background-position: center center; 
   background-attachment: fixed; 
-  min-height: 100vh; 
   margin: 0; /* Remove default margin */
   background-color: rgb(0, 35, 68) !important;
 }
@@ -36,9 +35,10 @@ body {
 
 .currentProfilePic {
   border-radius: 50%; /* Use 50% for a perfect circle */
-  width: 120px; /* Desired width */
-  height: 120px; /* Desired height */
+  width: 180px; /* Desired width */
+  height: 180px; /* Desired height */
   object-fit: cover; /* Maintain aspect ratio */
+  border: 2px solid rgba(255, 255, 255, 0.562);
 }
 
 /* ================================ */

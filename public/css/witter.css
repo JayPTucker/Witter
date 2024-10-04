@@ -1,7 +1,17 @@
 .pageLogo {
-  width: 28%;
+  width: 23%;
   height: auto;
-  margin: 30px 10px;
+  margin-bottom: 20px;
+}
+
+.witterTitle {
+  color: white;
+  font-weight: bold;
+  font-size: 55px;
+}
+
+.currentProfilePic {
+  margin-top: 15px;
 }
 
 .favorites-button {
@@ -19,6 +29,14 @@
 
 /* ======================================= */
 
+.sticky, .trending-section {
+  position: sticky;
+  top: 0; /* This will make the column stick to the top of the page */
+  height: 100vh; /* Ensure it takes up the full viewport height */
+  overflow-y: auto; /* Add scrolling if the content overflows */
+}
+
+
 .new-wit-row {
   background-color: rgba(7, 31, 53, 0.699);
   border: 1px solid rgba(255, 255, 255, 0.315);
@@ -34,6 +52,7 @@
   border-radius: 4px;
   resize: none;
   color: white !important;
+  margin-top: 20px;
 }
 
 input:focus {
@@ -90,7 +109,7 @@ input:focus {
 }
 
 .wit-row {
-  padding: 20px 0px;
+  padding: 10px 0px;
   transition: all 0.2s ease-in-out;
   color: white;
   border: 1px solid rgb(50, 50, 50);
@@ -115,7 +134,7 @@ input:focus {
 .wit-image {
   max-width: 150px;
   border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.562);
+  border: 2px solid rgba(255, 255, 255, 0.562);
   transition: all 0.1s ease-in-out;
 }
 
@@ -179,7 +198,8 @@ input:focus {
   height: 95px; /* Desired height */
   object-fit: cover; /* Maintain aspect ratio */
   float: right;
-  border: 1px solid rgba(255, 255, 255, 0.699);
+  border: 2px solid rgba(255, 255, 255, 0.568);
+  margin-top: 20px;
 }
 
 .wit-like-btn {
@@ -246,29 +266,6 @@ input:focus {
     margin-top: 30px;
   }
 
-/* .search-container {
-  position: relative;
-  margin-bottom: 30px;
-} */
-
-/* .search-input {
-  padding-left: 30px; 
-  padding: 10px 0px;
-  width: 100%;
-  background-color: rgb(41, 41, 41);
-  border-radius: 20px;
-  border: 1px solid rgb(41, 41, 41);
-  color: white !important;
-} */
-
-/* .search-icon {
-  position: absolute;
-  top: 50%;
-  left: 0%;
-  transform: translateY(-50%);
-  color: white;
-} */
-
 .logout-text {
   color: white;
   font-weight: bold;
@@ -312,6 +309,7 @@ input:focus {
 
 .T-wit-author {
   font-size: 15px;
+  color: rgb(255, 251, 215);
 }
 
 .T-wit-date {
