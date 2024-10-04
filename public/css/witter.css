@@ -114,6 +114,9 @@ input:focus {
 
 .wit-image {
   max-width: 150px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.699);
+  transition: all 0.2s ease-in-out;
 }
 
 .wit-profilePic {
@@ -122,6 +125,7 @@ input:focus {
   height: 95px; /* Desired height */
   object-fit: cover; /* Maintain aspect ratio */
   float: right;
+  border: 1px solid rgba(255, 255, 255, 0.699);
 }
 
 .wit-like-btn {
