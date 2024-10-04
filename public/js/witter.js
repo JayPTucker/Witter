@@ -7,6 +7,10 @@ jQuery(function() {
         var imageInput = $("#image-input");
         var newWitProfilePic = user.profilePicture;
 
+        // =============================================
+        // LOAD CURRENT PROFILE PIC
+        // =============================================
+        
         async function loadCurrentProfilePic() {
             var row = $("#newWit-profilePic");
             var rightProfileMenu = $("#rightProfileMenu");
@@ -28,6 +32,9 @@ jQuery(function() {
 
         // Call the function to load the current profile picture
         loadCurrentProfilePic(); 
+
+        // =============================================
+        // =============================================
 
         // Function to change profile picture
         function changeProfilePic(newProfilePic) {
@@ -272,6 +279,8 @@ jQuery(function() {
 
     // ==================================================
     // ==================================================
+    // WHEN THE "WIT" BUTTON IS PRESSED
+    // ==================================================
 
     newWitForm.on("submit", function(event) {
     event.preventDefault();
@@ -295,7 +304,7 @@ jQuery(function() {
     }
 
     return false; // Add this line to prevent default form submission behavior
-});
+    });
 
     function createWitFunction(formData) {
         $.ajax({
@@ -304,10 +313,7 @@ jQuery(function() {
             data: formData,
             processData: false,
             contentType: false,
-            success: function (response) {
-                // Display the wit immediately after creating it
-                // displayWit(response);
-    
+            success: function (response) {    
                 // Clears out page so Wits are no doubled
                 $("#wits-area").html("")
 
@@ -320,7 +326,10 @@ jQuery(function() {
             }
         });
     }    
-});
+    });
+
+// ==================================================
+// ==================================================
 
 function findProfilePicture(author) {
     return new Promise((resolve, reject) => {

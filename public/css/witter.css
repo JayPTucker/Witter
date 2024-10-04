@@ -119,6 +119,14 @@ input:focus {
   transition: all 0.2s ease-in-out;
 }
 
+#image-preview {
+  display: none; 
+  max-width: 150px; 
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.699);
+  margin-bottom: 10px;
+}
+
 .wit-profilePic {
   border-radius: 50%; /* Use 50% for a perfect circle */
   width: 95px; /* Desired width */
