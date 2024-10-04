@@ -168,6 +168,16 @@ jQuery(function() {
                         row.find('.delete-button').on('click', function () {
                             handleDeleteButtonClick(this.dataset.witId, user.username, row);
                         });
+
+                          // ADDING IMAGES TO THE PAGE
+                        if (data[i].image) {
+                            // Assuming images are stored in the "public/uploads/" directory
+                            var imageUrl = `/uploads/${data[i].image}`;
+                            var imageHtml = `<img src="${imageUrl}" alt="Wit Image" class="wit-image" style="cursor: pointer;">`;
+                            
+                            // Set the image inside the wit
+                            row.find(".imgAttachmentDiv").html(imageHtml);
+                        }
                     }
                 } else {
                     console.log("No wits found");
@@ -427,8 +437,6 @@ function renderDropDown(witData, row) {
 }
 
 
-
-
 function handleDeleteButtonClick(witData, username) {
     // console.log("THIS IS THE WITDATA: " + witData)
     // Use a confirm dialog for user confirmation
@@ -538,5 +546,5 @@ jQuery(function() {
     function error() {
         alert("Unable to retrieve your location.");
         $("#temp").text("Location access denied. Cannot fetch weather.");
-    }
+    }  
 });

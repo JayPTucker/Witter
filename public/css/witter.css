@@ -115,9 +115,15 @@ input:focus {
 .wit-image {
   max-width: 150px;
   border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.699);
-  transition: all 0.2s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.562);
+  transition: all 0.1s ease-in-out;
 }
+
+.wit-image:hover {
+  border: 1px solid rgb(255, 255, 255);
+  max-width: 155px;
+}
+
 
 #image-preview {
   display: none; 
@@ -125,6 +131,46 @@ input:focus {
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.699);
   margin-bottom: 10px;
+}
+
+/* Add this class to make the image larger */
+.wit-image-enlarged {
+  transform: scale(2); /* Adjust the scale factor as needed */
+  transition: transform 0.3s ease; /* Smooth transition effect */
+  position: fixed; /* Take it out of document flow */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%) scale(4); /* Center and scale */
+  z-index: 1000; /* Ensure it's on top */
+}
+
+.image-modal {
+  display: flex; /* Centering with flexbox */
+  justify-content: center;
+  align-items: center;
+  position: fixed; /* Fixed position */
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(0, 0, 0, 0.9); /* Semi-transparent background */
+  z-index: 1000; /* On top of other content */
+}
+
+.wit-image-enlarged {
+  max-width: 150px; /* Limit width */
+  max-height: auto; /* Limit height */
+  transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  color: red !important;
+  text-shadow: 3px solid black !important;
+  font-size: 80px !important;
+  cursor: pointer;
 }
 
 .wit-profilePic {
