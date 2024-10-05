@@ -40,7 +40,7 @@ app.get('/verificationCode', (req, res) => {
 });
 // =====================================
 
-// Sequelize Configuration (Handle PostgreSQL)
+// Sequelize Configuration (Handle PostgreSQL and MySQL)
 var sequelize;
 if (process.env.NODE_ENV === 'production') {
     // Use Heroku database settings for production
@@ -64,12 +64,12 @@ if (process.env.NODE_ENV === 'production') {
 
 
 
-// Starts the server to begin Listening:
+
 db.sequelize.sync().then(function() {
+    console.log(`Connected to ${process.env.NODE_ENV === 'production' ? 'Production' : 'Development'} Database`);
     app.listen(PORT, function() {
         console.log("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
     });
 }).catch(err => {
     console.error('Unable to connect to the database:', err);
 });
-// =====================================
