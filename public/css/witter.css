@@ -132,21 +132,20 @@ input:focus {
 }
 
 .wit-image {
-  max-width: 150px;
+  max-width: 30vh;
   border-radius: 15px;
   border: 2px solid rgba(255, 255, 255, 0.562);
-  transition: all 0.1s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .wit-image:hover {
-  border: 1px solid rgb(255, 255, 255);
-  max-width: 155px;
+  border: 2px solid rgb(255, 0, 0);
 }
 
 
 #image-preview {
   display: none; 
-  max-width: 150px; 
+  max-width: 30vh;
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.699);
   margin-bottom: 10px;
@@ -154,12 +153,12 @@ input:focus {
 
 /* Add this class to make the image larger */
 .wit-image-enlarged {
-  transform: scale(2); /* Adjust the scale factor as needed */
+  transform: scale(4); /* Adjust the scale factor as needed */
   transition: transform 0.3s ease; /* Smooth transition effect */
   position: fixed; /* Take it out of document flow */
   top: 50%; /* Center vertically */
   left: 50%; /* Center horizontally */
-  transform: translate(-50%, -50%) scale(4); /* Center and scale */
+  transform: translate(-50%, -50%) scale(100vh); /* Center and scale */
   z-index: 1000; /* Ensure it's on top */
 }
 

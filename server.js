@@ -44,9 +44,9 @@ app.get('/verificationCode', (req, res) => {
 // Sequelize Configuration (Handle JAWSDB or local MySQL)
 let sequelize;
 
-if (process.env.JAWSDB_URL) {
+if (process.env.CLOUDCUBE_URL) {
     // Use JAWSDB for production
-    sequelize = new db.Sequelize(process.env.JAWSDB_URL, {
+    sequelize = new db.Sequelize(process.env.CLOUDCUBE_URL, {
         dialect: 'mysql',
         dialectOptions: {
             // Additional options if needed
