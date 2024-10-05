@@ -1,7 +1,7 @@
 {
-  "name": "nakinojay",
+  "name": "witter",
   "version": "1.0.0",
-  "description": "Twert your Thoughts!",
+  "description": "Wit your Thoughts!",
   "main": "server.js",
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -24,14 +24,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/KiaraM-glitch/NaKiNoJay.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/KiaraM-glitch/NaKiNoJay/issues"
-  },
-  "homepage": "https://github.com/KiaraM-glitch/NaKiNoJay#readme"
+  "author": "JayPaulTucker",
+  "license": "ISC"
 }
