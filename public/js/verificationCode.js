@@ -1,5 +1,7 @@
 checkUserExistence();
 
+var alertDiv = document.getElementById("signup-failed-alert")
+
 function startVerificationTimer() {
     // Set the initial time
     let seconds = 120;
@@ -90,7 +92,11 @@ function sendVerificationCode() {
             alert("Email verified successfully. You can now log in.");
             window.location.replace("/login");
         } else {
-            alert("Invalid verification code. Please try again.");
+            $(alertDiv).append(`
+                <div class="alert alert-danger" role="alert">
+                  Verification code is incorrect, please try again.
+                </div>
+            `);
         }
     })
     .catch(error => {

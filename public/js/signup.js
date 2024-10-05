@@ -1,5 +1,4 @@
-$(document).ready(function() {
-
+$(document).ready(function () {
     var signUpForm = $("form.signup");
     var emailInput = $("input#email-input");
     var usernameInput = $("input#username-input");
@@ -9,124 +8,156 @@ $(document).ready(function() {
     var usernameInputBox = document.getElementById("username-input");
     var passwordInputBox = document.getElementById("password-input");
 
-    signUpForm.on("submit", function(event) {
+    var alertDiv = document.getElementById("signup-failed-alert");
+    var submitBtn = $(".signup-button")
+
+    // Handle form submission
+    signUpForm.on("submit", function (event) {
         event.preventDefault();
+        
+        $(alertDiv).html(""); // Clear previous alerts        
+
         var userData = {
             email: emailInput.val().trim(),
             username: usernameInput.val().trim(),
-            password: passwordInput.val().trim()
+            password: passwordInput.val().trim(),
         };
-
-        if (userData.password.length < 8) {
-            setInvalidInputStyle(passwordInputBox);
-            alert("Password must be more than 8 characters long");
-            return;
-        }
 
         resetInputStyles();
 
+        // Check for missing inputs
         if (!userData.email || !userData.username || !userData.password) {
             handleMissingInput(userData);
             return;
         }
 
+        // Check password length
+        if (userData.password.length < 8) {
+            setInvalidInputStyle(passwordInputBox);
+            showAlert("Password must be at least 8 characters long.");
+            return;
+        }
+
+        // Proceed with signup validation
         signUpFunction(userData.email, userData.username, userData.password);
     });
 
+    // Perform email validation
     function validateEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
 
+    // Centralized function to handle the signup process
     function signUpFunction(email, username, password) {
         if (!validateEmail(email)) {
             setInvalidInputStyle(emailInputBox);
-            alert("Please enter a valid email address.");
+            showAlert("Please enter a valid email address.");
             return;
         }
-    
+
+        checkIfEmailExists(email, function (emailExists) {
+            if (emailExists) {
+                setInvalidInputStyle(emailInputBox);
+                showAlert("An account with that email already exists.");
+            } else {
+                checkIfUsernameExists(username, function (usernameExists) {
+                    if (usernameExists) {
+                        setInvalidInputStyle(usernameInputBox);
+                        showAlert("Username is already taken. Please choose another.");
+                    } else {
+                        signUpRequest(email, username, password);
+                    }
+                });
+            }
+        });
+    }
+
+    // Helper function to check if the email exists
+    function checkIfEmailExists(email, callback) {
         $.ajax({
             url: "/api/check_email",
             method: "POST",
             data: { email: email },
             success: function (response) {
-                if (response.exists) {
-                    setInvalidInputStyle(emailInputBox);
-                    alert("An account with that email address already exists, please try another email.");
-                } else {
-                    $.ajax({
-                        url: "/api/check_username",
-                        method: "POST",
-                        data: { username: username },
-                        success: function (response) {
-                            if (response.exists) {
-                                setInvalidInputStyle(usernameInputBox);
-                                alert("Username is already registered to an account, please log in or choose another.");
-                            } else {
-                                // Proceed with the signup request
-                                $.post("/api/signup", {
-                                    email: email,
-                                    username: username,
-                                    password: password
-                                })
-                                .then(function (data) {
-                                    console.log("Server response:", data);
-                                    if (data.success) {
-                                        window.location.replace(data.redirect);
-                                    } else {
-                                        console.log("Error during signup:", data);
-                                        // Handle the error (e.g., display an error message to the user)
-                                    }
-                                })
-                                .catch(function (err) {
-                                    console.log("Error during signup:", err);
-                                    // Handle the error (e.g., display an error message to the user)
-                                });
-                            }
-                        }
-                    });
-                }
+                callback(response.exists);
             },
             error: function (err) {
-                console.error("Error checking if email or username exists:", err);
-                // Handle the error (e.g., display an error message to the user)
-            }
+                console.error("Error checking email:", err);
+            },
         });
     }
-    
-    // Log emailInputBox and usernameInputBox to the console to check their values
-    console.log("emailInputBox:", emailInputBox);
-    console.log("usernameInputBox:", usernameInputBox);
-    
 
+    // Helper function to check if the username exists
+    function checkIfUsernameExists(username, callback) {
+        $.ajax({
+            url: "/api/check_username",
+            method: "POST",
+            data: { username: username },
+            success: function (response) {
+                callback(response.exists);
+            },
+            error: function (err) {
+                console.error("Error checking username:", err);
+            },
+        });
+    }
+
+    // Perform the actual signup request
+    function signUpRequest(email, username, password) {
+        submitBtn.text("Loading...") 
+        submitBtn.css("color", "red")
+        $.post("/api/signup", { email, username, password })
+            .then(function (data) {
+                if (data.success) {
+                    window.location.replace(data.redirect);
+                } else {
+                    console.log("Error during signup:", data);
+                    showAlert("Error during signup. Please try again.");
+                }
+            })
+            .catch(function (err) {
+                console.error("Error during signup:", err);
+                showAlert("An error occurred. Please try again later.");
+            });
+    }
+
+    // Display an alert message in the alertDiv
+    function showAlert(message) {
+        $(alertDiv).append(`
+            <div class="alert alert-danger" role="alert">
+                ${message}
+            </div>
+        `);
+    }
+
+    // Set invalid input styles
     function setInvalidInputStyle(inputBox) {
         inputBox.style.backgroundColor = "#a20000";
         inputBox.style.color = "white";
     }
 
+    // Reset styles for all input boxes
     function resetInputStyles() {
-        emailInputBox.style.backgroundColor = "";
-        emailInputBox.style.color = "";
-        usernameInputBox.style.backgroundColor = "";
-        usernameInputBox.style.color = "";
-        passwordInputBox.style.backgroundColor = "";
-        passwordInputBox.style.color = "";
+        [emailInputBox, usernameInputBox, passwordInputBox].forEach((input) => {
+            input.style.backgroundColor = "";
+            input.style.color = "";
+        });
     }
 
+    // Handle missing inputs
     function handleMissingInput(userData) {
         if (!userData.email) {
             setInvalidInputStyle(emailInputBox);
-            alert("Please type in a valid email address.");
+            showAlert("Please enter a valid email address.");
         }
-
         if (!userData.username) {
             setInvalidInputStyle(usernameInputBox);
-            alert("Please type in a valid username.");
+            showAlert("Please enter a valid username.");
         }
-
         if (!userData.password) {
             setInvalidInputStyle(passwordInputBox);
-            alert("Please type in a valid password.");
+            showAlert("Please enter a valid password.");
         }
     }
 });
