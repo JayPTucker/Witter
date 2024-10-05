@@ -6,6 +6,7 @@ jQuery(function() {
         var bodyInput = $("#wit-input");
         var imageInput = $("#image-input");
         var newWitProfilePic = user.profilePicture;
+        var imageInputPreview = $("#image-preview")
 
         // =============================================
         // LOAD CURRENT PROFILE PIC
@@ -270,23 +271,24 @@ jQuery(function() {
 
     if (bodyInput.val().trim() === "" && imageInput[0].files[0] == null) {
         alert("Please enter something into the text box or choose an image.")
-    } else {        
-        // Create FormData object
-        var formData = new FormData();
-        formData.append("author", authorInput);
-        formData.append("body", bodyInput.val().trim());
+        } else {        
+            // Create FormData object
+            var formData = new FormData();
+            formData.append("author", authorInput);
+            formData.append("body", bodyInput.val().trim());
 
-        // Get the selected file from the input
-        if (imageInput[0].files.length > 0) {
-            formData.append("image", imageInput[0].files[0]);
+            // Get the selected file from the input
+            if (imageInput[0].files.length > 0) {
+                formData.append("image", imageInput[0].files[0]);
+            }
+
+            createWitFunction(formData);
+            bodyInput.val("");
+            imageInput.val(""); // Clear the file input
+            imageInputPreview.attr("src", "").hide()
         }
 
-        createWitFunction(formData);
-        bodyInput.val("");
-        imageInput.val(""); // Clear the file input
-    }
-
-    return false; // Add this line to prevent default form submission behavior
+        return false; // Add this line to prevent default form submission behavior
     });
 
     function createWitFunction(formData) {
