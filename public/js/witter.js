@@ -76,8 +76,6 @@ jQuery(function() {
                 const data = await $.get("/api/all_wits");
                 if (data.length !== 0) {
                     
-                    data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-
                     for (var i = 0; i < data.length; i++) {
                         var likesArray;
                         try {
@@ -116,10 +114,10 @@ jQuery(function() {
                         // ===========================================
                         // FIND THE PROFILE PIC
                         // ===========================================
-                        async function handleProfilePicture(row, author) {
+                        async function handleProfilePicture() {
                             try {
                                 // Resolve the profile picture once
-                                const result = await findProfilePicture(author);
+                                const result = await findProfilePicture(data[i].author);
                         
                                 if (!result) {
                                     // console.log("No Profile Pic Set in the DB, using Default");
@@ -134,10 +132,6 @@ jQuery(function() {
                                 console.error("Error fetching profile picture:", error);
                             }
                         }
-
-                        // THIS FIXES PROFILE PICS NOT RENDERING PROPERLY
-                        await handleProfilePicture(row, data[i].author);
-
                         
                         // Call the function
                         handleProfilePicture();
@@ -145,6 +139,9 @@ jQuery(function() {
                         row.find('.wit-like-btn').on('click', function () {
                             likePost(this.dataset.witId, user.username, row);
                         });
+
+                        await handleProfilePicture(row, data[i].author);
+
 
                         // ======================================
                         // ADDING IMAGES TO THE PAGE
