@@ -68,9 +68,9 @@ jQuery(function() {
             }
         });
 
-// =========================
-// LOADING ALL WITS
-// =========================
+        // =========================
+        // LOADING ALL WITS
+        // =========================
         async function loadWits() {
             try {
                 const data = await $.get("/api/all_wits");
@@ -81,7 +81,6 @@ jQuery(function() {
                         try {
                             likesArray = JSON.parse(data[i].likes || '[]');
                         } catch (error) {
-                            // console.error("Error parsing likes:", error);
                             likesArray = [];
                         }
                         var likesCount = likesArray.length;
@@ -109,57 +108,31 @@ jQuery(function() {
                             </div>
                         `);
 
-                        $("#wits-area").prepend(row);
+                        // Appending the row (instead of prepending)
+                        $("#wits-area").append(row);
 
-                        // ===========================================
                         // FIND THE PROFILE PIC
-                        // ===========================================
                         async function handleProfilePicture() {
                             try {
-                                // Resolve the profile picture once
                                 const result = await findProfilePicture(data[i].author);
-                        
                                 if (!result) {
-                                    // console.log("No Profile Pic Set in the DB, using Default");
-                        
                                     row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png"></img>`);
                                 } else {
-                                    // console.log("Profile Pic is Set in the DB");
-                        
                                     row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/uploads/${result}"></img>`);
                                 }
                             } catch (error) {
                                 console.error("Error fetching profile picture:", error);
                             }
                         }
-                        
-                        // Call the function
                         handleProfilePicture();
 
                         row.find('.wit-like-btn').on('click', function () {
                             likePost(this.dataset.witId, user.username, row);
                         });
 
-                        await handleProfilePicture(row, data[i].author);
-
-
-                        // ======================================
-                        // ADDING IMAGES TO THE PAGE
-                        if (data[i].image) {
-                            // Assuming images are stored in the "public/uploads/" directory
-                            var imageUrl = `/uploads/${data[i].image}`;
-                            row.find(".imgAttachmentDiv").html(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
-                        }
-
-                        $("#wits-area").prepend(row);
-                        // ======================================
-                    
-
                         const lowercaseUsername = user.username.toLowerCase();
                         if (data[i].likes && data[i].likes.includes(lowercaseUsername)) {
-                            // console.log('User liked the wit!');
-                            row.find('.wit-like-btn').css('background-color', 'red');
-                            row.find('.wit-like-btn').css('color', 'white');
+                            row.find('.wit-like-btn').css('background-color', 'red').css('color', 'white');
                         }
 
                         const dropdownHtml = await renderDropDown(data[i], row);
@@ -173,14 +146,9 @@ jQuery(function() {
                             handleDeleteButtonClick(this.dataset.witId, user.username, row);
                         });
 
-                          // ADDING IMAGES TO THE PAGE
                         if (data[i].image) {
-                            // Assuming images are stored in the "public/uploads/" directory
                             var imageUrl = `/uploads/${data[i].image}`;
-                            var imageHtml = `<img src="${imageUrl}" alt="Wit Image" class="wit-image" style="cursor: pointer;">`;
-                            
-                            // Set the image inside the wit
-                            row.find(".imgAttachmentDiv").html(imageHtml);
+                            row.find(".imgAttachmentDiv").html(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
                         }
                     }
                 } else {
@@ -192,6 +160,7 @@ jQuery(function() {
         }
 
         loadWits();
+
 
     // ========================================
     // LOADING TRENDING WITS

@@ -436,8 +436,13 @@ module.exports = function(app) {
     // FETCH ALL WITS ROUTE   
     // ============================================================
     app.get("/api/all_wits", function(req, res) {
-        db.Wit.findAll({}).then(function(results) {
+        db.Wit.findAll({
+            order: [['createdAt', 'DESC']] // Fetch newest first
+        }).then(function(results) {
             res.json(results);
+        }).catch(function(error) {
+            console.error("Error fetching wits:", error);
+            res.status(500).json({ error: "Failed to fetch wits" });
         });
     });
 
