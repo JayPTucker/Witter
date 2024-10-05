@@ -6,6 +6,8 @@ $(document).ready(function () {
     var usernameInputBox = document.getElementById("username-input")
     var passwordInputBox = document.getElementById("password-input")
 
+    var alertDiv = document.getElementById("login-failed-alert")
+
     document.getElementById("resetButton").addEventListener("click", function(event) {
         event.preventDefault();
         resetPassword();
@@ -13,6 +15,8 @@ $(document).ready(function () {
 
     loginForm.on("submit", function (event) {
         event.preventDefault();        
+
+        $(alertDiv).html("")
     
         var userData = {
             username: usernameOrEmailInput.val().trim(),
@@ -31,13 +35,21 @@ $(document).ready(function () {
             if (!userData.username) {
                 usernameInputBox.style.backgroundColor = "#a20000";
                 usernameInputBox.style.color = "white";
-                alert("Please type in a valid username.")
+                $(alertDiv).append(`
+                    <div class="alert alert-danger" role="alert">
+                      Please type in a valid Username.
+                    </div>
+                `);
             }
     
             if (!userData.password) {
                 passwordInputBox.style.backgroundColor = "#a20000";
                 passwordInputBox.style.color = "white";
-                alert("Please type in a valid password.")
+                $(alertDiv).append(`
+                    <div class="alert alert-danger" role="alert">
+                      Please type in a password.
+                    </div>
+                `);
             }
     
             // Handle the case where either username or password is missing
@@ -45,7 +57,6 @@ $(document).ready(function () {
         }
     
         loginUser(userData.username, userData.password);
-        usernameOrEmailInput.val("");
         passwordInput.val("");
     });
 
@@ -70,12 +81,25 @@ $(document).ready(function () {
                         })
                         .catch(function (err) {
                             console.log("Error during login:", err);
-                            alert("Password incorrect, please try again.");
+
+                            $(alertDiv).append(`
+                                <div class="alert alert-danger" role="alert">
+                                  Password is incorrect, please try again.
+                                </div>
+                              `);
+
+                            passwordInputBox.style.backgroundColor = "#a20000";
+                            passwordInputBox.style.color = "white";            
                         });
                 } else {
                     // Username does not exist, show an alert or handle it accordingly
-                    console.log("Username not found in the database");
-                    alert("Username not found");
+                    $(alertDiv).append(`
+                        <div class="alert alert-danger" role="alert">
+                          Username not found, please try again.
+                        </div>
+                    `);
+                    usernameInputBox.style.backgroundColor = "#a20000";
+                    usernameInputBox.style.color = "white";    
                 }
             },
             error: function (err) {
