@@ -75,6 +75,9 @@ jQuery(function() {
             try {
                 const data = await $.get("/api/all_wits");
                 if (data.length !== 0) {
+                    
+                    data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
                     for (var i = 0; i < data.length; i++) {
                         var likesArray;
                         try {
@@ -113,10 +116,10 @@ jQuery(function() {
                         // ===========================================
                         // FIND THE PROFILE PIC
                         // ===========================================
-                        async function handleProfilePicture() {
+                        async function handleProfilePicture(row, author) {
                             try {
                                 // Resolve the profile picture once
-                                const result = await findProfilePicture(data[i].author);
+                                const result = await findProfilePicture(author);
                         
                                 if (!result) {
                                     // console.log("No Profile Pic Set in the DB, using Default");
@@ -131,6 +134,10 @@ jQuery(function() {
                                 console.error("Error fetching profile picture:", error);
                             }
                         }
+
+                        // THIS FIXES PROFILE PICS NOT RENDERING PROPERLY
+                        await handleProfilePicture(row, data[i].author);
+
                         
                         // Call the function
                         handleProfilePicture();
