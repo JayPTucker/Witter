@@ -6,21 +6,12 @@ var compression = require('compression');
 var session = require("express-session");
 var passport = require("./config/passport");
 var path = require("path"); // Import the 'path' module
-var Sequelize = require('sequelize'); // Import Sequelize
+var db = require("./models"); // Your existing db model (with Sequelize setup)
 
 // =====================================
 
 // Sets up the Express app
 var PORT = process.env.PORT || 8080;
-
-// Set up Sequelize using JAWSDB_URL
-var sequelize = new Sequelize(process.env.JAWSDB_URL, {
-    dialect: 'mysql', // Use 'mysql' for JawsDB
-    dialectOptions: {
-        // Additional options if needed
-    }
-});
-
 var app = express();
 // =====================================
 
@@ -47,10 +38,32 @@ require("./routes/api-routes.js")(app);
 app.get('/verificationCode', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'verificationCode.html'));
 });
+
 // =====================================
 
-// Starts the server to begin Listening:
-sequelize.sync().then(function() {
+// Sequelize Configuration (Handle JAWSDB or local MySQL)
+let sequelize;
+
+if (process.env.JAWSDB_URL) {
+    // Use JAWSDB for production
+    sequelize = new db.Sequelize(process.env.JAWSDB_URL, {
+        dialect: 'mysql',
+        dialectOptions: {
+            // Additional options if needed
+        }
+    });
+} else {
+    // Use local MySQL for development
+    sequelize = new db.Sequelize(process.env.LOCAL_DB_NAME, process.env.LOCAL_DB_USER, process.env.LOCAL_DB_PASSWORD, {
+        host: process.env.LOCAL_DB_HOST || 'localhost',
+        dialect: 'mysql',
+        port: process.env.LOCAL_DB_PORT || 3306, // Default MySQL port
+        logging: console.log // Optional: log SQL queries for debugging
+    });
+}
+
+// Starts the server to begin listening
+db.sequelize.sync().then(function() {
     app.listen(PORT, function() {
         console.log("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
     });
