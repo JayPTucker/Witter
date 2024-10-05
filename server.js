@@ -29,6 +29,7 @@ app.use(session({ secret: process.env.SECRET, resave: true, saveUninitialized: t
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 // Routes
 require("./routes/html-routes.js")(app);
 require("./routes/api-routes.js")(app);
@@ -41,23 +42,27 @@ app.get('/verificationCode', (req, res) => {
 
 // Sequelize Configuration (Handle PostgreSQL)
 var sequelize;
-if (process.env.DATABASE_URL) {
-    // Use CloudCube (PostgreSQL) for production (deployed environment)
+if (process.env.NODE_ENV === 'production') {
+    // Use Heroku database settings for production
     sequelize = new db.Sequelize(process.env.DATABASE_URL, {
-        dialect: 'postgres', // Change to 'postgres' for PostgreSQL
+        dialect: 'postgres', // Use PostgreSQL dialect
         dialectOptions: {
-            // Additional options if needed
+            ssl: {
+                require: true,
+                rejectUnauthorized: false // Adjust based on your needs
+            }
         }
     });
 } else {
     // Use local MySQL for development
     sequelize = new db.Sequelize(process.env.LOCAL_DB_NAME, process.env.LOCAL_DB_USER, process.env.DB_PW, {
-        host: process.env.LOCAL_DB_HOST || 'localhost',
+        host: process.env.LOCAL_DB_HOST || '127.0.0.1',
         dialect: 'mysql',
-        port: process.env.LOCAL_DB_PORT || 3306, // Default MySQL port
-        logging: console.log // Optional: log SQL queries for debugging
+        port: process.env.LOCAL_DB_PORT || 3306
     });
 }
+
+
 
 // Starts the server to begin Listening:
 db.sequelize.sync().then(function() {
