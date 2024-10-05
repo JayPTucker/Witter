@@ -2,22 +2,32 @@
 require("dotenv").config();
 
 var express = require("express");
-var compression = require('compression')
+var compression = require('compression');
 var session = require("express-session");
 var passport = require("./config/passport");
 var path = require("path"); // Import the 'path' module
+var Sequelize = require('sequelize'); // Import Sequelize
+
 // =====================================
 
 // Sets up the Express app
 var PORT = process.env.PORT || 8080;
-var db = require("./models");
+
+// Set up Sequelize using JAWSDB_URL
+var sequelize = new Sequelize(process.env.JAWSDB_URL, {
+    dialect: 'mysql', // Use 'mysql' for JawsDB
+    dialectOptions: {
+        // Additional options if needed
+    }
+});
+
 var app = express();
 // =====================================
 
 app.use(compression());
 
 // Sets up the Express app to handle data parsing
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // =====================================
 
@@ -40,9 +50,11 @@ app.get('/verificationCode', (req, res) => {
 // =====================================
 
 // Starts the server to begin Listening:
-db.sequelize.sync().then(function() {
+sequelize.sync().then(function() {
     app.listen(PORT, function() {
         console.log("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
     });
+}).catch(err => {
+    console.error('Unable to connect to the database:', err);
 });
 // =====================================
