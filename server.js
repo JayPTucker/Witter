@@ -5,8 +5,8 @@ var express = require("express");
 var compression = require('compression');
 var session = require("express-session");
 var passport = require("./config/passport");
-var path = require("path"); // Import the 'path' module
-var db = require("./models"); // Your existing db model (with Sequelize setup)
+var path = require("path");
+var db = require("./models");
 
 // =====================================
 
@@ -26,7 +26,11 @@ app.use(express.json());
 app.use(express.static("public"));
 // =====================================
 
-app.use(session({ secret: process.env.SECRET, resave: true, saveUninitialized: true }));
+app.use(session({ 
+    secret: process.env.SECRET, 
+    resave: true, 
+    saveUninitialized: true 
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -41,11 +45,11 @@ app.get('/verificationCode', (req, res) => {
 
 // =====================================
 
-// Sequelize Configuration (Handle JAWSDB or local MySQL)
+// Sequelize Configuration (Handle CloudCube or local MySQL)
 let sequelize;
 
 if (process.env.CLOUDCUBE_URL) {
-    // Use JAWSDB for production
+    // Use CloudCube for production
     sequelize = new db.Sequelize(process.env.CLOUDCUBE_URL, {
         dialect: 'mysql',
         dialectOptions: {
@@ -65,9 +69,10 @@ if (process.env.CLOUDCUBE_URL) {
 // Starts the server to begin listening
 db.sequelize.sync().then(function() {
     app.listen(PORT, function() {
-        console.log("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
+        console.log(`==> 🌎  Listening on port ${PORT}. Visit http://localhost:${PORT}/ in your browser.`);
     });
 }).catch(err => {
     console.error('Unable to connect to the database:', err);
 });
+
 // =====================================
