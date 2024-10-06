@@ -1,13 +1,12 @@
 // Dependencies
 var db = require("../models");
 var passport = require("../config/passport.js");
-const multer = require("multer");
-const upload = multer({ dest: "public/uploads/" });
+const upload = require("../config/multerConfig"); 
 const nodemailer = require('nodemailer');
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require("bcryptjs");
-const app = express();
+const app = express()
 
 // Dummy database
 const users = [];
@@ -446,34 +445,38 @@ module.exports = function(app) {
         });
     });
 
-    // ============================================================
-    // FETCH ALL WITS BY USER ROUTE FOR IMAGES  
-    // ============================================================
-    app.post("/api/witter", upload.single("image"), function (req, res) {
-        console.log("Received Data:", req.body);  // Log other form data
-        console.log("Received File:", req.file);  // Log the file data
+// ============================================================
+// FETCH ALL WITS BY USER ROUTE FOR IMAGES  
+// ============================================================
+app.post("/api/witter", upload.single("image"), function (req, res) {
+    console.log("Received Data:", req.body);  // Log other form data
+    console.log("Received File:", req.file);  // Log the file data
     
-        const { author, body } = req.body;
-        const image = req.file;
-    
-        console.log("Author:", author);
-        console.log("Body:", body);
-        console.log("Image:", image);
-    
-        db.Wit.create({
-            author: author,
-            body: body,
-            image: image ? image.filename : null // Store the filename in the database if it exists
-        })
-        .then(function (results) {
-            console.log("Wit Created:", results);
-            res.json(results); // Send the created wit back as JSON
-        })
-        .catch(function (err) {
-            console.log("Error creating wit:", err);
-            res.status(401).json(err);
-        });
+    const { author, body } = req.body;
+    const image = req.file;
+
+    // Ensure the correct URL is used for S3, and handle local storage gracefully (if applicable)
+    const imageUrl = image && image.location ? image.location : null;
+
+    console.log("Author:", author);
+    console.log("Body:", body);
+    console.log("Image URL:", imageUrl);  // S3 URL
+
+    db.Wit.create({
+        author: author,
+        body: body,
+        image: imageUrl  // Save only the S3 URL (or null if no image was uploaded)
+    })
+    .then(function (results) {
+        console.log("Wit Created:", results);
+        res.json(results); // Send the created wit back as JSON
+    })
+    .catch(function (err) {
+        console.log("Error creating wit:", err);
+        res.status(401).json(err);
     });
+});
+
 
     // ============================================================
     // FETCH TOP TRENDING WITS ROUTE 
@@ -609,7 +612,7 @@ module.exports = function(app) {
             // Update the profile picture in the database
             await db.User.update(
                 {
-                    profilePicture: profilePicture ? profilePicture.filename : null
+                    profilePicture: profilePicture ? (profilePicture.location || profilePicture.filename) : null
                 },
                 {
                     where: {
@@ -631,6 +634,7 @@ module.exports = function(app) {
             res.status(401).json(err);
         }
     });
+
     // ============================================================
     // FIND PROFILE PIC FOR WITTER.JS PAGE ROUTE
     // ============================================================

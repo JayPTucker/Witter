@@ -26,8 +26,8 @@ jQuery(function() {
                 rightProfileMenu.append(`<img class="currentProfilePic" src="/img/defaultProfilePic.png"></img>`);
             } else {
                 // console.log("Profile Pic is Set in the DB");
-                row.append(`<img class="Wit-profilePic" src="/uploads/${newWitProfilePic}"></img>`);
-                rightProfileMenu.append(`<img class="currentProfilePic" src="/uploads/${newWitProfilePic}"></img>`);
+                row.append(`<img class="Wit-profilePic" src="${newWitProfilePic}"></img>`);
+                rightProfileMenu.append(`<img class="currentProfilePic" src="${newWitProfilePic}"></img>`);
             }
         }
 
@@ -119,7 +119,7 @@ jQuery(function() {
                                 if (!result) {
                                     row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png"></img>`);
                                 } else {
-                                    row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/uploads/${result}"></img>`);
+                                    row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="${result}"></img>`);
                                 }
                             } catch (error) {
                                 console.error("Error fetching profile picture:", error);
@@ -147,8 +147,9 @@ jQuery(function() {
                             handleDeleteButtonClick(this.dataset.witId, user.username, row);
                         });
 
+                        // Update to use the S3 URL directly
                         if (data[i].image) {
-                            var imageUrl = `/uploads/${data[i].image}`;
+                            var imageUrl = data[i].image;  // Now using the full S3 URL from the database
                             row.find(".imgAttachmentDiv").html(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
                         }
                     }
@@ -222,7 +223,7 @@ jQuery(function() {
                         if (!profilePic) {
                             row.find('#T-witProfilePic').html(`<img class="T-Wit-profilePic" src="/img/defaultProfilePic.png"></img>`);
                         } else {
-                            row.find('#T-witProfilePic').html(`<img class="T-Wit-profilePic" src="/uploads/${profilePic}"></img>`);
+                            row.find('#T-witProfilePic').html(`<img class="T-Wit-profilePic" src="${profilePic}"></img>`);
                         }
 
                         // Attach click event handler to the like button
@@ -234,8 +235,8 @@ jQuery(function() {
                         // ======================================
                         // ADDING IMAGES TO THE PAGE
                         if (data[i].image) {
-                            // Assuming images are stored in the "public/uploads/" directory
-                            var imageUrl = `/uploads/${data[i].image}`;
+                            
+                            var imageUrl = data[i].image;
                             row.find(".imgAttachmentDiv").html(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
                         }
 
