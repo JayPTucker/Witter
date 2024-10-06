@@ -1,5 +1,6 @@
 jQuery(function() {
     $.get("/api/user_data").then(function(user) {
+
         $(".member-name").text(user.username);
         var newWitForm = $("form.new-wit");
         var authorInput = user.username;
@@ -7,6 +8,11 @@ jQuery(function() {
         var imageInput = $("#image-input");
         var newWitProfilePic = user.profilePicture;
         var imageInputPreview = $("#image-preview")
+
+        let offset = 0;  // Start at the first page
+        const limit = 10;  // Load 10 wits at a time
+        let loading = false;  // To prevent multiple calls at once
+        let allWitsLoaded = false;  // Flag to check if all wits are loaded
 
         // =============================================
         // LOAD CURRENT PROFILE PIC
@@ -69,14 +75,20 @@ jQuery(function() {
             }
         });
 
+
         // =========================
-        // LOADING ALL WITS
+        // LOAD WITS FUNCTION (WITH PAGINATION)
         // =========================
         async function loadWits() {
+            if (loading || allWitsLoaded) return;  // Prevent loading more while a request is in progress
+            loading = true;
+
             try {
-                const data = await $.get("/api/all_wits");
-                if (data.length !== 0) {
-                    
+                const data = await $.get(`/api/all_wits?limit=${limit}&offset=${offset}`);
+                
+                if (data.length > 0) {
+                    offset += data.length;  // Increment the offset by the number of wits loaded
+
                     for (var i = 0; i < data.length; i++) {
                         var likesArray;
                         try {
@@ -84,6 +96,7 @@ jQuery(function() {
                         } catch (error) {
                             likesArray = [];
                         }
+
                         var likesCount = likesArray.length;
 
                         var row = $(`<div class="wit-row col-md-12" id="wit-${data[i].id}"></div>`);
@@ -109,7 +122,7 @@ jQuery(function() {
                             </div>
                         `);
 
-                        // Appending the row (instead of prepending)
+                        // Appending the row
                         $("#wits-area").append(row);
 
                         // FIND THE PROFILE PIC - Await the result to ensure proper order
@@ -135,19 +148,41 @@ jQuery(function() {
                             handleDeleteButtonClick(this.dataset.witId, user.username, row);
                         });
 
-                        // Update to use the S3 URL directly
                         if (data[i].image) {
-                            var imageUrl = data[i].image;  // Now using the full S3 URL from the database
+                            var imageUrl = data[i].image;
                             row.find(".imgAttachmentDiv").html(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
                         }
                     }
                 } else {
-                    console.log("No wits found");
+                    allWitsLoaded = true;  // No more wits to load
                 }
             } catch (error) {
                 console.error("Error loading wits:", error);
+            } finally {
+                loading = false;  // Allow further loading
             }
         }
+
+        // =========================
+        // IMPROVED INFINITE SCROLL HANDLER
+        // =========================
+        $(window).on("scroll", function () {
+            const scrollPosition = $(window).scrollTop() + $(window).height();
+            const documentHeight = $(document).height();
+            // console.log("Scroll Position:", scrollPosition);
+            // console.log("Document Height:", documentHeight);    
+
+            // Trigger loadWits if scrolled near the bottom of the page (within 100px)
+            if (scrollPosition >= documentHeight - -700 && !loading && !allWitsLoaded) {
+                // Chose 700 cause it's the closest to the bottom of the page.
+                loadWits();  // Load more wits when scrolling near the bottom
+            }
+        });
+
+        // Load the initial batch of wits when the page loads
+        $(document).ready(function () {
+            loadWits();  // Load the first batch of wits
+        });
 
         // SEPARATE FUNCTION FOR LOADING PROFILE PICS SO THEY ARE NOT SKIPPED
         async function handleProfilePicture(wit, row) {
@@ -161,10 +196,7 @@ jQuery(function() {
             } catch (error) {
                 console.error("Error fetching profile picture:", error);
             }
-        }
-
-        loadWits();
-
+        };
 
     // ========================================
     // LOADING TRENDING WITS
@@ -289,6 +321,8 @@ jQuery(function() {
             bodyInput.val("");
             imageInput.val(""); // Clear the file input
             imageInputPreview.attr("src", "").hide()
+
+            
         }
 
         return false; // Add this line to prevent default form submission behavior

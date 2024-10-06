@@ -431,19 +431,28 @@ module.exports = function(app) {
         }
     });
 
-    // ============================================================
-    // FETCH ALL WITS ROUTE   
-    // ============================================================
-    app.get("/api/all_wits", function(req, res) {
-        db.Wit.findAll({
-            order: [['createdAt', 'DESC']] // Fetch newest first
-        }).then(function(results) {
-            res.json(results);
-        }).catch(function(error) {
-            console.error("Error fetching wits:", error);
-            res.status(500).json({ error: "Failed to fetch wits" });
+        // ============================================================
+        // FETCH ALL WITS ROUTE WITH PAGINATION
+        // ============================================================
+        app.get("/api/all_wits", function(req, res) {
+            // Get limit and offset from the query parameters
+            const limit = parseInt(req.query.limit) || 10;  // Number of wits to load per request
+            const offset = parseInt(req.query.offset) || 0;  // Offset to load the next batch
+
+            db.Wit.findAll({
+                order: [['createdAt', 'DESC']],  // Fetch newest first
+                limit: limit,                    // Limit number of wits to return
+                offset: offset                   // Skip records for pagination
+            })
+            .then(function(results) {
+                res.json(results);
+            })
+            .catch(function(error) {
+                console.error("Error fetching wits:", error);
+                res.status(500).json({ error: "Failed to fetch wits" });
+            });
         });
-    });
+
 
 // ============================================================
 // FETCH ALL WITS BY USER ROUTE FOR IMAGES  
