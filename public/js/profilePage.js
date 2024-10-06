@@ -14,7 +14,7 @@ jQuery(function() {
             row.append(`<img class="currentProfilePic" src="/img/defaultProfilePic.png"></img>`);
         } else {
             console.log("Profile Pic is Set in the DB");
-            var profilePicElement = $(`<p>Profile Picture:</p><img class="currentProfilePic" src="/uploads/${data.profilePicture}">`);
+            var profilePicElement = $(`<p>Profile Picture:</p><img class="currentProfilePic" src="${data.profilePicture}">`);
             row.append(profilePicElement);
         }
 
@@ -40,7 +40,7 @@ jQuery(function() {
                         alert("Profile Picture changed successfully");
         
                         // Update the profile picture on the page without refreshing
-                        var newProfilePicUrl = `/uploads/${imageInput[0].files[0].name}`;
+                        var newProfilePicUrl = `${imageInput[0].files[0].name}`;
         
                         // Update the profile picture on the page
                         profilePicElement.find("img").attr("src", newProfilePicUrl + `?t=${new Date().getTime()}`);
