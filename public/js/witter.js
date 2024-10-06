@@ -112,20 +112,8 @@ jQuery(function() {
                         // Appending the row (instead of prepending)
                         $("#wits-area").append(row);
 
-                        // FIND THE PROFILE PIC
-                        async function handleProfilePicture() {
-                            try {
-                                const result = await findProfilePicture(data[i].author);
-                                if (!result) {
-                                    row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png"></img>`);
-                                } else {
-                                    row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="${result}"></img>`);
-                                }
-                            } catch (error) {
-                                console.error("Error fetching profile picture:", error);
-                            }
-                        }
-                        handleProfilePicture();
+                        // FIND THE PROFILE PIC - Await the result to ensure proper order
+                        await handleProfilePicture(data[i], row);
 
                         row.find('.wit-like-btn').on('click', function () {
                             likePost(this.dataset.witId, user.username, row);
@@ -158,6 +146,20 @@ jQuery(function() {
                 }
             } catch (error) {
                 console.error("Error loading wits:", error);
+            }
+        }
+
+        // SEPARATE FUNCTION FOR LOADING PROFILE PICS SO THEY ARE NOT SKIPPED
+        async function handleProfilePicture(wit, row) {
+            try {
+                const result = await findProfilePicture(wit.author);
+                if (!result) {
+                    row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png"></img>`);
+                } else {
+                    row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="${result}"></img>`);
+                }
+            } catch (error) {
+                console.error("Error fetching profile picture:", error);
             }
         }
 
