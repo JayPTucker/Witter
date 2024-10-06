@@ -2,22 +2,22 @@
 require("dotenv").config();
 
 var express = require("express");
-var compression = require('compression')
+var compression = require('compression');
 var session = require("express-session");
 var passport = require("./config/passport");
 var path = require("path"); // Import the 'path' module
-// =====================================
 
+// =====================================
 // Sets up the Express app
 var PORT = process.env.PORT || 8080;
-var db = require("./models");
+var db = require("./models"); // Sequelize (make sure models/index.js is using process.env vars for MySQL)
 var app = express();
 // =====================================
 
 app.use(compression());
 
 // Sets up the Express app to handle data parsing
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // =====================================
 
@@ -25,7 +25,12 @@ app.use(express.json());
 app.use(express.static("public"));
 // =====================================
 
-app.use(session({ secret: process.env.SECRET, resave: true, saveUninitialized: true }));
+// Session handling and Passport.js initialization
+app.use(session({
+    secret: process.env.SECRET,
+    resave: true,
+    saveUninitialized: true
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -45,4 +50,3 @@ db.sequelize.sync().then(function() {
         console.log("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
     });
 });
-// =====================================
