@@ -103,7 +103,7 @@ jQuery(function() {
 
                         row.append(`
                             <div class="row">
-                                <div class="col-md-2" id="witProfilePic"></div>
+                                <div class="col-md-2" id="witProfilePic-${data[i].id}"></div> <!-- Add wit.id to make it dynamic -->
                                 <div class="col-md-9">
                                     <h4 class="wit-author">@${data[i].author}</h4>
                                     <p class="wit-date">${moment(data[i].createdAt).format("h:mma on dddd")} </p>
@@ -121,6 +121,7 @@ jQuery(function() {
                                 </div>
                             </div>
                         `);
+
 
                         // Appending the row
                         $("#wits-area").append(row);
@@ -173,7 +174,7 @@ jQuery(function() {
             // console.log("Document Height:", documentHeight);    
 
             // Trigger loadWits if scrolled near the bottom of the page (within 100px)
-            if (scrollPosition >= documentHeight - -700 && !loading && !allWitsLoaded) {
+            if (scrollPosition >= documentHeight - -850 && !loading && !allWitsLoaded) {
                 // Chose 700 cause it's the closest to the bottom of the page.
                 loadWits();  // Load more wits when scrolling near the bottom
             }
@@ -184,19 +185,39 @@ jQuery(function() {
             loadWits();  // Load the first batch of wits
         });
 
+        // Function to find and return the profile picture URL for an author
+    function findProfilePicture(author) {
+        return new Promise((resolve, reject) => {
+            // Fetch the profile picture for the author
+            $.get(`/api/profilePicture/${author}`)
+            .then(response => {
+                resolve(response.profilePicture);
+            })
+            .catch(error => {
+                console.log("Error fetching profile picture:", error);
+                reject(error);
+            });
+        });
+    }
+
         // SEPARATE FUNCTION FOR LOADING PROFILE PICS SO THEY ARE NOT SKIPPED
         async function handleProfilePicture(wit, row) {
             try {
-                const result = await findProfilePicture(wit.author);
-                if (!result) {
-                    row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png"></img>`);
+                const profilePic = await findProfilePicture(wit.author);  // Wait for the profile picture to be fetched
+                console.log("Profile picture fetched:", profilePic);  // Debugging log to check if the profile picture is correct
+                
+                if (profilePic) {
+                    // Update the correct row's profile picture using the dynamic id
+                    row.find(`#witProfilePic-${wit.id}`).html(`<img class="Wit-profilePic" src="${profilePic}" alt="Profile Picture">`);
                 } else {
-                    row.find('#witProfilePic').html(`<img class="Wit-profilePic" src="${result}"></img>`);
+                    row.find(`#witProfilePic-${wit.id}`).html(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png" alt="Default Profile Picture">`);
                 }
             } catch (error) {
                 console.error("Error fetching profile picture:", error);
+                row.find(`#witProfilePic-${wit.id}`).html(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png" alt="Default Profile Picture">`);
             }
-        };
+        }
+        
 
     // ========================================
     // LOADING TRENDING WITS
@@ -302,70 +323,132 @@ jQuery(function() {
     // ==================================================
 
     newWitForm.on("submit", function(event) {
-    event.preventDefault();
-
-    if (bodyInput.val().trim() === "" && imageInput[0].files[0] == null) {
-        alert("Please enter something into the text box or choose an image.")
-        } else {        
-            // Create FormData object
-            var formData = new FormData();
-            formData.append("author", authorInput);
-            formData.append("body", bodyInput.val().trim());
-
-            // Get the selected file from the input
-            if (imageInput[0].files.length > 0) {
-                formData.append("image", imageInput[0].files[0]);
-            }
-
-            createWitFunction(formData);
-            bodyInput.val("");
-            imageInput.val(""); // Clear the file input
-            imageInputPreview.attr("src", "").hide()
-
-            
+        event.preventDefault();  // Prevent the form from submitting the traditional way
+    
+        // Check if the body and image inputs are empty
+        if (bodyInput.val().trim() === "" && imageInput[0].files[0] == null) {
+            alert("Please enter something into the text box or choose an image.");
+            return;
+        } 
+    
+        // Create FormData to handle the text and image
+        var formData = new FormData();
+        formData.append("author", authorInput);
+        formData.append("body", bodyInput.val().trim());
+    
+        if (imageInput[0].files.length > 0) {
+            formData.append("image", imageInput[0].files[0]);  // Append image if available
         }
-
-        return false; // Add this line to prevent default form submission behavior
+    
+        // Submit the form data via AJAX
+        createWitFunction(formData);
+    
+        // Clear input fields after submission
+        bodyInput.val("");
+        imageInput.val(""); // Clear the image input
+        imageInputPreview.attr("src", "").hide();  // Clear the image preview
+    
+        return false;
     });
+    
 
     function createWitFunction(formData) {
         $.ajax({
-            url: "/api/witter",
+            url: "/api/witter",  // Server endpoint to post a new wit
             type: "POST",
             data: formData,
-            processData: false,
-            contentType: false,
+            processData: false,  // Tell jQuery not to process the data
+            contentType: false,  // Tell jQuery not to set content-type
             success: function (response) {    
-                // Clears out page so Wits are no doubled
-                $("#wits-area").html("")
-
-                // Reload all wits to include the new one
-                loadWits();
+                appendNewWitToDOM(response);  // Append the newly created wit to the DOM
             },
             error: function (err) {
-                console.log(err.responseJSON);
-                console.log(500);
+                console.log("Error posting new wit:", err.responseJSON);
             }
         });
-    }    
-    });
+    }
+    
 
 // ==================================================
+function appendNewWitToDOM(newWit) {
+    // Create an empty likes array if no likes
+    var likesArray = [];
+    var likesCount = 0;
+
+    // Create the new wit row
+    var row = $(`<div class="wit-row col-md-12" id="wit-${newWit.id}"></div>`);
+
+    row.append(`
+        <div class="row">
+            <div class="col-md-2" id="witProfilePic-${newWit.id}"></div>  <!-- Profile pic placeholder -->
+            <div class="col-md-9">
+                <h4 class="wit-author">@${newWit.author}</h4>
+                <p class="wit-date">${moment(newWit.createdAt).format("h:mma on dddd")} </p>
+                <p class="wit-body">${newWit.body}</p>
+                <p class="imgAttachmentDiv"></p>
+                <button type="button" data-wit-id="${newWit.id}" class="wit-like-btn wit-like-btn-${newWit.id} btn btn-default btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+                        <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+                    </svg>
+                    ${likesCount}
+                </button>
+            </div>
+            <div class="col-md-1">
+                <div class="dropdown-container"></div>
+            </div>
+        </div>
+    `);
+
+    // Append the new wit row to the top of the wits area
+    $("#wits-area").prepend(row);
+
+    // Fetch the profile picture and update the DOM
+    handleProfilePicture(newWit, row);
+
+    // Attach event listener to the like button
+    row.find('.wit-like-btn').on('click', function () {
+        likePost(this.dataset.witId, user.username, row);
+    });
+
+    // If the new wit has an image, display it
+    if (newWit.image) {
+        var imageUrl = newWit.image;
+        console.log("Wit image URL:", imageUrl);  // Debugging log for the image URL
+        row.find(".imgAttachmentDiv").html(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
+    }
+}
+
 // ==================================================
+
+async function handleProfilePicture(wit, row) {
+    try {
+        const profilePic = await findProfilePicture(wit.author);  // Wait for the profile picture to be fetched
+        console.log("Profile picture fetched:", profilePic);  // Debugging log to check if the profile picture is correct
+        
+        if (profilePic) {
+            row.find(`#witProfilePic-${wit.id}`).html(`<img class="Wit-profilePic" src="${profilePic}" alt="Profile Picture">`);
+        } else {
+            row.find(`#witProfilePic-${wit.id}`).html(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png" alt="Default Profile Picture">`);
+        }
+    } catch (error) {
+        console.error("Error fetching profile picture:", error);
+        row.find(`#witProfilePic-${wit.id}`).html(`<img class="Wit-profilePic" src="/img/defaultProfilePic.png" alt="Default Profile Picture">`);
+    };
+};
 
 function findProfilePicture(author) {
     return new Promise((resolve, reject) => {
         // Fetch the profile picture for the author
         $.get(`/api/profilePicture/${author}`)
-            .then(response => {
-                resolve(response.profilePicture);
-            })
-            .catch(error => {
-                console.log("Error fetching profile picture:", error);
-                reject(error);
-            });
+        .then(response => {
+            resolve(response.profilePicture);
+        })
+        .catch(error => {
+            console.log("Error fetching profile picture:", error);
+            reject(error);
+        });
     });
-}
+};
 
 function likePost(witId, username) {
     // console.log("Like button has been pressed");
@@ -400,8 +483,8 @@ function likePost(witId, username) {
         error: function(error) {
             console.error('Error within likePost function:', error)
         }
-    })
-}
+    });
+};
 
 function renderDropDown(witData, row) {
     // console.log("Rendering dropdown for wit:", witData);
@@ -458,8 +541,9 @@ function handleDeleteButtonClick(witData, username) {
     if (userConfirmation) {
         // User clicked "OK," proceed with the delete action
         console.log("User confirmed deletion");
-        window.location.reload();
-        // Call the function to handle the delete button click
+        
+        $(`#wit-${witData}`).remove();
+        alert("Wit has been deleted successfully");
     } else {
         // User clicked "Cancel" or closed the dialog, do nothing or provide feedback
         console.log("User canceled deletion");
@@ -507,8 +591,9 @@ function handleEditButtonClick(witData, username) {
         data: {editPrompt},
         success: function (response) {
             console.log("Wit has been edited successfully")
-            alert("Wit has been edited successfully")
-            window.location.reload();
+            
+            $(`#wit-${witData}`).find(".wit-body").text(editPrompt);
+            alert("Wit has been edited successfully");
         }, 
         error: function(error) {
             console.error('Error within handleEditButton function:', error)
@@ -559,4 +644,5 @@ jQuery(function() {
         alert("Unable to retrieve your location.");
         $("#temp").text("Location access denied. Cannot fetch weather.");
     }  
+    });
 });
