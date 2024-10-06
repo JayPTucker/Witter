@@ -115,6 +115,12 @@ input:focus {
   border: 1px solid rgb(50, 50, 50);
 }
 
+.wit-img-div {
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 0px !important;
+}
+
 .new-wit {
   transition: all 0.3s ease-in-out;
   margin-bottom: 0px !important; /* to fix random spacing issue */
@@ -331,4 +337,236 @@ input:focus {
 
 .T-wit-like-btn:hover {
   background-color: rgb(113, 113, 113) !important;
+}
+
+
+
+@media only screen and (max-width: 600px) {
+  .pageLogo {
+      width: 60%; /* Make logo larger for visibility on mobile */
+      margin-bottom: 10px;
+  }
+
+  .menu-left-col p, button{
+    transform: scale(0.7);
+  }
+
+  .menu-left-col {
+    padding: 0px !important;
+
+  }
+
+  .home-button, .profile-button, .logout-button {
+    width: 150px !important;
+    margin-bottom: 2px;
+    margin-left: -10px;
+  }
+
+  .witterTitle {
+      font-size: 35px; /* Reduce title size */
+  }
+
+  .currentProfilePic {
+      width: 80px;
+      height: 80px;
+  }
+
+  .wit-profilePic {
+    float: left !important;
+  }
+
+  .wit-input {
+      height: 100px; /* Shorter input area for mobile */
+      font-size: 18px;
+  }
+
+  .image-icon {
+      width: 25px; /* Slightly smaller icon */
+      height: 25px;
+  }
+
+  .wit-button {
+      padding: 3px 10px; /* Reduce padding for smaller buttons */
+      font-size: 14px;
+  }
+
+  /* Reduce padding and font size for wits */
+  .wit-row {
+      padding: 0px 0px !important;
+      font-size: 14px;
+  }
+
+  .wit-body {
+      font-size: 16px;
+      margin: -10px 0px 5px 0px;
+  }
+
+  .wit-image {
+      max-width: 30%; /* Make images responsive and take more space */
+      height: auto;
+  }
+
+  .wit-profilePic {
+      width: 60px; /* Smaller profile picture for mobile */
+      height: 60px;
+      margin-top: 10px;
+  }
+
+  .wit-like-btn {
+      font-size: 12px; /* Reduce button font size */
+      padding: 5px;
+  }
+
+  /* Trending section adjustments */
+  .trending-section {
+      padding: 8px;
+      font-size: 14px;
+  }
+
+  .trending-title {
+      font-size: 20px;
+  }
+
+  .T-wit-profilePic {
+      width: 40px;
+      height: 40px;
+  }
+
+  .T-wit-author {
+      font-size: 12px;
+  }
+
+  .T-wit-body {
+      font-size: 10px;
+  }
+}
+
+
+@media only screen and (min-width: 601px) and (max-width: 992px) {
+  .pageLogo {
+      width: 35%;
+  }
+
+  .witterTitle {
+      font-size: 45px;
+  }
+
+  .wit-input {
+      height: 120px;
+      font-size: 22px;
+  }
+
+  .wit-body {
+      font-size: 18px;
+  }
+
+  .wit-image {
+      max-width: 50%;
+      height: auto;
+  }
+
+  .wit-profilePic {
+      width: 60px;
+      height: 60px;
+  }
+
+  .wit-like-btn {
+      font-size: 14px;
+      padding: 8px;
+  }
+
+  .T-wit-profilePic {
+      width: 50px;
+      height: 50px;
+  }
+
+  .T-wit-author {
+      font-size: 14px;
+  }
+
+  .T-wit-body {
+      font-size: 12px;
+  }
+}
+
+@media only screen and (min-width: 481px) and (max-width: 767px) and (orientation: landscape) {
+  .wit-row {
+      flex-direction: row;
+      padding: 5px;
+  }
+
+  .wit-author, .wit-date {
+      text-align: left;
+  }
+
+  .wit-profilePic {
+      width: 50px;
+      height: 50px;
+  }
+
+  .wit-image {
+      width: 70%;
+      height: auto;
+  }
+}
+
+@media only screen and (min-width: 993px) {
+  .pageLogo {
+      width: 23%;
+  }
+
+  .witterTitle {
+      font-size: 55px;
+  }
+
+  .wit-input {
+      height: 150px;
+      font-size: 25px;
+  }
+
+  .wit-row {
+      padding: 15px;
+  }
+
+  .wit-profilePic {
+    width: 80px;
+    height: 80px;
+  }
+
+  .wit-image {
+      max-width: 30vh;
+  }
+
+  .wit-like-btn {
+      font-size: 16px;
+      padding: 10px;
+  }
+}
+
+@media only screen and (min-width: 1800px) {
+  .pageLogo {
+      width: 20%;
+  }
+
+  .witterTitle {
+      font-size: 65px;
+  }
+
+  .wit-body {
+      font-size: 25px;
+  }
+
+  .wit-profilePic {
+      width: 100px;
+      height: 100px;
+  }
+
+  .wit-image {
+      max-width: 40vh;
+  }
+
+  .wit-like-btn {
+      font-size: 18px;
+      padding: 12px;
+  }
 }

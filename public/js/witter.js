@@ -103,7 +103,7 @@ jQuery(function() {
 
                         row.append(`
                             <div class="row">
-                                <div class="col-md-2" id="witProfilePic-${data[i].id}"></div> <!-- Add wit.id to make it dynamic -->
+                                <div class="col-md-2 wit-img-div" id="witProfilePic-${data[i].id}"></div> <!-- Add wit.id to make it dynamic -->
                                 <div class="col-md-9">
                                     <h4 class="wit-author">@${data[i].author}</h4>
                                     <p class="wit-date">${moment(data[i].createdAt).format("h:mma on dddd")} </p>
@@ -380,7 +380,7 @@ function appendNewWitToDOM(newWit) {
 
     row.append(`
         <div class="row">
-            <div class="col-md-2" id="witProfilePic-${newWit.id}"></div>  <!-- Profile pic placeholder -->
+            <div class="col-md-2 wit-img-div" id="witProfilePic-${newWit.id}"></div>  <!-- Profile pic placeholder -->
             <div class="col-md-9">
                 <h4 class="wit-author">@${newWit.author}</h4>
                 <p class="wit-date">${moment(newWit.createdAt).format("h:mma on dddd")} </p>
