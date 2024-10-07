@@ -357,27 +357,61 @@ input:focus {
   }
 
   .home-button, .profile-button, .logout-button {
-    width: 150px !important;
+    width: 130px !important;
     margin-bottom: 2px;
     margin-left: -10px;
+    font-size: 18px;
   }
 
   .witterTitle {
       font-size: 35px; /* Reduce title size */
   }
 
+  /* PROFILE PIC TOP LEFT */
   .currentProfilePic {
-      width: 80px;
-      height: 80px;
+      width: 65px;
+      height: 65px;
+  }
+
+  .logout-text {
+    font-size: 20px !important;
+    margin: 0px !important;
+    float: left !important;
   }
 
   .wit-profilePic {
     float: left !important;
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  #temp {
+    font-size: 15px;
+  }
+
+  .pageLogo {
+    margin: 0px !important;
+  }
+  .wittertitle {
+    font-size: 24px;
+  }
+
+
+  .wit-img-div {
+    margin: 0px 15px !important;
+  }
+
+  .wit-author {
+    font-size: 17px;
+  }
+
+  #newWit-ProfilePic {
+    padding: 0px !important;
   }
 
   .wit-input {
       height: 100px; /* Shorter input area for mobile */
-      font-size: 18px;
+      font-size: 15px !important;
   }
 
   .image-icon {
