@@ -42,19 +42,16 @@ jQuery(function() {
 
         // =============================================
 
-        // =========================
-        // LOAD WITS FUNCTION (WITH PAGINATION)
-        // =========================
         async function loadWits() {
             if (loading || allWitsLoaded) return;  // Prevent loading more while a request is in progress
             loading = true;
-
+        
             try {
                 const data = await $.get(`/api/all_wits?limit=${limit}&offset=${offset}`);
-                
+        
                 if (data.length > 0) {
                     offset += data.length;  // Increment the offset by the number of wits loaded
-
+        
                     for (var i = 0; i < data.length; i++) {
                         var likesArray;
                         try {
@@ -62,16 +59,24 @@ jQuery(function() {
                         } catch (error) {
                             likesArray = [];
                         }
-
+        
                         var likesCount = likesArray.length;
-
+        
+                        // Create the wit row and include the popup for followers
                         var row = $(`<div class="wit-row col-md-12" id="wit-${data[i].id}"></div>`);
-
+        
                         row.append(`
                             <div class="row">
-                                <div class="col-md-2 wit-img-div" id="witProfilePic-${data[i].id}"></div> <!-- Add wit.id to make it dynamic -->
+                                <div class="col-md-2 wit-img-div" id="witProfilePic-${data[i].id}"></div>
                                 <div class="col-md-9">
-                                    <h4 class="wit-author">@${data[i].author}</h4>
+                                    <h4 class="wit-author" data-username="${data[i].author}">@${data[i].author}</h4>
+                                    <!-- Popup container for followers, hidden initially -->
+                                    <div class="popup" style="display: none;">
+                                        <div class="followers-list">
+                                            <p>Followers: ${data[i].followers ? data[i].followers.length : 0}</p>
+                                            <button class="follow-btn">Follow</button>
+                                        </div>
+                                    </div>
                                     <p class="wit-date">${moment(data[i].createdAt).format("h:mma on dddd")} </p>
                                     <p class="wit-body">${data[i].body}</p>
                                     <p class="imgAttachmentDiv"></p>
@@ -87,34 +92,40 @@ jQuery(function() {
                                 </div>
                             </div>
                         `);
-
-
+                                
                         // Appending the row
                         $("#wits-area").append(row);
-
+        
                         // FIND THE PROFILE PIC - Await the result to ensure proper order
                         await handleProfilePicture(data[i], row);
-
+        
+                        // Handle like functionality
                         row.find('.wit-like-btn').on('click', function () {
                             likePost(this.dataset.witId, user.username, row);
                         });
-
+        
                         const lowercaseUsername = user.username.toLowerCase();
                         if (data[i].likes && data[i].likes.includes(lowercaseUsername)) {
                             row.find('.wit-like-btn').css('background-color', 'red').css('color', 'white');
                         }
-
+        
+                        // Handle the dropdown menu
                         const dropdownHtml = await renderDropDown(data[i], row);
                         row.find('.dropdown-container').html(dropdownHtml);
-
+        
                         row.find('.edit-button').on('click', function () {
                             handleEditButtonClick(this.dataset.witId, user.username, row);
                         });
-
+        
                         row.find('.delete-button').on('click', function () {
                             handleDeleteButtonClick(this.dataset.witId, user.username, row);
                         });
 
+                        row.find('.follow-btn').on('click', function() {
+                            console.log("Test1");
+                        })
+        
+                        // Load image if available
                         if (data[i].image) {
                             var imageUrl = data[i].image;
                             row.find(".imgAttachmentDiv").html(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
@@ -610,5 +621,16 @@ jQuery(function() {
         alert("Unable to retrieve your location.");
         $("#temp").text("Location access denied. Cannot fetch weather.");
     }  
+    });
+});
+
+$(document).ready(function () {
+    // Handle hover event on usernames
+    $(document).on('mouseenter', '.wit-author', function () {
+        $(this).siblings('.popup').fadeIn();
+    });
+
+    $(document).on('mouseleave', '.wit-author', function () {
+        $(this).siblings('.popup').fadeOut();
     });
 });
