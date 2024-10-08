@@ -6,3 +6,7 @@
 body {
     color: white !important;
 }
+
+button, #image-input {
+    width: 300px !important;
+}
