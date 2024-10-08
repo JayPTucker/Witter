@@ -32,7 +32,6 @@
 .sticky, .trending-section {
   position: sticky;
   top: 0; /* This will make the column stick to the top of the page */
-  height: 100vh; /* Ensure it takes up the full viewport height */
   overflow-y: auto; /* Add scrolling if the content overflows */
 }
 
@@ -347,9 +346,9 @@ input:focus {
       margin-bottom: 10px;
   }
 
-  .menu-left-col p, button{
+  /* .menu-left-col p, button{
     transform: scale(0.7);
-  }
+  } */
 
   .menu-left-col {
     padding: 0px !important;
@@ -358,8 +357,8 @@ input:focus {
 
   .home-button, .profile-button, .logout-button {
     width: 130px !important;
-    margin-bottom: 2px;
-    margin-left: -10px;
+    margin: 0px !important;
+    padding: 5px !important;
     font-size: 18px;
   }
 
@@ -369,14 +368,13 @@ input:focus {
 
   /* PROFILE PIC TOP LEFT */
   .currentProfilePic {
-      width: 65px;
-      height: 65px;
+    width: 65px;
+    height: 65px;
   }
 
   .logout-text {
     font-size: 20px !important;
     margin: 0px !important;
-    float: left !important;
   }
 
   .wit-profilePic {
@@ -409,9 +407,13 @@ input:focus {
     padding: 0px !important;
   }
 
+  .rightMenu {
+    display: none !important;
+  }
+
   .wit-input {
-      height: 100px; /* Shorter input area for mobile */
-      font-size: 15px !important;
+      height: 70px; /* Shorter input area for mobile */
+      font-size: 19px !important;
   }
 
   .image-icon {
