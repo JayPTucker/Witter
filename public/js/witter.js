@@ -41,40 +41,6 @@ jQuery(function() {
         loadCurrentProfilePic(); 
 
         // =============================================
-        // =============================================
-
-        // Function to change profile picture
-        function changeProfilePic(newProfilePic) {
-            var formData = new FormData();
-            formData.append("username", user.username);
-            formData.append("profilePicture", newProfilePic);
-
-            $.ajax({
-                url: '/api/changeProfilePic',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(updatedUser) {
-                    // Update the local user data
-                    newWitProfilePic = updatedUser.profilePicture;
-                    
-                    // Reload the profile picture to reflect changes
-                    loadCurrentProfilePic();
-                },
-                error: function(err) {
-                    console.log("Error changing profile picture:", err);
-                }
-            });
-        }
-
-        $("#profilePicInput").on("change", function() {
-            var selectedFile = this.files[0];
-            if (selectedFile) {
-                changeProfilePic(selectedFile);
-            }
-        });
-
 
         // =========================
         // LOAD WITS FUNCTION (WITH PAGINATION)

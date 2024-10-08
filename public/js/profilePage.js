@@ -3,25 +3,46 @@ jQuery(function() {
         var imageInput = $("#image-input");
         var username = data.username;
         var newProfilePicForm = $("form.new-profilePic");
-        var profilePageInfo = $(".user-info");
-        
+        var saveBtn = $(".profilepic-button")
+
         // Display current profile picture and username
         var row = $(`<div id="profilePicRow" class="profilePicRow"></div>`);
         row.append(`<p>Username: @${username}</p>`);
 
+        var profilePicElement;
         if (!data.profilePicture) {
             console.log("No Profile Pic Set in the DB, using Default");
-            row.append(`<img class="currentProfilePic" src="/img/defaultProfilePic.png"></img>`);
+            profilePicElement = $(`<p>Profile Picture:</p><img class="currentProfilePic" src="/img/defaultProfilePic.png"></img>`);
         } else {
             console.log("Profile Pic is Set in the DB");
-            var profilePicElement = $(`<p>Profile Picture:</p><img class="currentProfilePic" src="${data.profilePicture}">`);
-            row.append(profilePicElement);
+            profilePicElement = $(`<p>Profile Picture:</p><img class="currentProfilePic" src="${data.profilePicture}">`);
         }
 
+        row.append(profilePicElement);
         $(".user-info").prepend(row);
+
+        // ================================
+        // PREVIEW IMAGE ON FILE SELECTION
+        // ================================
+        imageInput.on("change", function() {
+            if (imageInput[0].files && imageInput[0].files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    // Update the src attribute of the currentProfilePic dynamically after it exists in the DOM
+                    row.find("img.currentProfilePic").attr('src', e.target.result);
+                    saveBtn.text("SAVE")
+                    saveBtn.css("background-color", "red")
+                }
+
+                // Read the image file as a data URL
+                reader.readAsDataURL(imageInput[0].files[0]);
+            }
+        });
 
         newProfilePicForm.on("submit", function(event) {
             event.preventDefault();
+            saveBtn.text("Loading...")
         
             if (imageInput[0].files[0] == null) {
                 alert("Please choose an image.");
@@ -37,16 +58,12 @@ jQuery(function() {
                     processData: false,
                     contentType: false,
                     success: function (response) {
-                        alert("Profile Picture changed successfully");
-        
-                        // Update the profile picture on the page without refreshing
-                        var newProfilePicUrl = `${imageInput[0].files[0].name}`;
-        
-                        // Update the profile picture on the page
-                        profilePicElement.find("img").attr("src", newProfilePicUrl + `?t=${new Date().getTime()}`);
+                        var reader = new FileReader();
+                        console.log("Profile Picture changed successfully");
                         
-                        // Optionally reload the page if you want to ensure the backend data is also updated
-                        window.location.reload(); // Uncomment this line if needed
+                        saveBtn.text("Success")
+                        saveBtn.css("background-color", "green")
+                    
                     },
                     error: function (err) {
                         alert("Profile Picture not properly changed.");
@@ -56,6 +73,5 @@ jQuery(function() {
                 });
             }
         });
-        
     });
 });
