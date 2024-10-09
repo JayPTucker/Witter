@@ -485,6 +485,43 @@ module.exports = function(app) {
         });
     });
 
+    // ============================================================
+    // FETCH ALL WITS FROM USERS YOU FOLLOW
+    // ============================================================
+    app.get("/api/all_following_wits", async function(req, res) {
+        try {
+            const loggedInUserId = req.user.id; // Assuming you're using session or JWT for auth
+
+            // Get the logged-in user and parse their followers field
+            const user = await db.User.findOne({
+                where: { id: loggedInUserId },
+                attributes: ['followers'] // Only select the followers column
+            });
+
+            if (!user || !user.followers) {
+                return res.status(404).json({ error: "User not found or no followers" });
+            }
+
+            // Parse the followers list (assuming it's stored as a JSON array)
+            const followersArray = JSON.parse(user.followers || '[]');
+
+            // Fetch all wits from users the logged-in user is following
+            const wits = await db.Wit.findAll({
+                where: {
+                    author: followersArray // Fetch wits where the author is in the followers array
+                },
+                order: [['createdAt', 'DESC']],  // Fetch newest wits first
+                limit: req.query.limit || 10,     // Limit the number of results
+                offset: req.query.offset || 0     // Skip records for pagination
+            });
+
+            res.json(wits);
+        } catch (error) {
+            console.error("Error fetching wits:", error);
+            res.status(500).json({ error: "Failed to fetch wits" });
+        }
+    });
+
 
 // ============================================================
 // FETCH ALL WITS BY USER ROUTE FOR IMAGES  

@@ -14,14 +14,6 @@
   margin-top: 15px;
 }
 
-.favorites-button {
-  background-color: rgba(56, 56, 56, 0.699);
-}
-
-.favorites-button:hover {
-  background-color: rgba(56, 56, 56, 0.699) !important;
-}
-
 #temp {
   color: white;
   font-size: 20px;
@@ -363,7 +355,7 @@ input:focus {
 
   }
 
-  .home-button, .profile-button, .logout-button {
+  .home-button, .profile-button, .logout-button, .following-button {
     width: 130px !important;
     margin: 0px !important;
     padding: 5px !important;

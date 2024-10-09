@@ -13,7 +13,7 @@ body {
   resize: none;
 }  
 
-.profile-button, .logout-button, .home-button, .favorites-button, .default-button {
+.profile-button, .logout-button, .home-button, .following-button, .default-button {
   border: 1px solid rgba(0, 0, 0, 0);
   background-color: rgba(7, 31, 53, 0.699);
   border: 1px solid rgba(255, 255, 255, 0.116);
@@ -27,7 +27,7 @@ body {
   transition: all 0.2s ease-in-out;
 }
 
-.profile-button:hover, .logout-button:hover, .home-button:hover, .favorites-button:hover, .default-button:hover {
+.profile-button:hover, .logout-button:hover, .home-button:hover, .following-button:hover, .default-button:hover {
   background-color: rgb(34, 67, 97) !important;
   border: 1px solid white;
   width: 53%;
