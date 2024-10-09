@@ -206,6 +206,14 @@ input:focus {
   margin-top: 20px;
 }
 
+.profile-popup {
+  background-color: red;
+  width: 200px;
+  border: 1px solid white;
+  padding: 5px;
+  position: absolute;
+}
+
 .wit-like-btn {
   border-radius: 20px !important;
   padding: 5px;

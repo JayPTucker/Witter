@@ -30,6 +30,11 @@ module.exports = function(sequelize, DataTypes) {
     profilePicture: {
       type: DataTypes.STRING,
       allowNull: true
+    },
+      followers: {
+      type: DataTypes.TEXT,  // Storing JSON as text
+      allowNull: true,
+      defaultValue: '[]'  // Default to an empty array
     }
   });
 
@@ -43,5 +48,6 @@ module.exports = function(sequelize, DataTypes) {
   User.addHook("beforeCreate", function(user) {
     user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10), null);
   });
+  
   return User;
 };

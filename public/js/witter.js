@@ -52,6 +52,9 @@ jQuery(function() {
                 if (data.length > 0) {
                     offset += data.length;  // Increment the offset by the number of wits loaded
         
+
+                    console.log(data)
+
                     for (var i = 0; i < data.length; i++) {
                         var likesArray;
                         try {
@@ -59,7 +62,7 @@ jQuery(function() {
                         } catch (error) {
                             likesArray = [];
                         }
-        
+
                         var likesCount = likesArray.length;
         
                         // Create the wit row and include the popup for followers
@@ -70,11 +73,10 @@ jQuery(function() {
                                 <div class="col-md-2 wit-img-div" id="witProfilePic-${data[i].id}"></div>
                                 <div class="col-md-9">
                                     <h4 class="wit-author" data-username="${data[i].author}">@${data[i].author}</h4>
-                                    <!-- Popup container for followers, hidden initially -->
-                                    <div class="popup" style="display: none;">
+                                    <div class="popup profile-popup" style="display: none;">
                                         <div class="followers-list">
-                                            <p>Followers: ${data[i].followers ? data[i].followers.length : 0}</p>
-                                            <button class="follow-btn">Follow</button>
+                                            <p><span class="followerAmount" id="follower-count-${data[i].author}"></span></p>
+                                            <button class="follow-btn follow-btn-${data[i].author}">Follow</button>
                                         </div>
                                     </div>
                                     <p class="wit-date">${moment(data[i].createdAt).format("h:mma on dddd")} </p>
@@ -92,7 +94,7 @@ jQuery(function() {
                                 </div>
                             </div>
                         `);
-                                
+                                                        
                         // Appending the row
                         $("#wits-area").append(row);
         
@@ -122,9 +124,10 @@ jQuery(function() {
                         });
 
                         row.find('.follow-btn').on('click', function() {
-                            console.log("Test1");
-                        })
-        
+                            const targetUsername = $(this).closest('.popup').siblings('.wit-author').data('username');
+                            followPost(targetUsername, user.username);  // user.username is the logged-in user
+                        });
+                                
                         // Load image if available
                         if (data[i].image) {
                             var imageUrl = data[i].image;
@@ -427,10 +430,33 @@ function findProfilePicture(author) {
     });
 };
 
+
+// ======================================================
+
+function followPost(targetUsername, followerUsername) {
+    $.ajax({
+        method: 'POST',
+        url: `/api/users/${targetUsername}/follow`,
+        data: { username: followerUsername },  // The logged-in user who is following
+        success: function (response) {
+            const followBtn = $(`[data-username="${targetUsername}"]`).siblings('.popup').find('.follow-btn');
+
+            // Update the follow button and follower count
+            followBtn.text(response.isFollowing ? 'Unfollow' : 'Follow');
+            followBtn.closest('.followers-list').find('p').text(`Followers: ${response.followersCount}`);
+
+            console.log(response.message);
+        },
+        error: function (error) {
+            console.error("Error following/unfollowing user:", error);
+        }
+    });
+}
+
+// ======================================================
+
 function likePost(witId, username) {
-    // console.log("Like button has been pressed");
-    // console.log(witId)
-    // console.log(username)
+
     var row = $(`#wit-${witId}`);
 
     $.ajax({
@@ -625,12 +651,53 @@ jQuery(function() {
 });
 
 $(document).ready(function () {
-    // Handle hover event on usernames
-    $(document).on('mouseenter', '.wit-author', function () {
-        $(this).siblings('.popup').fadeIn();
+
+    // First, get the logged-in user's username
+    let loggedInUser = '';
+
+    $.get('/api/user_data', function(response) {
+        if (response.username) {
+            loggedInUser = response.username;  // Store the logged-in user's username
+        }
     });
 
-    $(document).on('mouseleave', '.wit-author', function () {
-        $(this).siblings('.popup').fadeOut();
+    // Handle hover event on usernames
+    $(document).on('click', '.wit-author', function () {
+        $(this).siblings('.popup').fadeIn();  // Show the popup
+
+        let username = $(this).text().replace('@', '');  // Get the text and remove the @
+        // console.log(username);
+
+        $.ajax({
+            method: 'GET',
+            url: `/api/users/${username}/followers`,  // Adjust the endpoint as needed
+            success: function (response) {
+                // Assuming the response contains the follower count and followers list
+                console.log(`Follower count for ${username}: ${response.followerCount}`);
+                
+                // Update the follower count in the DOM
+                $(`#follower-count-${username}`).text(`Followers: ${response.followerCount}`);
+
+                // Assuming response.followers contains the list of followers (an array)
+                if (response.followers.includes(loggedInUser)) {
+                    // If the logged-in user is in the list of followers, show "Unfollow"
+                    $(`.follow-btn-${username}`).text('Unfollow');
+                } else {
+                    // Otherwise, show "Follow"
+                    $(`.follow-btn-${username}`).text('Follow');
+                }
+            },
+            error: function (error) {
+                console.error(`Error fetching follower count for ${username}:`, error);
+            }
+        });
+    });
+
+    $(document).on('mouseleave', '.followers-list', function () {
+        $('.popup').fadeOut();
+    });
+
+    $(document).on('scroll', function () {
+        $('.popup').fadeOut();
     });
 });

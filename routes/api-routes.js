@@ -431,27 +431,59 @@ module.exports = function(app) {
         }
     });
 
-        // ============================================================
-        // FETCH ALL WITS ROUTE WITH PAGINATION
-        // ============================================================
-        app.get("/api/all_wits", function(req, res) {
-            // Get limit and offset from the query parameters
-            const limit = parseInt(req.query.limit) || 10;  // Number of wits to load per request
-            const offset = parseInt(req.query.offset) || 0;  // Offset to load the next batch
+    // ============================================================
+    // GET FOLLOWER COUNT AND FOLLOWERS LIST FOR A USER
+    // ============================================================
+    app.get('/api/users/:username/followers', async function(req, res) {
+        const username = req.params.username;
 
-            db.Wit.findAll({
-                order: [['createdAt', 'DESC']],  // Fetch newest first
-                limit: limit,                    // Limit number of wits to return
-                offset: offset                   // Skip records for pagination
-            })
-            .then(function(results) {
-                res.json(results);
-            })
-            .catch(function(error) {
-                console.error("Error fetching wits:", error);
-                res.status(500).json({ error: "Failed to fetch wits" });
+        try {
+            // Find the user by username
+            const user = await db.User.findOne({
+                where: { username: username },
+                attributes: ['followers']  // Fetch only the followers field
             });
+
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            // Parse the followers field (which is stored as JSON)
+            let followers = JSON.parse(user.followers || '[]');
+
+            // Respond with the follower count and the list of followers
+            return res.json({
+                followerCount: followers.length,
+                followers: followers  // Return the list of followers
+            });
+
+        } catch (error) {
+            console.error('Error fetching followers:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
+
+    // ============================================================
+    // FETCH ALL WITS ROUTE WITH PAGINATION
+    // ============================================================
+    app.get("/api/all_wits", function(req, res) {
+        // Get limit and offset from the query parameters
+        const limit = parseInt(req.query.limit) || 10;  // Number of wits to load per request
+        const offset = parseInt(req.query.offset) || 0;  // Offset to load the next batch
+
+        db.Wit.findAll({
+            order: [['createdAt', 'DESC']],  // Fetch newest first
+            limit: limit,                    // Limit number of wits to return
+            offset: offset                   // Skip records for pagination
+        })
+        .then(function(results) {
+            res.json(results);
+        })
+        .catch(function(error) {
+            console.error("Error fetching wits:", error);
+            res.status(500).json({ error: "Failed to fetch wits" });
         });
+    });
 
 
 // ============================================================
@@ -558,8 +590,55 @@ app.post("/api/witter", upload.single("image"), function (req, res) {
         }
     });
     
+    // ============================================================
+    // FOLLOW/UNFOLLOW ROUTE
+    // ============================================================
+    app.post("/api/users/:username/follow", async function (req, res) {
+        const targetUsername = req.params.username;
+        const followerUsername = req.body.username; // The user who is following
+
+        try {
+            // Find the user to be followed and include the primary key (id)
+            const targetUser = await db.User.findOne({
+                where: { username: targetUsername },
+                attributes: ['id', 'username', 'followers']  // Include the primary key 'id'
+            });
+
+            if (!targetUser) {
+                return res.status(404).json({ success: false, error: "User not found" });
+            }
+
+            // Parse the followers field (initialize if null or invalid)
+            let followers;
+            try {
+                followers = JSON.parse(targetUser.followers || '[]');
+            } catch (error) {
+                console.warn("Invalid followers field, defaulting to empty array:", targetUser.followers);
+                followers = [];
+            }
+
+            // If the user is already following, unfollow
+            if (followers.includes(followerUsername)) {
+                followers = followers.filter(user => user !== followerUsername);
+                await targetUser.update({ followers: JSON.stringify(followers) });
+
+                return res.json({ success: true, message: "Unfollowed successfully", followersCount: followers.length, isFollowing: false });
+            }
+
+            // If the user is not following, follow the user
+            followers.push(followerUsername);
+            await targetUser.update({ followers: JSON.stringify(followers) });
+
+            return res.json({ success: true, message: "Followed successfully", followersCount: followers.length, isFollowing: true });
+
+        } catch (error) {
+            console.error("Error in follow/unfollow API route:", error);
+            return res.status(500).json({ success: false, error: "Internal Server Error" });
+        }
+    });    
     
-    
+
+
     // ============================================================
     // DELETE WIT ROUTE
     // ============================================================
