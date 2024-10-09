@@ -145,20 +145,168 @@ jQuery(function() {
         }
 
         // =========================
-        // IMPROVED INFINITE SCROLL HANDLER
+        // FOLLOWING BUTTON
         // =========================
-        $(window).on("scroll", function () {
-            const scrollPosition = $(window).scrollTop() + $(window).height();
-            const documentHeight = $(document).height();
-            // console.log("Scroll Position:", scrollPosition);
-            // console.log("Document Height:", documentHeight);    
 
-            // Trigger loadWits if scrolled near the bottom of the page (within 100px)
-            if (scrollPosition >= documentHeight - -850 && !loading && !allWitsLoaded) {
-                // Chose 700 cause it's the closest to the bottom of the page.
-                loadWits();  // Load more wits when scrolling near the bottom
+        $(".following-button").on('click', async function() {
+            $(".wit-row").remove();
+            // if (loading || allWitsLoaded) return;  // Prevent loading more while a request is in progress
+            // loading = true;
+        
+            // Make the request to the API
+            // const data = await $.get(`/api/all_following_wits`);
+        
+            // Log the data to make sure it works
+            // console.log(data);
+            
+            try {
+                const data = await $.get(`/api/all_following_wits`);
+        
+                if (data.length > 0) {
+                    offset += data.length;  // Increment the offset by the number of wits loaded
+        
+
+                    console.log(data)
+
+                    for (var i = 0; i < data.length; i++) {
+                        var likesArray;
+                        try {
+                            likesArray = JSON.parse(data[i].likes || '[]');
+                        } catch (error) {
+                            likesArray = [];
+                        }
+
+                        var likesCount = likesArray.length;
+        
+                        // Create the wit row and include the popup for followers
+                        var row = $(`<div class="wit-row col-md-12" id="wit-${data[i].id}"></div>`);
+        
+                        row.append(`
+                            <div class="row">
+                                <div class="col-md-2 wit-img-div" id="witProfilePic-${data[i].id}"></div>
+                                <div class="col-md-9">
+                                    <h4 class="wit-author" data-username="${data[i].author}">@${data[i].author}</h4>
+                                    <div class="popup profile-popup" style="display: none;">
+                                        <div class="followers-list">
+                                            <p><span class="followerAmount" id="follower-count-${data[i].author}"></span></p>
+                                            <button class="follow-btn follow-btn-${data[i].author}">Follow</button>
+                                        </div>
+                                    </div>
+                                    <p class="wit-date">${moment(data[i].createdAt).format("h:mma on dddd")} </p>
+                                    <p class="wit-body">${data[i].body}</p>
+                                    <p class="imgAttachmentDiv"></p>
+                                    <button type="button" data-wit-id="${data[i].id}" class="wit-like-btn wit-like-btn-${data[i].id} btn btn-default btn-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+                                            <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+                                        </svg>
+                                        ${likesCount}
+                                    </button>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="dropdown-container"></div>
+                                </div>
+                            </div>
+                        `);
+                                                        
+                        // Appending the row
+                        $("#wits-area").append(row);
+        
+                        // FIND THE PROFILE PIC - Await the result to ensure proper order
+                        await handleProfilePicture(data[i], row);
+        
+                        // Handle like functionality
+                        row.find('.wit-like-btn').on('click', function () {
+                            likePost(this.dataset.witId, user.username, row);
+                        });
+        
+                        const lowercaseUsername = user.username.toLowerCase();
+                        if (data[i].likes && data[i].likes.includes(lowercaseUsername)) {
+                            row.find('.wit-like-btn').css('background-color', 'red').css('color', 'white');
+                        }
+        
+                        // Handle the dropdown menu
+                        const dropdownHtml = await renderDropDown(data[i], row);
+                        row.find('.dropdown-container').html(dropdownHtml);
+        
+                        row.find('.edit-button').on('click', function () {
+                            handleEditButtonClick(this.dataset.witId, user.username, row);
+                        });
+        
+                        row.find('.delete-button').on('click', function () {
+                            handleDeleteButtonClick(this.dataset.witId, user.username, row);
+                        });
+
+                        row.find('.follow-btn').on('click', function() {
+                            const targetUsername = $(this).closest('.popup').siblings('.wit-author').data('username');
+                            followPost(targetUsername, user.username);  // user.username is the logged-in user
+                        });
+                                
+                        // Load image if available
+                        if (data[i].image) {
+                            var imageUrl = data[i].image;
+                            row.find(".imgAttachmentDiv").html(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
+                        }
+                    }
+                } else {
+                    allWitsLoaded = true;  // No more wits to load
+                }
+            } catch (error) {
+                console.error("Error loading wits:", error);
+            } finally {
+                loading = false;  // Allow further loading
             }
-        });
+        })
+    
+        
+
+        
+            // Now loop through the wits and display them (if any)
+            // data.forEach(async function(wit) {
+            //     // Insert logic here to append each wit to the DOM
+            //     console.log(wit);
+        
+            //     let witRow = $(`<div class="wit-row col-md-12" id="wit-${wit.id}"></div>`);
+        
+            //     witRow.append(`
+            //         <div class="row">
+            //             <div class="col-md-2 wit-img-div" id="witProfilePic-${wit.id}"></div>
+            //             <div class="col-md-9">
+            //                 <h4 class="wit-author" data-username="${wit.author}">@${wit.author}</h4>
+            //                 <p class="wit-date">${moment(wit.createdAt).format("h:mma on dddd")}</p>
+            //                 <p class="wit-body">${wit.body}</p>
+            //                 <p class="imgAttachmentDiv"></p>
+            //                 <button type="button" data-wit-id="${wit.id}" class="wit-like-btn wit-like-btn-${wit.id} btn btn-default btn-sm">
+            //                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+            //                         <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+            //                     </svg>
+            //                     ${wit.likes.length}
+            //                 </button>
+            //             </div>
+            //             <div class="col-md-1">
+            //                 <div class="dropdown-container"></div>
+            //             </div>
+            //         </div>
+            //     `);
+        
+            //     // Append the row to the wits area
+            //     $("#wits-area").append(witRow);
+            // });  
+
+    // =========================
+    // IMPROVED INFINITE SCROLL HANDLER
+    // =========================
+    $(window).on("scroll", function () {
+        const scrollPosition = $(window).scrollTop() + $(window).height();
+        const documentHeight = $(document).height();
+        // console.log("Scroll Position:", scrollPosition);
+        // console.log("Document Height:", documentHeight);    
+
+        // Trigger loadWits if scrolled near the bottom of the page (within 100px)
+        if (scrollPosition >= documentHeight - -850 && !loading && !allWitsLoaded) {
+            // Chose 700 cause it's the closest to the bottom of the page.
+            loadWits();  // Load more wits when scrolling near the bottom
+        }
+    });
 
         // Load the initial batch of wits when the page loads
         $(document).ready(function () {
@@ -701,45 +849,3 @@ $(document).ready(function () {
         $('.popup').fadeOut();
     });
 });
-
-$(".following-button").on('click', async function() {
-    $(".wit-row").remove();
-
-    // Make the request to the API
-    const data = await $.get(`/api/all_following_wits`);
-
-    // Log the data to make sure it works
-    console.log(data);
-
-    // Now loop through the wits and display them (if any)
-    data.forEach(async function(wit) {
-        // Insert logic here to append each wit to the DOM
-        console.log(wit);
-
-        let witRow = $(`<div class="wit-row col-md-12" id="wit-${wit.id}"></div>`);
-
-        witRow.append(`
-            <div class="row">
-                <div class="col-md-2 wit-img-div" id="witProfilePic-${wit.id}"></div>
-                <div class="col-md-9">
-                    <h4 class="wit-author" data-username="${wit.author}">@${wit.author}</h4>
-                    <p class="wit-date">${moment(wit.createdAt).format("h:mma on dddd")}</p>
-                    <p class="wit-body">${wit.body}</p>
-                    <p class="imgAttachmentDiv"></p>
-                    <button type="button" data-wit-id="${wit.id}" class="wit-like-btn wit-like-btn-${wit.id} btn btn-default btn-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
-                            <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
-                        </svg>
-                        ${wit.likes.length}
-                    </button>
-                </div>
-                <div class="col-md-1">
-                    <div class="dropdown-container"></div>
-                </div>
-            </div>
-        `);
-
-        // Append the row to the wits area
-        $("#wits-area").append(witRow);
-    });  
-})

@@ -489,6 +489,7 @@ module.exports = function(app) {
     // FETCH ALL WITS FROM USERS YOU FOLLOW
     // ============================================================
     app.get("/api/all_following_wits", async function(req, res) {
+
         try {
             const loggedInUserId = req.user.id; // Assuming you're using session or JWT for auth
 
