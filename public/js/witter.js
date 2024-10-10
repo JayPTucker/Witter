@@ -75,7 +75,7 @@ jQuery(function() {
                                     <h4 class="wit-author" data-username="${data[i].author}">@${data[i].author}</h4>
                                     <div class="popup profile-popup" style="display: none;">
                                         <div class="followers-list">
-                                            <p><span class="followerAmount" id="follower-count-${data[i].author}"></span></p>
+                                            <p class="followerAmount" id="follower-count-${data[i].id}"></p>
                                             <button class="follow-btn follow-btn-${data[i].author}">Follow</button>
                                         </div>
                                     </div>
@@ -94,7 +94,7 @@ jQuery(function() {
                                 </div>
                             </div>
                         `);
-                                                        
+                                                                                
                         // Appending the row
                         $("#wits-area").append(row);
         
@@ -188,7 +188,7 @@ jQuery(function() {
                                     <h4 class="wit-author" data-username="${data[i].author}">@${data[i].author}</h4>
                                     <div class="popup profile-popup" style="display: none;">
                                         <div class="followers-list">
-                                            <p><span class="followerAmount" id="follower-count-${data[i].author}"></span></p>
+                                            <p class="followerAmount" id="follower-count-${data[i].id}"></p>
                                             <button class="follow-btn follow-btn-${data[i].author}">Follow</button>
                                         </div>
                                     </div>
@@ -812,20 +812,26 @@ $(document).ready(function () {
     // Handle hover event on usernames
     $(document).on('click', '.wit-author', function () {
         $(this).siblings('.popup').fadeIn();  // Show the popup
-
+    
         let username = $(this).text().replace('@', '');  // Get the text and remove the @
-        // console.log(username);
-
+        let witId = $(this).closest('.wit-row').attr('id').split('-')[1];  // Get the wit's ID from the row
+    
         $.ajax({
             method: 'GET',
             url: `/api/users/${username}/followers`,  // Adjust the endpoint as needed
             success: function (response) {
                 // Assuming the response contains the follower count and followers list
                 console.log(`Follower count for ${username}: ${response.followerCount}`);
-                
-                // Update the follower count in the DOM
-                $(`#follower-count-${username}`).text(`Followers: ${response.followerCount}`);
-
+    
+                // Update the follower count in the DOM, use witId for unique identification
+                if (response.followerCount == 0) {
+                    $(`#follower-count-${witId}`).text(`Followers: 0`);
+                    console.log("NO FOLLOWERS");
+                } else {
+                    console.log("HAS FOLLOWERS");
+                    $(`#follower-count-${witId}`).text(`Followers: ${response.followerCount}`);
+                }
+    
                 // Assuming response.followers contains the list of followers (an array)
                 if (response.followers.includes(loggedInUser)) {
                     // If the logged-in user is in the list of followers, show "Unfollow"
@@ -840,7 +846,7 @@ $(document).ready(function () {
             }
         });
     });
-
+    
     $(document).on('mouseleave', '.followers-list', function () {
         $('.popup').fadeOut();
     });

@@ -486,30 +486,33 @@ module.exports = function(app) {
     });
 
     // ============================================================
-    // FETCH ALL WITS FROM USERS YOU FOLLOW
+    // FETCH ALL WITS FROM USERS YOU ARE FOLLOWING
     // ============================================================
     app.get("/api/all_following_wits", async function(req, res) {
-
         try {
             const loggedInUserId = req.user.id; // Assuming you're using session or JWT for auth
 
-            // Get the logged-in user and parse their followers field
+            // Get the logged-in user and parse their following field
             const user = await db.User.findOne({
                 where: { id: loggedInUserId },
-                attributes: ['followers'] // Only select the followers column
+                attributes: ['following'] // Only select the following column
             });
 
-            if (!user || !user.followers) {
-                return res.status(404).json({ error: "User not found or no followers" });
+            if (!user || !user.following) {
+                return res.status(404).json({ error: "User not found or not following anyone" });
             }
 
-            // Parse the followers list (assuming it's stored as a JSON array)
-            const followersArray = JSON.parse(user.followers || '[]');
+            // Parse the following list (assuming it's stored as a JSON array)
+            const followingArray = JSON.parse(user.following || '[]');
+
+            if (followingArray.length === 0) {
+                return res.json([]); // No users followed, return empty array
+            }
 
             // Fetch all wits from users the logged-in user is following
             const wits = await db.Wit.findAll({
                 where: {
-                    author: followersArray // Fetch wits where the author is in the followers array
+                    author: followingArray // Fetch wits where the author is in the following array
                 },
                 order: [['createdAt', 'DESC']],  // Fetch newest wits first
                 limit: req.query.limit || 10,     // Limit the number of results
@@ -628,52 +631,72 @@ app.post("/api/witter", upload.single("image"), function (req, res) {
         }
     });
     
-    // ============================================================
-    // FOLLOW/UNFOLLOW ROUTE
-    // ============================================================
-    app.post("/api/users/:username/follow", async function (req, res) {
-        const targetUsername = req.params.username;
-        const followerUsername = req.body.username; // The user who is following
+// ============================================================
+// FOLLOW/UNFOLLOW ROUTE
+// ============================================================
+app.post("/api/users/:username/follow", async function (req, res) {
+    const targetUsername = req.params.username;   // The user to be followed/unfollowed
+    const followerUsername = req.body.username;   // The logged-in user who is following/unfollowing
 
-        try {
-            // Find the user to be followed and include the primary key (id)
-            const targetUser = await db.User.findOne({
-                where: { username: targetUsername },
-                attributes: ['id', 'username', 'followers']  // Include the primary key 'id'
-            });
+    try {
+        // Find the target user (Person A) who is being followed/unfollowed
+        const targetUser = await db.User.findOne({
+            where: { username: targetUsername },
+            attributes: ['id', 'username', 'followers']  // Include their followers field
+        });
 
-            if (!targetUser) {
-                return res.status(404).json({ success: false, error: "User not found" });
-            }
+        // Find the user who is following/unfollowing (Person B)
+        const followerUser = await db.User.findOne({
+            where: { username: followerUsername },
+            attributes: ['id', 'username', 'following']  // Include their following field
+        });
 
-            // Parse the followers field (initialize if null or invalid)
-            let followers;
-            try {
-                followers = JSON.parse(targetUser.followers || '[]');
-            } catch (error) {
-                console.warn("Invalid followers field, defaulting to empty array:", targetUser.followers);
-                followers = [];
-            }
-
-            // If the user is already following, unfollow
-            if (followers.includes(followerUsername)) {
-                followers = followers.filter(user => user !== followerUsername);
-                await targetUser.update({ followers: JSON.stringify(followers) });
-
-                return res.json({ success: true, message: "Unfollowed successfully", followersCount: followers.length, isFollowing: false });
-            }
-
-            // If the user is not following, follow the user
-            followers.push(followerUsername);
-            await targetUser.update({ followers: JSON.stringify(followers) });
-
-            return res.json({ success: true, message: "Followed successfully", followersCount: followers.length, isFollowing: true });
-
-        } catch (error) {
-            console.error("Error in follow/unfollow API route:", error);
-            return res.status(500).json({ success: false, error: "Internal Server Error" });
+        if (!targetUser || !followerUser) {
+            return res.status(404).json({ success: false, error: "User not found" });
         }
-    });    
+
+        // Parse the followers of the target user and the following of the logged-in user
+        let targetUserFollowers = JSON.parse(targetUser.followers || '[]');
+        let followerUserFollowing = JSON.parse(followerUser.following || '[]');
+
+        // Check if the follower is already following the target user
+        if (targetUserFollowers.includes(followerUsername)) {
+            // Unfollow: Remove the follower from the target user's followers list
+            targetUserFollowers = targetUserFollowers.filter(user => user !== followerUsername);
+            await targetUser.update({ followers: JSON.stringify(targetUserFollowers) });
+
+            // Remove the target user from the follower's following list
+            followerUserFollowing = followerUserFollowing.filter(user => user !== targetUsername);
+            await followerUser.update({ following: JSON.stringify(followerUserFollowing) });
+
+            return res.json({
+                success: true,
+                message: "Unfollowed successfully",
+                followersCount: targetUserFollowers.length,
+                isFollowing: false
+            });
+        }
+
+        // Follow: Add the follower to the target user's followers list
+        targetUserFollowers.push(followerUsername);
+        await targetUser.update({ followers: JSON.stringify(targetUserFollowers) });
+
+        // Add the target user to the follower's following list
+        followerUserFollowing.push(targetUsername);
+        await followerUser.update({ following: JSON.stringify(followerUserFollowing) });
+
+        return res.json({
+            success: true,
+            message: "Followed successfully",
+            followersCount: targetUserFollowers.length,
+            isFollowing: true
+        });
+
+    } catch (error) {
+        console.error("Error in follow/unfollow API route:", error);
+        return res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+});
     
 
 

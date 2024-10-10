@@ -31,7 +31,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: true
     },
-      followers: {
+    followers: {
+      type: DataTypes.TEXT,  // Storing JSON as text
+      allowNull: true,
+      defaultValue: '[]'  // Default to an empty array
+    },
+    following: {
       type: DataTypes.TEXT,  // Storing JSON as text
       allowNull: true,
       defaultValue: '[]'  // Default to an empty array
