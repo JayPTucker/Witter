@@ -94,6 +94,16 @@ input:focus {
   color: rgb(255, 251, 215);
 }
 
+.clickable {
+  cursor: pointer;  /* Makes the element appear clickable */
+  text-decoration: underline;  /* Adds underline to simulate a link */
+}
+
+.clickable:hover {
+  color: rgb(255, 242, 128);
+}
+
+
 .wit-date {
   font-size: 13px;
   color: rgb(182, 182, 182);
@@ -198,13 +208,53 @@ input:focus {
   margin-top: 20px;
 }
 
+/* ======================================= */
+/* PROFILE POPUP */
+/* ======================================= */
+
 .profile-popup {
-  background-color: red;
+  background-color: rgb(6, 36, 64);
   width: 200px;
   border: 1px solid white;
+  border-radius: 15px;
   padding: 5px;
   position: absolute;
 }
+
+.followers-span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.follow-btn {
+  border: 1px solid rgba(0, 0, 0, 0);
+  background-color: rgba(24, 57, 89, 0.699);
+  border: 1px solid rgba(255, 255, 255, 0.116);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: white;
+  width: 60%;
+  padding: 5px;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
+
+.follow-btn:hover {
+  background-color: rgb(34, 67, 97) !important;
+  border: 1px solid white;
+  width: 65%;
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  margin-right: 10px;
+}
+
+/* ======================================= */
+/* ======================================= */
 
 .wit-like-btn {
   border-radius: 20px !important;

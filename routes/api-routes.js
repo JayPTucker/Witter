@@ -441,7 +441,7 @@ module.exports = function(app) {
             // Find the user by username
             const user = await db.User.findOne({
                 where: { username: username },
-                attributes: ['followers']  // Fetch only the followers field
+                attributes: ['followers', 'profilePicture']  // Fetch only the followers field
             });
 
             if (!user) {
@@ -454,7 +454,8 @@ module.exports = function(app) {
             // Respond with the follower count and the list of followers
             return res.json({
                 followerCount: followers.length,
-                followers: followers  // Return the list of followers
+                followers: followers,  // Return the list of followers
+                ProfilePic: user.profilePicture
             });
 
         } catch (error) {
