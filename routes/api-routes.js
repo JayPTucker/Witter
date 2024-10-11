@@ -490,6 +490,9 @@ module.exports = function(app) {
     // FETCH ALL WITS FROM USERS YOU ARE FOLLOWING
     // ============================================================
     app.get("/api/all_following_wits", async function(req, res) {
+        const limit = parseInt(req.query.limit) || 10;  // Number of wits to load per request
+        const offset = parseInt(req.query.offset) || 0;  // Offset to load the next batch
+
         try {
             const loggedInUserId = req.user.id; // Assuming you're using session or JWT for auth
 
