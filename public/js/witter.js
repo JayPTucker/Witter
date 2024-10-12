@@ -414,6 +414,9 @@ function appendNewWitToDOM(newWit) {
 }
 
 // ===========================================
+// ===========================================
+
+// ===========================================
 // FIND PROFILE PICTURE FUNCTION 1
 // ===========================================
 
@@ -710,62 +713,51 @@ jQuery(function() {
 // ===========================================
 
 // ===========================================
-// PROFILE LOAD FUNCTION
+// PROFILE POPUP LOAD FUNCTION
 // ===========================================
-$(document).ready(function () {
+$(document).on('click', '.wit-author', function () {
+    $(this).siblings('.popup').fadeIn();  // Show the popup
 
-    // First, get the logged-in user's username
-    let loggedInUser = '';
+    let username = $(this).text().replace('@', '');  // Get the username without '@'
+    let witId = $(this).closest('.wit-row').attr('id').split('-')[1];  // Get the wit ID
 
-    $.get('/api/user_data', function(response) {
-        if (response.username) {
-            loggedInUser = response.username;  // Store the logged-in user's username
+    $.ajax({
+        method: 'GET',
+        url: `/api/users/${username}/followers`,  // API endpoint
+        success: function (response) {
+            console.log(`Follower count for ${username}: ${response.followerCount}`);
+            console.log(response);
+
+            // Insert profile picture and follower count
+            const profilePicUrl = response.ProfilePic || 
+                "./img/defaultProfilePic.png";
+
+            $(`#follower-count-${witId}`).html(`
+                <span class="followers-span">
+                    <img src="${profilePicUrl}" 
+                         alt="Profile Picture" 
+                         class="profile-pic" />
+                    <p>Followers: ${response.followerCount}</p>
+                </span>
+            `);
+
+            console.log(response.ProfilePic ? 'Has profile pic' : 'NO PROFILE PIC FOUND');
+
+            // Handle the follow/unfollow button
+            const followBtnText = response.followers.includes(loggedInUser) ? 'Unfollow' : 'Follow';
+            $(`.follow-btn-${username}`).text(followBtnText);
+        },
+        error: function (error) {
+            console.error(`Error fetching follower count for ${username}:`, error);
         }
     });
+});
 
-    // Handle hover event on usernames
-    $(document).on('click', '.wit-author', function () {
-        $(this).siblings('.popup').fadeIn();  // Show the popup
-    
-        let username = $(this).text().replace('@', '');  // Get the text and remove the @
-        let witId = $(this).closest('.wit-row').attr('id').split('-')[1];  // Get the wit's ID from the row
-    
-        $.ajax({
-            method: 'GET',
-            url: `/api/users/${username}/followers`,  // Adjust the endpoint as needed
-            success: function (response) {
-                // Assuming the response contains the follower count and followers list
-                console.log(`Follower count for ${username}: ${response.followerCount}`);
-                console.log(response)
+// Hide the popup on mouse leave or scroll
+$(document).on('mouseleave', '.followers-list', function () {
+    $('.popup').fadeOut();
+});
 
-                $(`#follower-count-${witId}`).html(`
-                    <span class="followers-span">
-                    <img src='${response.ProfilePic}' alt="Profile Picture" class="profile-pic" />
-                    <p>Followers: ${response.followerCount}</p>
-                    </span>`
-                );
-
-    
-                // Assuming response.followers contains the list of followers (an array)
-                if (response.followers.includes(loggedInUser)) {
-                    // If the logged-in user is in the list of followers, show "Unfollow"
-                    $(`.follow-btn-${username}`).text('Unfollow');
-                } else {
-                    // Otherwise, show "Follow"
-                    $(`.follow-btn-${username}`).text('Follow');
-                }
-            },
-            error: function (error) {
-                console.error(`Error fetching follower count for ${username}:`, error);
-            }
-        });
-    });
-    
-    $(document).on('mouseleave', '.followers-list', function () {
-        $('.popup').fadeOut();
-    });
-
-    $(document).on('scroll', function () {
-        $('.popup').fadeOut();
-    });
+$(document).on('scroll', function () {
+    $('.popup').fadeOut();
 });
