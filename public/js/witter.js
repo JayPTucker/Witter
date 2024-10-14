@@ -168,7 +168,104 @@ jQuery(function() {
     // CALL TO LOAD WITS INITIALLY
     loadWits('/api/all_wits');
 
-    // =========================
+    // ========================================
+    // LOADING TRENDING WITS
+    // ========================================
+
+    function loadTrendingWits() {
+        $.get("/api/top_wits").then(function (data) {
+            if (data.length !== 0) {
+                const profilePicturePromises = data.map(wit =>
+                    findProfilePicture(wit.author)
+                );
+    
+                Promise.all(profilePicturePromises).then(profilePictures => {
+                    data.forEach((witData, i) => {
+                        let likesArray = [];
+                        try {
+                            likesArray = JSON.parse(witData.likes || '[]');
+                        } catch (error) {
+                            console.error("Error parsing likes:", error);
+                        }
+    
+                        const likesCount = likesArray.length;
+                        const row = $(`
+                            <div class="T-wit-row col-md-12" id="wit-${witData.id}">
+                                <div class="row">
+                                    <div class="col-md-3" id="T-witProfilePic"></div>
+                                    <div class="col-md-9">
+                                        <h4 class="T-wit-author">@${witData.author}</h4>
+                                        <p class="T-wit-date">${moment(witData.createdAt).format("h:mma on dddd")}</p>
+                                        <p class="T-wit-body">${witData.body}</p>
+                                        <p class="imgAttachmentDiv"></p>
+                                        <button type="button" data-wit-id="${witData.id}" 
+                                            class="T-wit-like-btn btn btn-default btn-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor"
+                                                 class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+                                                <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 
+                                                    1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 
+                                                    1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 
+                                                    1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 
+                                                    .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 
+                                                    1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 
+                                                    .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 
+                                                    16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609
+                                                    -2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 
+                                                    1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 
+                                                    1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+                                            </svg>
+                                            ${likesCount}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+    
+                        $("#trendingWits").prepend(row);
+    
+                        const profilePic = profilePictures[i];
+                        const profilePicHtml = profilePic
+                            ? `<img class="T-Wit-profilePic" src="${profilePic}" />`
+                            : `<img class="T-Wit-profilePic" src="/img/defaultProfilePic.png" />`;
+                        row.find('#T-witProfilePic').html(profilePicHtml);
+    
+                        // Handle like button click
+                        row.find('.T-wit-like-btn').on('click', function () {
+                            const button = $(this);
+                            const witId = this.dataset.witId;
+    
+                            likePost(witId, user.username, row).then(response => {
+                                // Toggle the button color based on like status
+                                if (response.userAlreadyLiked) {
+                                    button.css('background-color', 'red').css('color', 'white');
+                                } else {
+                                    button.css('background-color', '').css('color', '');
+                                }
+                            });
+                        });
+    
+                        if (likesArray.includes(user.username.toLowerCase())) {
+                            row.find('.T-wit-like-btn').css('background-color', 'red').css('color', 'white');
+                        }
+    
+                        // Load attached image if available
+                        if (witData.image) {
+                            row.find(".imgAttachmentDiv").html(
+                                `<img src="${witData.image}" alt="Wit Image" class="wit-image">`
+                            );
+                        }
+                    });
+                });
+            }
+        });
+    }
+    
+    loadTrendingWits();
+    
+
+    // ==================================================
+
+        // =========================
     // IMPROVED INFINITE SCROLL HANDLER
     // =========================
     $(window).on("scroll", function () {
@@ -222,106 +319,6 @@ jQuery(function() {
             }
         }
         
-
-    // ========================================
-    // LOADING TRENDING WITS
-    // ========================================
-
-    function loadTrendingWits() {
-        $.get("/api/top_wits").then(function(data) {
-            if (data.length !== 0) {
-                // Create an array of promises for fetching profile pictures
-                const profilePicturePromises = data.map(wit => findProfilePicture(wit.author));
-
-                // Wait for all promises to resolve
-                Promise.all(profilePicturePromises)
-                .then(profilePictures => {
-                    for (var i = 0; i < data.length; i++) {
-                        // Parse the likes string into a JSON array if it's not empty
-                        var likesArray;
-                        try {
-                            likesArray = JSON.parse(data[i].likes || '[]');
-                        } catch (error) {
-                            console.error("Error parsing likes:", error);
-                            likesArray = [];
-                        }
-
-                        // Get the length of the array
-                        var likesCount = likesArray.length;
-
-                        // var mainData = data[i];
-                        var row = $(`<div class="T-wit-row col-md-12" id="wit-${data[i].id}"></div>`);
-                        row.append(`
-                        <div class="row">
-
-                            <div class="col-md-3" id="T-witProfilePic">
-                            
-                            </div>
-            
-                            <div class="col-md-9">
-                                <h4 class="T-wit-author">@${data[i].author}</h4><p class="T-wit-date">${moment(data[i].createdAt).format("h:mma on dddd")} </p>
-                                <p class="T-wit-body">${data[i].body}</p>
-                                <p class="imgAttachmentDiv"></p>
-                                <button type="button" data-wit-id="${data[i].id}" class="wit-like-btn btn btn-default btn-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
-                                        <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
-                                    </svg>
-
-                                    ${likesCount}
-
-                                </button>
-                            </div>
-
-                        </div>
-                        `);
-
-                        $("#trendingWits").prepend(row);
-
-                        // Append profile pic to the page using the pre-fetched profilePictures array
-                        const profilePic = profilePictures[i];
-                        if (!profilePic) {
-                            row.find('#T-witProfilePic').html(`<img class="T-Wit-profilePic" src="/img/defaultProfilePic.png"></img>`);
-                        } else {
-                            row.find('#T-witProfilePic').html(`<img class="T-Wit-profilePic" src="${profilePic}"></img>`);
-                        }
-
-                        // Attach click event handler to the like button
-                        row.find('.wit-like-btn').on('click', function () {
-                            // Call the function to handle the like button click
-                            likePost(this.dataset.witId, user.username, row);
-                        });
-
-                        // ======================================
-                        // ADDING IMAGES TO THE PAGE
-                        if (data[i].image) {
-                            
-                            var imageUrl = data[i].image;
-                            row.find(".imgAttachmentDiv").html(`<img src="${imageUrl}" alt="Wit Image" class="wit-image">`);
-                        }
-
-                        $("#T-wits-area").prepend(row);
-                        // ======================================
-
-
-                        const lowercaseUsername = user.username.toLowerCase();
-
-                        // Checks if the user has liked the wit
-                        if (data[i].likes && data[i].likes.includes(lowercaseUsername)) {
-                            row.find('.wit-like-btn').css('background-color', 'red');
-                            row.find('.wit-like-btn').css('color', 'white');
-                        }
-
-                    }
-                })
-            } else {
-                return;
-            }
-        });
-    }
-
-    loadTrendingWits();
-
-    // ==================================================
     // ==================================================
     // WHEN THE "WIT" BUTTON IS PRESSED
     // ==================================================
@@ -501,41 +498,46 @@ function followPost(targetUsername, followerUsername) {
 // LIKE POST FUNCTION
 // ===========================================
 
-function likePost(witId, username) {
+function likePost(witId, username, row) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            method: 'POST',
+            url: `/api/wits/${witId}/like`,
+            data: { username: username },
+            success: function (response) {
+                const likeButton = row.find(`.T-wit-like-btn[data-wit-id="${witId}"]`);
+                const likeCount = response.numLikes;
 
-    var row = $(`#wit-${witId}`);
+                // Update the like button text with the new like count
+                likeButton.html(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor"
+                         class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+                        <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 
+                            1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 
+                            1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 
+                            1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 
+                            .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 
+                            1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 
+                            .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 
+                            16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609
+                            -2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 
+                            1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 
+                            1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+                    </svg>
+                    ${likeCount}
+                `);
 
-    $.ajax({
-        method: 'POST',
-        url: `/api/wits/${witId}/like`,
-        data: {username: username},
-        success: function (response) {
-            var witBtn = (".wit-like-btn-" + witId)
-
-            // Update the like button with the new like count
-            row.find(witBtn).html(`
-                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
-                    <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
-                </svg>
-                ${response.numLikes}
-            `);
-
-            // Update the like button style if needed
-            if (response.userAlreadyLiked) {
-                row.find(witBtn).css('background-color', 'red');
-                row.find(witBtn).css('color', 'white');
-            } else {
-                row.find(witBtn).css('background-color', 'white');
-                row.find(witBtn).css('color', 'black');
+                // Resolve the promise with the response
+                resolve(response);
+            },
+            error: function (error) {
+                console.error('Error within likePost function:', error);
+                reject(error);
             }
-        },        
-        error: function(error) {
-            console.error('Error within likePost function:', error)
-        }
+        });
     });
-};
+}
 
-// ===========================================
 // ===========================================
 
 // ===========================================
