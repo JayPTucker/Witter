@@ -1,3 +1,12 @@
+let loggedInUser = '';  // Define globally
+
+// Fetch the logged-in user's username on page load
+$.get('/api/user_data', function (response) {
+    if (response.username) {
+        loggedInUser = response.username;
+    }
+});
+
 jQuery(function() {
     $.get("/api/user_data").then(function(user) {
 
