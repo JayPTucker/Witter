@@ -75,7 +75,7 @@ jQuery(function() {
                                 <button class="follow-btn follow-btn-${witData.author}">Follow</button>
                             </div>
                         </div>
-                        <p class="wit-date">${moment(witData.createdAt).format("h:mma on dddd")}</p>
+                        <p class="wit-date">${moment(witData.createdAt).format("h:mma on MMMM Do, YYYY")}</p>
                         <p class="wit-body">${witData.body}</p>
                         <p class="imgAttachmentDiv"></p>
                         <button type="button" data-wit-id="${witData.id}" class="wit-like-btn wit-like-btn-${witData.id} btn btn-default btn-sm">
@@ -195,7 +195,7 @@ jQuery(function() {
                                     <div class="col-md-3" id="T-witProfilePic"></div>
                                     <div class="col-md-9">
                                         <h4 class="T-wit-author">@${witData.author}</h4>
-                                        <p class="T-wit-date">${moment(witData.createdAt).format("h:mma on dddd")}</p>
+                                        <p class="T-wit-date">${moment(witData.createdAt).format("h:mma on MMMM Do, YYYY")}</p>
                                         <p class="T-wit-body">${witData.body}</p>
                                         <p class="imgAttachmentDiv"></p>
                                         <button type="button" data-wit-id="${witData.id}" 
@@ -384,7 +384,7 @@ function appendNewWitToDOM(newWit) {
             <div class="col-md-2 wit-img-div" id="witProfilePic-${newWit.id}"></div>  <!-- Profile pic placeholder -->
             <div class="col-md-9">
                 <h4 class="wit-author">@${newWit.author}</h4>
-                <p class="wit-date">${moment(newWit.createdAt).format("h:mma on dddd")} </p>
+                <p class="wit-date">${moment(witData.createdAt).format("h:mma on MMMM Do, YYYY")}</p>
                 <p class="wit-body">${newWit.body}</p>
                 <p class="imgAttachmentDiv"></p>
                 <button type="button" data-wit-id="${newWit.id}" class="wit-like-btn wit-like-btn-${newWit.id} btn btn-default btn-sm">
