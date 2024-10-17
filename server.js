@@ -33,12 +33,13 @@ app.use(express.static("public"));
 // Session handling and Passport.js initialization
 app.use(session({
     secret: process.env.SECRET,
-    resave: false, // Changed to false for more efficient handling
-    saveUninitialized: false, // Changed to false for better session management
+    resave: true,
+    saveUninitialized: true,
     cookie: {
-        secure: process.env.NODE_ENV === 'production' // Ensure cookies are secure in production
+        secure: process.env.NODE_ENV === "production" // Ensures secure cookies in production
     }
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
