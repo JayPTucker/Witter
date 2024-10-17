@@ -30,10 +30,10 @@ function generateVerificationCode() {
 module.exports = function(app) {
 
     // ============================================================
-    // LOGIN ROUTE    
+    // LOGIN ROUTE   
     // ============================================================
-    app.post("/api/login", async function(req, res, next) {
 
+    app.post("/api/login", async function(req, res, next) {
         try {
             const user = await db.User.findOne({
                 where: {
@@ -41,42 +41,37 @@ module.exports = function(app) {
                     isVerified: true
                 }
             });
-    
-            if (user) {
-                // Mark the user as verified
-                console.log("User is verified")
+
+            if (!user) {
+                console.log("User is not verified");
+                return res.status(401).json({ error: "User is not verified" });
             } else {
-                console.log("user is not verified")
-                return;
+                console.log("User is verified");
             }
         } catch (error) {
             console.error("Error validating if Email is verified:", error);
-            res.status(500).json({ error: "Error verifying email" });
+            return res.status(500).json({ error: "Error verifying email" });
         }
         
         passport.authenticate("local", function(err, user, info) {
             if (err) {
-                // Handle unexpected errors
                 console.error("Error during authentication:", err);
                 return res.status(500).json({ error: "Internal Server Error" });
             }
-    
+
             if (!user) {
-                // Handle authentication failure (invalid username or password)
                 console.log("Authentication failed");
                 return res.status(401).json({ error: "Invalid username or password" });
             }
-    
-            // Authentication successful, log in the user
+
             req.logIn(user, function(err) {
                 if (err) {
-                    // Handle login error
                     console.error("Error during login:", err);
                     return res.status(500).json({ error: "Internal Server Error" });
                 }
-    
-                // Return the user data
-                return res.json(req.user);
+
+                // Redirect to /witter after successful login
+                return res.redirect("/witter");  // <-- Change to redirect instead of returning JSON
             });
         })(req, res, next);
     });
