@@ -469,13 +469,13 @@ module.exports = function(app) {
     // ============================================================
     app.get("/api/all_wits", function(req, res) {
         // Get limit and offset from the query parameters
-        const limit = parseInt(req.query.limit) || 10;  // Number of wits to load per request
-        const offset = parseInt(req.query.offset) || 0;  // Offset to load the next batch
+        // const limit = parseInt(req.query.limit) || 10;  // Number of wits to load per request
+        // const offset = parseInt(req.query.offset) || 0;  // Offset to load the next batch
 
         db.Wit.findAll({
-            order: [['createdAt', 'DESC']],  // Fetch newest first
-            limit: limit,                    // Limit number of wits to return
-            offset: offset                   // Skip records for pagination
+            order: [['createdAt', 'DESC']]  // Fetch newest first
+            // limit: limit,                    // Limit number of wits to return
+            // offset: offset                   // Skip records for pagination
         })
         .then(function(results) {
             res.json(results);
@@ -516,9 +516,9 @@ module.exports = function(app) {
                 where: {
                     author: followingArray // Fetch wits where the author is in the following array
                 },
-                order: [['createdAt', 'DESC']],  // Fetch newest wits first
-                limit: req.query.limit || 10,     // Limit the number of results
-                offset: req.query.offset || 0     // Skip records for pagination
+                order: [['createdAt', 'DESC']]  // Fetch newest wits first
+                // limit: req.query.limit || 10,     // Limit the number of results
+                // offset: req.query.offset || 0     // Skip records for pagination
             });
 
             res.json(wits);
