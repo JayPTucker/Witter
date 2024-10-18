@@ -7,6 +7,9 @@ $.get('/api/user_data', function (response) {
     }
 });
 
+$(".home-button").css("background-color", "rgb(34, 67, 97)").css("border", "3px solid white")
+
+
 jQuery(function() {
     $.get("/api/user_data").then(function(user) {
 
@@ -157,16 +160,20 @@ jQuery(function() {
         }
     }
 
+    // CALL TO LOAD WITS INITIALLY
+    loadWits('/api/all_wits');
+
+
     // =============================================
     // CALL TO LOAD WITS USING OTHER API
     // =============================================
     $(".following-button").on('click', async function () {
         $(".wit-row").remove();  // Clear current wits
         await loadWits('/api/all_following_wits');
-    });
 
-    // CALL TO LOAD WITS INITIALLY
-    loadWits('/api/all_wits');
+        $(".following-button").css("background-color", "rgb(34, 67, 97)").css("border", "3px solid white");
+        $(".home-button").css("background-color", "rgba(7, 31, 53, 0.699)").css("border", "rgba(255, 255, 255, 0.116)");
+    });
 
     // ========================================
     // LOADING TRENDING WITS
