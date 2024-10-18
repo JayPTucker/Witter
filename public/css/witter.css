@@ -139,7 +139,7 @@ input:focus {
 }
 
 .wit-image {
-  max-width: 30vh;
+  max-width: 20vh !important;
   border-radius: 15px;
   border: 2px solid rgba(255, 255, 255, 0.562);
   transition: all 0.2s ease-in-out;
