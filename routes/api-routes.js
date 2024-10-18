@@ -29,27 +29,36 @@ function generateVerificationCode() {
 
 module.exports = function(app) {
 
-// LOGIN ROUTE    
+// LOGIN ROUTE
 app.post("/api/login", async function(req, res, next) {
+    const { username, password } = req.body;
+
+    // Check if username or password is empty
+    if (!username || !password) {
+        return res.status(400).json({ error: "Username and password are required" });
+    }
+
     try {
+        // Check if user is verified
         const user = await db.User.findOne({
             where: {
-                username: req.body.username,
+                username: username,
                 isVerified: true
             }
         });
 
         if (!user) {
-            console.log("User is not verified");
-            return res.status(401).json({ error: "User is not verified" });
+            console.log("User is not verified or does not exist");
+            return res.status(401).json({ error: "User is not verified or does not exist" });
         } else {
             console.log("User is verified");
         }
     } catch (error) {
-        console.error("Error validating if Email is verified:", error);
-        return res.status(500).json({ error: "Error verifying email" });
+        console.error("Error validating if user is verified:", error);
+        return res.status(500).json({ error: "Error verifying user" });
     }
     
+    // Use passport to authenticate the user
     passport.authenticate("local", function(err, user, info) {
         if (err) {
             console.error("Error during authentication:", err);
@@ -57,10 +66,11 @@ app.post("/api/login", async function(req, res, next) {
         }
 
         if (!user) {
-            console.log("Authentication failed");
+            console.log("Authentication failed: Invalid username or password");
             return res.status(401).json({ error: "Invalid username or password" });
         }
 
+        // Log the user in
         req.logIn(user, function(err) {
             if (err) {
                 console.error("Error during login:", err);
@@ -68,7 +78,7 @@ app.post("/api/login", async function(req, res, next) {
             }
 
             // Redirect to /witter after successful login
-            return res.redirect("/witter");  // <-- Change to redirect instead of returning JSON
+            return res.redirect("/witter");
         });
     })(req, res, next);
 });
