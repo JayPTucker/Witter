@@ -1,5 +1,6 @@
 // DEPENDENCIES
 require("dotenv").config();
+
 var express = require("express");
 var compression = require('compression');
 var session = require("express-session");
@@ -18,29 +19,18 @@ app.use(compression());
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// Force HTTPS in production
-app.use((req, res, next) => {
-    if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
-        return res.redirect('https://' + req.headers.host + req.url);
-    }
-    next();
-});
+// =====================================
 
 // Static directory
 app.use(express.static("public"));
+// =====================================
 
+// Session handling and Passport.js initialization
 app.use(session({
     secret: process.env.SECRET,
     resave: true,
-    saveUninitialized: true,
-    cookie: {
-        secure: process.env.NODE_ENV === "production", // Ensures secure cookies in production
-        sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax',  // Set `none` for cross-site cookies in production
-        httpOnly: true
-    }
+    saveUninitialized: true
 }));
-
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -52,14 +42,9 @@ require("./routes/api-routes.js")(app);
 app.get('/verificationCode', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'verificationCode.html'));
 });
+// =====================================
 
-// Error handler
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-});
-
-// Starts the server to begin listening:
+// Starts the server to begin Listening:
 db.sequelize.sync().then(function() {
     app.listen(PORT, function() {
         console.log("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);

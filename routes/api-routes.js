@@ -29,59 +29,57 @@ function generateVerificationCode() {
 
 module.exports = function(app) {
 
-// LOGIN ROUTE
-app.post("/api/login", async function(req, res, next) {
-    const { username, password } = req.body;
+    // ============================================================
+    // LOGIN ROUTE    
+    // ============================================================
+    app.post("/api/login", async function(req, res, next) {
 
-    // Check if username or password is empty
-    if (!username || !password) {
-        return res.status(400).json({ error: "Username and password are required" });
-    }
-
-    try {
-        // Check if user is verified
-        const user = await db.User.findOne({
-            where: {
-                username: username,
-                isVerified: true
-            }
-        });
-
-        if (!user) {
-            console.log("User is not verified or does not exist");
-            return res.status(401).json({ error: "User is not verified or does not exist" });
-        } else {
-            console.log("User is verified");
-        }
-    } catch (error) {
-        console.error("Error validating if user is verified:", error);
-        return res.status(500).json({ error: "Error verifying user" });
-    }
+        try {
+            const user = await db.User.findOne({
+                where: {
+                    username: req.body.username,
+                    isVerified: true
+                }
+            });
     
-    // Use passport to authenticate the user
-    passport.authenticate("local", function(err, user, info) {
-        if (err) {
-            console.error("Error during authentication:", err);
-            return res.status(500).json({ error: "Internal Server Error" });
+            if (user) {
+                // Mark the user as verified
+                console.log("User is verified")
+            } else {
+                console.log("user is not verified")
+                return;
+            }
+        } catch (error) {
+            console.error("Error validating if Email is verified:", error);
+            res.status(500).json({ error: "Error verifying email" });
         }
-
-        if (!user) {
-            console.log("Authentication failed: Invalid username or password");
-            return res.status(401).json({ error: "Invalid username or password" });
-        }
-
-        // Log the user in
-        req.logIn(user, function(err) {
+        
+        passport.authenticate("local", function(err, user, info) {
             if (err) {
-                console.error("Error during login:", err);
+                // Handle unexpected errors
+                console.error("Error during authentication:", err);
                 return res.status(500).json({ error: "Internal Server Error" });
             }
-
-            // Redirect to /witter after successful login
-            return res.redirect("/witter");
-        });
-    })(req, res, next);
-});
+    
+            if (!user) {
+                // Handle authentication failure (invalid username or password)
+                console.log("Authentication failed");
+                return res.status(401).json({ error: "Invalid username or password" });
+            }
+    
+            // Authentication successful, log in the user
+            req.logIn(user, function(err) {
+                if (err) {
+                    // Handle login error
+                    console.error("Error during login:", err);
+                    return res.status(500).json({ error: "Internal Server Error" });
+                }
+    
+                // Return the user data
+                return res.json(req.user);
+            });
+        })(req, res, next);
+    });
 
     // ============================================================
     // PASSWORD RESET ROUTE    

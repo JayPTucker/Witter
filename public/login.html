@@ -25,16 +25,21 @@
 
             <div class="login-register-col login-col col-md-6 text-center">
                 <h1>Login</h1>
-                <form class="login" action="/api/login" method="POST">
-                    <div id="login-failed-alert"></div>
-                    <input class="login-register-inputs" type="username" autocomplete="on" id="username-input" placeholder="Username" name="username">
+                <form class="login">
+
+                    <div id="login-failed-alert">
+
+                    </div>
+
+                    <input class="login-register-inputs" type="username" autocomplete="on" id="username-input" placeholder="Username">
                     <br><br>
-                    <input class="login-register-inputs" type="password" autocomplete="on" id="password-input" placeholder="Password" name="password">
+                    <input class="login-register-inputs" type="password" autocomplete="on" id="password-input" placeholder="Password">
                     <br><br>
-                    <p class="no-account">Don't have an account? <a href="/signup">Sign Up!</a></p>
                     <button class="login-button default-button" type="submit">Submit</button>
+                    <p class="no-account">Don't have an account? <a href="/signup">Sign Up!</a></p>
+                    <p id="resetLink">Forgot Password? <a href="#" id="resetButton">Click here to reset.</a></p>
+
                 </form>
-                
             </div>
         </div>
     </div>
