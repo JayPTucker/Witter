@@ -57,7 +57,7 @@ jQuery(function() {
         try {
             likesArray = JSON.parse(witData.likes || '[]');
         } catch (error) {
-            console.error("Error parsing likes:", error);
+            // console.error("Error parsing likes:", error);
         }
         
         const likesCount = likesArray.length;
@@ -265,47 +265,47 @@ jQuery(function() {
 
     // ==================================================
 
-        // =========================
+    // =========================
     // IMPROVED INFINITE SCROLL HANDLER
     // =========================
-    $(window).on("scroll", function () {
-        const scrollPosition = $(window).scrollTop() + $(window).height();
-        const documentHeight = $(document).height();
-        // console.log("Scroll Position:", scrollPosition);
-        // console.log("Document Height:", documentHeight);    
+    // $(window).on("scroll", function () {
+    //     const scrollPosition = $(window).scrollTop() + $(window).height();
+    //     const documentHeight = $(document).height();
+    //     // console.log("Scroll Position:", scrollPosition);
+    //     // console.log("Document Height:", documentHeight);    
 
-        // Trigger loadWits if scrolled near the bottom of the page (within 100px)
-        if (scrollPosition >= documentHeight - -850 && !loading && !allWitsLoaded) {
-            // Chose 700 cause it's the closest to the bottom of the page.
-            loadWits();  // Load more wits when scrolling near the bottom
-        }
-    });
+    //     // Trigger loadWits if scrolled near the bottom of the page (within 100px)
+    //     if (scrollPosition >= documentHeight - -850 && !loading && !allWitsLoaded) {
+    //         // Chose 700 cause it's the closest to the bottom of the page.
+    //         loadWits();  // Load more wits when scrolling near the bottom
+    //     }
+    // });
 
-        // Load the initial batch of wits when the page loads
-        $(document).ready(function () {
-            loadWits();  // Load the first batch of wits
-        });
+    //     // Load the initial batch of wits when the page loads
+    //     $(document).ready(function () {
+    //         loadWits();  // Load the first batch of wits
+    //     });
 
-        // Function to find and return the profile picture URL for an author
-    function findProfilePicture(author) {
-        return new Promise((resolve, reject) => {
-            // Fetch the profile picture for the author
-            $.get(`/api/profilePicture/${author}`)
-            .then(response => {
-                resolve(response.profilePicture);
-            })
-            .catch(error => {
-                console.log("Error fetching profile picture:", error);
-                reject(error);
-            });
-        });
-    }
+    //     // Function to find and return the profile picture URL for an author
+    // function findProfilePicture(author) {
+    //     return new Promise((resolve, reject) => {
+    //         // Fetch the profile picture for the author
+    //         $.get(`/api/profilePicture/${author}`)
+    //         .then(response => {
+    //             resolve(response.profilePicture);
+    //         })
+    //         .catch(error => {
+    //             console.log("Error fetching profile picture:", error);
+    //             reject(error);
+    //         });
+    //     });
+    // }
 
         // SEPARATE FUNCTION FOR LOADING PROFILE PICS SO THEY ARE NOT SKIPPED
         async function handleProfilePicture(wit, row) {
             try {
                 const profilePic = await findProfilePicture(wit.author);  // Wait for the profile picture to be fetched
-                console.log("Profile picture fetched:", profilePic);  // Debugging log to check if the profile picture is correct
+                // console.log("Profile picture fetched:", profilePic);  // Debugging log to check if the profile picture is correct
                 
                 if (profilePic) {
                     // Update the correct row's profile picture using the dynamic id
@@ -384,7 +384,7 @@ function appendNewWitToDOM(newWit) {
             <div class="col-md-2 wit-img-div" id="witProfilePic-${newWit.id}"></div>  <!-- Profile pic placeholder -->
             <div class="col-md-9">
                 <h4 class="wit-author">@${newWit.author}</h4>
-                <p class="wit-date">${moment(witData.createdAt).format("h:mma on MMMM Do, YYYY")}</p>
+                <p class="wit-date">${moment(newWit.createdAt).format("h:mma on MMMM Do, YYYY")}</p>
                 <p class="wit-body">${newWit.body}</p>
                 <p class="imgAttachmentDiv"></p>
                 <button type="button" data-wit-id="${newWit.id}" class="wit-like-btn wit-like-btn-${newWit.id} btn btn-default btn-sm">
@@ -429,7 +429,7 @@ function appendNewWitToDOM(newWit) {
 async function handleProfilePicture(wit, row) {
     try {
         const profilePic = await findProfilePicture(wit.author);  // Wait for the profile picture to be fetched
-        console.log("Profile picture fetched:", profilePic);  // Debugging log to check if the profile picture is correct
+        // console.log("Profile picture fetched:", profilePic);  // Debugging log to check if the profile picture is correct
         
         if (profilePic) {
             row.find(`#witProfilePic-${wit.id}`).html(`<img class="Wit-profilePic" src="${profilePic}" alt="Profile Picture">`);
@@ -571,7 +571,7 @@ function renderDropDown(witData, row) {
                     </div>
                 </div>`;
         } else if (authorInput === witData.author) {
-            console.log("Rendering dropdown for wit created by the current user");
+            // console.log("Rendering dropdown for wit created by the current user");
             return `
             <div class="dropdown">
                 <button class="dropbtn">
