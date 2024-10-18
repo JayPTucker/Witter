@@ -29,52 +29,49 @@ function generateVerificationCode() {
 
 module.exports = function(app) {
 
-    // ============================================================
-    // LOGIN ROUTE   
-    // ============================================================
-
-    app.post("/api/login", async function(req, res, next) {
-        try {
-            const user = await db.User.findOne({
-                where: {
-                    username: req.body.username,
-                    isVerified: true
-                }
-            });
-
-            if (!user) {
-                console.log("User is not verified");
-                return res.status(401).json({ error: "User is not verified" });
-            } else {
-                console.log("User is verified");
+// LOGIN ROUTE    
+app.post("/api/login", async function(req, res, next) {
+    try {
+        const user = await db.User.findOne({
+            where: {
+                username: req.body.username,
+                isVerified: true
             }
-        } catch (error) {
-            console.error("Error validating if Email is verified:", error);
-            return res.status(500).json({ error: "Error verifying email" });
+        });
+
+        if (!user) {
+            console.log("User is not verified");
+            return res.status(401).json({ error: "User is not verified" });
+        } else {
+            console.log("User is verified");
         }
-        
-        passport.authenticate("local", function(err, user, info) {
+    } catch (error) {
+        console.error("Error validating if Email is verified:", error);
+        return res.status(500).json({ error: "Error verifying email" });
+    }
+    
+    passport.authenticate("local", function(err, user, info) {
+        if (err) {
+            console.error("Error during authentication:", err);
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+
+        if (!user) {
+            console.log("Authentication failed");
+            return res.status(401).json({ error: "Invalid username or password" });
+        }
+
+        req.logIn(user, function(err) {
             if (err) {
-                console.error("Error during authentication:", err);
+                console.error("Error during login:", err);
                 return res.status(500).json({ error: "Internal Server Error" });
             }
 
-            if (!user) {
-                console.log("Authentication failed");
-                return res.status(401).json({ error: "Invalid username or password" });
-            }
-
-            req.logIn(user, function(err) {
-                if (err) {
-                    console.error("Error during login:", err);
-                    return res.status(500).json({ error: "Internal Server Error" });
-                }
-
-                // Redirect to /witter after successful login
-                return res.redirect("/witter");  // <-- Change to redirect instead of returning JSON
-            });
-        })(req, res, next);
-    });
+            // Redirect to /witter after successful login
+            return res.redirect("/witter");  // <-- Change to redirect instead of returning JSON
+        });
+    })(req, res, next);
+});
 
     // ============================================================
     // PASSWORD RESET ROUTE    
