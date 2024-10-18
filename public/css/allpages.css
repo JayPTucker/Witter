@@ -7,6 +7,11 @@ body {
   margin: 0; /* Remove default margin */
   background-color: rgb(0, 35, 68) !important;
 }
+
+button:focus {
+  outline: none !important;
+}
+
   
 /* Gets rid of resize option on input */
 .form-control {
