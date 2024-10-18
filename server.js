@@ -30,13 +30,14 @@ app.use((req, res, next) => {
 // Static directory
 app.use(express.static("public"));
 
-// Session handling and Passport.js initialization
 app.use(session({
     secret: process.env.SECRET,
     resave: true,
     saveUninitialized: true,
     cookie: {
-        secure: process.env.NODE_ENV === "production" // Ensures secure cookies in production
+        secure: process.env.NODE_ENV === "production", // Ensures secure cookies in production
+        sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax',  // Set `none` for cross-site cookies in production
+        httpOnly: true
     }
 }));
 
