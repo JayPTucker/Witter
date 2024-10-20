@@ -63,7 +63,6 @@ jQuery(function() {
                         
                         saveBtn.text("Success")
                         saveBtn.css("background-color", "green")
-                    
                     },
                     error: function (err) {
                         alert("Profile Picture not properly changed.");

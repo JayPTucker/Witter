@@ -72,12 +72,15 @@ jQuery(function() {
                     <div class="col-md-2 wit-img-div" id="witProfilePic-${witData.id}"></div>
                     <div class="col-md-9">
                         <h4 class="wit-author" data-username="${witData.author}">@<span class='clickable'>${witData.author}</span></h4>
+
                         <div class="popup profile-popup" style="display: none;">
                             <div class="followers-list">
                                 <p class="followerAmount" id="follower-count-${witData.id}"></p>
                                 <button class="follow-btn follow-btn-${witData.author}">Follow</button>
                             </div>
                         </div>
+                        <a class="following-status">Loading...</a>
+                        
                         <p class="wit-date">${moment(witData.createdAt).format("h:mma on MMMM Do, YYYY")}</p>
                         <p class="wit-body">${witData.body}</p>
                         <p class="imgAttachmentDiv"></p>
@@ -97,6 +100,46 @@ jQuery(function() {
         
         // Append the row to the wits area
         $("#wits-area").append(row);
+
+        // Now make the AJAX call to check if the logged-in user is following the author
+        $.ajax({
+            method: 'GET',
+            url: `/api/users/${witData.author}/followers`,  // API endpoint
+            success: function (response) {
+                const followBtnText = response.followers.includes(loggedInUser) ? 'Following' : '';
+
+                // Update the .following-status button with the correct status
+                $(`#wit-${witData.id} .following-status`).text(followBtnText);
+
+                // Handle the follow/unfollow button inside the popup as well
+                const popupFollowBtnText = response.followers.includes(loggedInUser) ? 'Unfollow' : 'Follow';
+                $(`.follow-btn-${witData.author}`).text(popupFollowBtnText);
+            },
+            error: function (error) {
+                console.error(`Error fetching follower status for ${witData.author}:`, error);
+                $(`#wit-${witData.id} .following-status`).text('Error');  // Indicate error if the request fails
+            }
+        });
+
+        // Event listener for follow/unfollow in the popup or main post
+        $(document).on('click', '.following-status', function () {
+            let witRow = $(this).closest('.wit-row');
+            let username = witRow.find('.wit-author').data('username');
+            let isFollowing = $(this).text() === 'Following';
+
+            $.ajax({
+                method: isFollowing ? 'DELETE' : 'POST',
+                url: `/api/users/${username}/follow`,  // API endpoint for follow/unfollow
+                success: function (response) {
+                    console.log(`${isFollowing ? 'Unfollowed' : 'Followed'} ${username}`);
+                    $(`.following-status`, witRow).text(isFollowing ? 'Not Following' : 'Following');
+                    $(`.follow-btn-${username}`).text(isFollowing ? 'Follow' : 'Unfollow');
+                },
+                error: function (error) {
+                    console.error(`Error ${isFollowing ? 'unfollowing' : 'following'} ${username}:`, error);
+                }
+            });
+        });
 
         // Load profile picture
         await handleProfilePicture(witData, row);
@@ -271,42 +314,6 @@ jQuery(function() {
     
 
     // ==================================================
-
-    // =========================
-    // IMPROVED INFINITE SCROLL HANDLER
-    // =========================
-    // $(window).on("scroll", function () {
-    //     const scrollPosition = $(window).scrollTop() + $(window).height();
-    //     const documentHeight = $(document).height();
-    //     // console.log("Scroll Position:", scrollPosition);
-    //     // console.log("Document Height:", documentHeight);    
-
-    //     // Trigger loadWits if scrolled near the bottom of the page (within 100px)
-    //     if (scrollPosition >= documentHeight - -850 && !loading && !allWitsLoaded) {
-    //         // Chose 700 cause it's the closest to the bottom of the page.
-    //         loadWits();  // Load more wits when scrolling near the bottom
-    //     }
-    // });
-
-    //     // Load the initial batch of wits when the page loads
-    //     $(document).ready(function () {
-    //         loadWits();  // Load the first batch of wits
-    //     });
-
-    //     // Function to find and return the profile picture URL for an author
-    // function findProfilePicture(author) {
-    //     return new Promise((resolve, reject) => {
-    //         // Fetch the profile picture for the author
-    //         $.get(`/api/profilePicture/${author}`)
-    //         .then(response => {
-    //             resolve(response.profilePicture);
-    //         })
-    //         .catch(error => {
-    //             console.log("Error fetching profile picture:", error);
-    //             reject(error);
-    //         });
-    //     });
-    // }
 
         // SEPARATE FUNCTION FOR LOADING PROFILE PICS SO THEY ARE NOT SKIPPED
         async function handleProfilePicture(wit, row) {
@@ -664,7 +671,7 @@ jQuery(function() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(success, error);
     } else {
-        alert("Geolocation is not supported by this browser.");
+        console.log("Geolocation not supported")
     }
 
     // If geolocation is successful

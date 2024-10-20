@@ -89,6 +89,12 @@ input:focus {
 /* POSTED WITS */
 /* =================================================== */
 
+.following-status {
+  margin-top: -25px !important;
+  font-size: 20px;
+  color: rgb(84, 235, 255) !important;
+}
+
 .wit-author {
   margin-bottom: 5px;
   color: rgb(255, 251, 215);
