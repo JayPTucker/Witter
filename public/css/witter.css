@@ -95,9 +95,11 @@ input:focus {
   color: rgb(84, 235, 255) !important;
 }
 
-.wit-author {
-  margin-bottom: 5px;
-  color: rgb(255, 251, 215);
+.wit-author,
+.following-status {
+  display: inline-block;
+  margin-right: 10px; /* Optional: Adds space between the two elements */
+  vertical-align: auto; /* Aligns them vertically */
 }
 
 .clickable {
