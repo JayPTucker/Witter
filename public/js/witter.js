@@ -244,7 +244,15 @@ jQuery(function() {
                                 <div class="row">
                                     <div class="col-md-3" id="T-witProfilePic"></div>
                                     <div class="col-md-9">
-                                        <h4 class="T-wit-author">@${witData.author}</h4>
+                                    <h4 class="wit-author" data-username="${witData.author}">@<span class='clickable'>${witData.author}</span></h4>
+                                    <a class="following-status">Loading...</a>
+
+                                    <div class="popup profile-popup" style="display: none;">
+                                        <div class="followers-list">
+                                            <p class="followerAmount" id="follower-count-${witData.id}"></p>
+                                            <button class="follow-btn follow-btn-${witData.author}">Follow</button>
+                                        </div>
+                                    </div>                                        
                                         <p class="T-wit-date">${moment(witData.createdAt).format("h:mma on MMMM Do, YYYY")}</p>
                                         <p class="T-wit-body">${witData.body}</p>
                                         <p class="imgAttachmentDiv"></p>
