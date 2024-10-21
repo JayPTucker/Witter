@@ -729,7 +729,7 @@ jQuery(function() {
 $(document).on('click', '.wit-author', function () {
     $(this).siblings('.popup').fadeIn();  // Show the popup
 
-    let username = $(this).text().replace('@', '');  // Get the username without '@'
+    let username = $(this).text().replace('@', '').trim();  // Get the username without '@' and trim extra spaces
     let witId = $(this).closest('.wit-row').attr('id').split('-')[1];  // Get the wit ID
 
     $.ajax({
@@ -740,8 +740,8 @@ $(document).on('click', '.wit-author', function () {
             console.log(response);
 
             // Insert profile picture and follower count
-            const profilePicUrl = response.ProfilePic || 
-                "./img/defaultProfilePic.png";
+            const profilePicUrl = response.ProfilePic ? response.ProfilePic : "./img/defaultProfilePic.png";
+
 
             $(`#follower-count-${witId}`).html(`
                 <span class="followers-span">
@@ -755,6 +755,8 @@ $(document).on('click', '.wit-author', function () {
             console.log(response.ProfilePic ? 'Has profile pic' : 'NO PROFILE PIC FOUND');
 
             // Handle the follow/unfollow button
+            console.log(loggedInUser)
+            console.log(username)
             const followBtnText = response.followers.includes(loggedInUser) ? 'Unfollow' : 'Follow';
             $(`.follow-btn-${username}`).text(followBtnText);
         },

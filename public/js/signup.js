@@ -38,6 +38,11 @@ $(document).ready(function () {
             return;
         }
 
+        if (userData.username.includes(' ')) {
+            showAlert("Username cannot have a space in it")
+            return;
+        }
+
         // Proceed with signup validation
         signUpFunction(userData.email, userData.username, userData.password);
     });
