@@ -804,4 +804,35 @@ app.post("/api/users/:username/follow", async function (req, res) {
             res.status(500).json({ error: "Internal Server Error" });
         });
     });
+
+    app.post('/api/comments', async (req, res) => {
+        const { witId, author, body } = req.body;
+    
+        try {
+            const newComment = await db.Comment.create({
+                witId,
+                author,
+                body
+            });
+            res.json(newComment);
+        } catch (error) {
+            console.error("Error adding comment:", error);
+            res.status(500).json({ error: "Could not add comment" });
+        }
+    });
+
+    // API route to fetch comments for a specific wit
+    app.get('/api/wits/:witId/comments', async (req, res) => {
+        const witId = req.params.witId;
+
+        try {
+            const comments = await db.Comment.findAll({ where: { witId } });
+            res.json(comments);
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+            res.status(500).json({ error: 'Could not fetch comments' });
+        }
+    });
+
+    
 };

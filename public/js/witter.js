@@ -90,6 +90,14 @@ jQuery(function() {
                             </svg>
                             ${likesCount}
                         </button>
+
+                        <button type="button" data-wit-id="${witData.id}" class="comment-btn btn btn-default btn-sm">Comments</button>
+                        <div class="comment-section" style="display:none;" id="comment-section-${witData.id}">
+                            <textarea placeholder="Add a comment" class="comment-input"></textarea>
+                            <button type="button" data-wit-id="${witData.id}" class="submit-comment-btn btn btn-primary">Submit Comment</button>
+                            <div class="comments-list"></div>
+                        </div>
+
                     </div>
                     <div class="col-md-1">
                         <div class="dropdown-container"></div>
@@ -100,6 +108,33 @@ jQuery(function() {
         
         // Append the row to the wits area
         $("#wits-area").append(row);
+
+        // Handle comment button toggle
+        row.find('.comment-btn').on('click', function () {
+            $(`#comment-section-${witData.id}`).toggle();
+        });
+
+        // Handle submit comment functionality
+        row.find('.submit-comment-btn').on('click', function () {
+            const commentText = $(this).siblings('.comment-input').val();
+            if (commentText) {
+                postComment(this.dataset.witId, commentText, user.username);
+            }
+        });
+
+        $.ajax({
+            method: 'GET',
+            url: `/api/wits/${witData.id}/comments`,  // Your new API route to fetch comments
+            success: function (comments) {
+                const commentsList = $(`#comment-section-${witData.id} .comments-list`);
+                comments.forEach(comment => {
+                    commentsList.append(`<p><strong>${comment.author}:</strong> ${comment.body}</p>`);
+                });
+            },
+            error: function (error) {
+                console.error('Error fetching comments:', error);
+            }
+        });
 
         // Now make the AJAX call to check if the logged-in user is following the author
         $.ajax({
@@ -774,3 +809,20 @@ $(document).on('mouseleave', '.followers-list', function () {
 $(document).on('scroll', function () {
     $('.popup').fadeOut();
 });
+
+async function postComment(witId, commentText, username) {
+    console.log("postcommentfunction")
+    try {
+        const response = await $.ajax({
+            method: 'POST',
+            url: '/api/comments',
+            data: { witId, author: username, body: commentText }
+        });
+
+        // Once the comment is posted, append it to the comments list
+        const commentHtml = `<p><strong>${response.author}:</strong> ${response.body}</p>`;
+        $(`#comment-section-${witId} .comments-list`).append(commentHtml);
+    } catch (error) {
+        console.error('Error posting comment:', error);
+    }
+}
