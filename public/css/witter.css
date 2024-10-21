@@ -274,6 +274,18 @@ input:focus {
   background-color: rgb(113, 113, 113) !important;
 }
 
+.comment-btn {
+  border: 1px solid rgba(0, 0, 0, 0);
+  background-color: rgba(23, 65, 105, 0.699);
+  border: 1px solid rgba(255, 255, 255, 0.116) !important;
+  border-radius: 10px !important;
+  color: white;
+  width: 20%;
+  padding: 5px !important;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
+
 /* =================================================== */
 /* DROPDOWN MENU */
 /* =================================================== */

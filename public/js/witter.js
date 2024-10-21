@@ -91,7 +91,9 @@ jQuery(function() {
                             ${likesCount}
                         </button>
 
-                        <button type="button" data-wit-id="${witData.id}" class="comment-btn btn btn-default btn-sm">Comments</button>
+                        <button type="button" data-wit-id="${witData.id}" class="comment-btn btn btn-default btn-sm">
+                            Comments (<span class="comment-count" id="comment-count-${witData.id}">0</span>)
+                        </button>
                         <div class="comment-section" style="display:none;" id="comment-section-${witData.id}">
                             <textarea placeholder="Add a comment" class="comment-input"></textarea>
                             <button type="button" data-wit-id="${witData.id}" class="submit-comment-btn btn btn-primary">Submit Comment</button>
@@ -122,6 +124,7 @@ jQuery(function() {
             }
         });
 
+        // GET API FOR THE COMMENTS OF A POST
         $.ajax({
             method: 'GET',
             url: `/api/wits/${witData.id}/comments`,  // Your new API route to fetch comments
@@ -130,6 +133,8 @@ jQuery(function() {
                 comments.forEach(comment => {
                     commentsList.append(`<p><strong>${comment.author}:</strong> ${comment.body}</p>`);
                 });
+                // Update the comment count on the button
+                $(`#comment-count-${witData.id}`).text(comments.length);
             },
             error: function (error) {
                 console.error('Error fetching comments:', error);

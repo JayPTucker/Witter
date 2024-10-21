@@ -633,72 +633,72 @@ app.post("/api/witter", upload.single("image"), function (req, res) {
         }
     });
     
-// ============================================================
-// FOLLOW/UNFOLLOW ROUTE
-// ============================================================
-app.post("/api/users/:username/follow", async function (req, res) {
-    const targetUsername = req.params.username;   // The user to be followed/unfollowed
-    const followerUsername = req.body.username;   // The logged-in user who is following/unfollowing
+    // ============================================================
+    // FOLLOW/UNFOLLOW ROUTE
+    // ============================================================
+    app.post("/api/users/:username/follow", async function (req, res) {
+        const targetUsername = req.params.username;   // The user to be followed/unfollowed
+        const followerUsername = req.body.username;   // The logged-in user who is following/unfollowing
 
-    try {
-        // Find the target user (Person A) who is being followed/unfollowed
-        const targetUser = await db.User.findOne({
-            where: { username: targetUsername },
-            attributes: ['id', 'username', 'followers']  // Include their followers field
-        });
+        try {
+            // Find the target user (Person A) who is being followed/unfollowed
+            const targetUser = await db.User.findOne({
+                where: { username: targetUsername },
+                attributes: ['id', 'username', 'followers']  // Include their followers field
+            });
 
-        // Find the user who is following/unfollowing (Person B)
-        const followerUser = await db.User.findOne({
-            where: { username: followerUsername },
-            attributes: ['id', 'username', 'following']  // Include their following field
-        });
+            // Find the user who is following/unfollowing (Person B)
+            const followerUser = await db.User.findOne({
+                where: { username: followerUsername },
+                attributes: ['id', 'username', 'following']  // Include their following field
+            });
 
-        if (!targetUser || !followerUser) {
-            return res.status(404).json({ success: false, error: "User not found" });
-        }
+            if (!targetUser || !followerUser) {
+                return res.status(404).json({ success: false, error: "User not found" });
+            }
 
-        // Parse the followers of the target user and the following of the logged-in user
-        let targetUserFollowers = JSON.parse(targetUser.followers || '[]');
-        let followerUserFollowing = JSON.parse(followerUser.following || '[]');
+            // Parse the followers of the target user and the following of the logged-in user
+            let targetUserFollowers = JSON.parse(targetUser.followers || '[]');
+            let followerUserFollowing = JSON.parse(followerUser.following || '[]');
 
-        // Check if the follower is already following the target user
-        if (targetUserFollowers.includes(followerUsername)) {
-            // Unfollow: Remove the follower from the target user's followers list
-            targetUserFollowers = targetUserFollowers.filter(user => user !== followerUsername);
+            // Check if the follower is already following the target user
+            if (targetUserFollowers.includes(followerUsername)) {
+                // Unfollow: Remove the follower from the target user's followers list
+                targetUserFollowers = targetUserFollowers.filter(user => user !== followerUsername);
+                await targetUser.update({ followers: JSON.stringify(targetUserFollowers) });
+
+                // Remove the target user from the follower's following list
+                followerUserFollowing = followerUserFollowing.filter(user => user !== targetUsername);
+                await followerUser.update({ following: JSON.stringify(followerUserFollowing) });
+
+                return res.json({
+                    success: true,
+                    message: "Unfollowed successfully",
+                    followersCount: targetUserFollowers.length,
+                    isFollowing: false
+                });
+            }
+
+            // Follow: Add the follower to the target user's followers list
+            targetUserFollowers.push(followerUsername);
             await targetUser.update({ followers: JSON.stringify(targetUserFollowers) });
 
-            // Remove the target user from the follower's following list
-            followerUserFollowing = followerUserFollowing.filter(user => user !== targetUsername);
+            // Add the target user to the follower's following list
+            followerUserFollowing.push(targetUsername);
             await followerUser.update({ following: JSON.stringify(followerUserFollowing) });
 
             return res.json({
                 success: true,
-                message: "Unfollowed successfully",
+                message: "Followed successfully",
                 followersCount: targetUserFollowers.length,
-                isFollowing: false
+                isFollowing: true
             });
+
+        } catch (error) {
+            console.error("Error in follow/unfollow API route:", error);
+            return res.status(500).json({ success: false, error: "Internal Server Error" });
         }
-
-        // Follow: Add the follower to the target user's followers list
-        targetUserFollowers.push(followerUsername);
-        await targetUser.update({ followers: JSON.stringify(targetUserFollowers) });
-
-        // Add the target user to the follower's following list
-        followerUserFollowing.push(targetUsername);
-        await followerUser.update({ following: JSON.stringify(followerUserFollowing) });
-
-        return res.json({
-            success: true,
-            message: "Followed successfully",
-            followersCount: targetUserFollowers.length,
-            isFollowing: true
-        });
-
-    } catch (error) {
-        console.error("Error in follow/unfollow API route:", error);
-        return res.status(500).json({ success: false, error: "Internal Server Error" });
-    }
-});
+    });
     
 
 
@@ -805,6 +805,10 @@ app.post("/api/users/:username/follow", async function (req, res) {
         });
     });
 
+    // ============================================================
+    // POSTING A COMMENT
+    // ============================================================
+
     app.post('/api/comments', async (req, res) => {
         const { witId, author, body } = req.body;
     
@@ -821,7 +825,9 @@ app.post("/api/users/:username/follow", async function (req, res) {
         }
     });
 
-    // API route to fetch comments for a specific wit
+    // ============================================================
+    // GET THE COMMENTS FOR A POST
+    // ============================================================
     app.get('/api/wits/:witId/comments', async (req, res) => {
         const witId = req.params.witId;
 
@@ -833,6 +839,5 @@ app.post("/api/users/:username/follow", async function (req, res) {
             res.status(500).json({ error: 'Could not fetch comments' });
         }
     });
-
     
 };
