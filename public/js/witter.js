@@ -133,7 +133,7 @@ jQuery(function() {
             success: function (comments) {
                 const commentsList = $(`#comment-section-${witData.id} .comments-list`);
                 comments.forEach(comment => {
-                    commentsList.append(`<p class="comment"><strong>${comment.author}:</strong> ${comment.body}</p>`);
+                    commentsList.append(`<p class="comment"><strong>@${comment.author}:</strong><br><span class="wit-date">${moment(comment.createdAt).format("h:mma on MMMM Do, YYYY")}</span><br> ${comment.body}</p>`);
                 });
                 // Update the comment count on the button
                 $(`#comment-count-${witData.id}`).text(comments.length);
