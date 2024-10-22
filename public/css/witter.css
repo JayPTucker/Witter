@@ -280,10 +280,53 @@ input:focus {
   border: 1px solid rgba(255, 255, 255, 0.116) !important;
   border-radius: 10px !important;
   color: white;
-  width: 20%;
+  max-width: 25%;
   padding: 5px !important;
   font-weight: bold;
   transition: all 0.2s ease-in-out;
+}
+
+.comment-input {
+  background-color: #56565600 !important;
+  height: 80px;
+  width: 100% !important;
+  font-size: 15px !important;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 1px solid gray !important;
+  resize: none;
+  color: white !important;
+  margin: 10px;
+}
+
+.submit-comment-btn {
+  border: 1px solid rgba(0, 0, 0, 0) !important;
+  background-color: rgba(23, 65, 105, 0.699) !important;
+  border-radius: 10px !important;
+  color: white;
+  width: 30%;
+  padding: 5px !important;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 10px;
+}
+
+.submit-comment-btn:hover {
+  background-color: rgba(23, 65, 105, 0.699) !important;
+  border: 1px solid rgb(255, 255, 255) !important;
+}
+
+.comment {
+  padding: 10px;
+  background-color: rgba(80, 151, 218, 0.375) !important;
+  border: 1px solid gray;
+  border-radius: 15px;
+  transition: all 0.2s ease-in-out;
+}
+
+.comment:hover {
+  border: 1px solid white;
+  background-color: rgba(23, 65, 105, 0.699) !important;
 }
 
 /* =================================================== */

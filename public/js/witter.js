@@ -92,13 +92,15 @@ jQuery(function() {
                         </button>
 
                         <button type="button" data-wit-id="${witData.id}" class="comment-btn btn btn-default btn-sm">
-                            Comments (<span class="comment-count" id="comment-count-${witData.id}">0</span>)
+                            Replies (<span class="comment-count" id="comment-count-${witData.id}">0</span>)
                         </button>
                         <div class="comment-section" style="display:none;" id="comment-section-${witData.id}">
-                            <textarea placeholder="Add a comment" class="comment-input"></textarea>
-                            <button type="button" data-wit-id="${witData.id}" class="submit-comment-btn btn btn-primary">Submit Comment</button>
+                            <textarea placeholder="Add a comment" class="comment-input" maxlength="120"></textarea>
+                            <div class="char-counter" id="char-counter-${witData.id}">120 characters remaining</div>
+                            <button type="button" data-wit-id="${witData.id}" class="submit-comment-btn btn btn-primary">Submit Wit</button>
                             <div class="comments-list"></div>
                         </div>
+
 
                     </div>
                     <div class="col-md-1">
@@ -131,7 +133,7 @@ jQuery(function() {
             success: function (comments) {
                 const commentsList = $(`#comment-section-${witData.id} .comments-list`);
                 comments.forEach(comment => {
-                    commentsList.append(`<p><strong>${comment.author}:</strong> ${comment.body}</p>`);
+                    commentsList.append(`<p class="comment"><strong>${comment.author}:</strong> ${comment.body}</p>`);
                 });
                 // Update the comment count on the button
                 $(`#comment-count-${witData.id}`).text(comments.length);
@@ -815,6 +817,8 @@ $(document).on('scroll', function () {
     $('.popup').fadeOut();
 });
 
+
+// POST COMMENT FUNCTION
 async function postComment(witId, commentText, username) {
     console.log("postcommentfunction")
     try {
@@ -825,9 +829,45 @@ async function postComment(witId, commentText, username) {
         });
 
         // Once the comment is posted, append it to the comments list
-        const commentHtml = `<p><strong>${response.author}:</strong> ${response.body}</p>`;
+        const commentHtml = `<p class="comment"><strong class="test">${response.author}:</strong> ${response.body}</p>`;
         $(`#comment-section-${witId} .comments-list`).append(commentHtml);
     } catch (error) {
         console.error('Error posting comment:', error);
     }
 }
+
+// =======================================
+// CHARACTER LIMITS
+// =======================================
+// Handle character limit for the comment input
+$(document).on('input', '.comment-input', function () {
+    const witId = $(this).closest('.comment-section').attr('id').split('-')[2];
+    const maxChars = 120;  // Character Limit
+    const currentLength = $(this).val().length;
+    const remainingChars = maxChars - currentLength;
+
+    // Update the character counter
+    $(`#char-counter-${witId}`).text(`${remainingChars} characters remaining`);
+
+    // If the limit is reached, prevent further input (optional)
+    if (currentLength >= maxChars) {
+        $(this).val($(this).val().substr(0, maxChars));  // This prevents extra characters from being added
+    }
+});
+
+// Handle character limit for the wit-input
+$(document).on('input', '#wit-input', function () {
+    const maxChars = 220;  
+    const currentLength = $(this).val().length;
+    const remainingChars = maxChars - currentLength;
+
+    // Update the character counter
+    $('#wit-char-counter').text(`${remainingChars} characters remaining`);
+
+    // Optional: If limit is reached, prevent further input
+    if (currentLength >= maxChars) {
+        $(this).val($(this).val().substr(0, maxChars));  // Prevents input beyond limit
+    }
+});
+
+// =======================================

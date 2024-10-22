@@ -78,24 +78,27 @@
         <form class="new-wit row form-group" enctype="multipart/form-data">
 
           <div class="col-md-2" id="newWit-profilePic">
-           <!-- PROFILE PIC COL -->
+            <!-- PROFILE PIC COL -->
           </div>
-
+        
           <div class="col-md-10">
-
-            <textarea class="form-control wit-input" rows="3" id="wit-input" name="body" placeholder="Type your thoughts here..." autocomplete="off"></textarea>
+            <textarea class="form-control wit-input" rows="3" id="wit-input" name="body" 
+                      placeholder="Type your thoughts here..." autocomplete="off" maxlength="220"></textarea>
+            <div class="char-counter" id="wit-char-counter">220 characters remaining</div>
+            
             <img id="image-preview" src="" alt="Image Preview">
             <label for="image-input">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-image-fill image-icon" viewBox="0 0 16 16">
-                <path d="M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2V3zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12zm5-6.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" 
+                   class="bi bi-image-fill image-icon" viewBox="0 0 16 16">
+                <path d="M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a1 1 0 0 0-1-1V3zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5L3.22 9.44a.5.5 0 0 0-.59.08L5.22 13zM6 6a1.5 1.5 0 1 0-3 0A1.5 1.5 0 0 0 6 6z"/>
               </svg>  
-            
               <input type="file" id="image-input" name="image" class="hidden-input" accept="image/*">
             </label>
             
             <button class="wit-button" type="submit">Wit!</button>  
           </div>
         </form>
+        
 
         <div class="row justify-content-center" id="wits-area"> <!-- Add inline style for centering -->
           <!-- WITS GO HERE -->
