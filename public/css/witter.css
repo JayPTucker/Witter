@@ -46,6 +46,10 @@
   margin-top: 20px;
 }
 
+.char-counter {
+  color: white;
+}
+
 input:focus {
   outline: none; /* Remove the default outline */
   border: 2px solid #007BFF; /* Custom border */
@@ -275,15 +279,19 @@ input:focus {
 }
 
 .comment-btn {
-  border: 1px solid rgba(0, 0, 0, 0);
   background-color: rgba(23, 65, 105, 0.699);
   border: 1px solid rgba(255, 255, 255, 0.116) !important;
   border-radius: 10px !important;
   color: white;
-  max-width: 25%;
   padding: 5px !important;
   font-weight: bold;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.comment-btn:hover {
+  padding: 5px 17px !important;
+  background-color: rgba(31, 105, 173, 0.808) !important;
+  border: 1px solid rgb(255, 255, 255) !important;
 }
 
 .comment-input {
@@ -300,20 +308,21 @@ input:focus {
 }
 
 .submit-comment-btn {
-  border: 1px solid rgba(0, 0, 0, 0) !important;
+  border: 1px solid rgba(255, 255, 255, 0.116) !important;
   background-color: rgba(23, 65, 105, 0.699) !important;
   border-radius: 10px !important;
   color: white;
   width: 30%;
   padding: 5px !important;
   font-weight: bold;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out !important;
   margin-bottom: 10px;
 }
 
 .submit-comment-btn:hover {
-  background-color: rgba(23, 65, 105, 0.699) !important;
+  background-color: rgba(31, 105, 173, 0.808) !important;
   border: 1px solid rgb(255, 255, 255) !important;
+  width: 35% !important;
 }
 
 .comment {
@@ -322,6 +331,7 @@ input:focus {
   border: 1px solid gray;
   border-radius: 15px;
   transition: all 0.2s ease-in-out;
+  max-width: 100%;
 }
 
 .comment:hover {

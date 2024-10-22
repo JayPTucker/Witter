@@ -29,19 +29,19 @@ $(document).ready(function () {
         if (!userData.email || !userData.username || !userData.password) {
             handleMissingInput(userData);
             return;
-        }
+        };
 
         // Check password length
         if (userData.password.length < 8) {
             setInvalidInputStyle(passwordInputBox);
             showAlert("Password must be at least 8 characters long.");
             return;
-        }
+        };
 
         if (userData.username.includes(' ')) {
             showAlert("Username cannot have a space in it")
             return;
-        }
+        };
 
         // Proceed with signup validation
         signUpFunction(userData.email, userData.username, userData.password);
