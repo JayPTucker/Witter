@@ -49,6 +49,25 @@ button:focus {
   width: 53%;
 }
 
+.load-more-wits, .load-more-btn {
+  background-color: rgba(7, 31, 53, 0.699);
+  border: 1px solid rgba(255, 255, 255, 0.116);
+  border-radius: 10px;
+  margin: 10px;
+  font-size: 22px;
+  color: white;
+  width: 50%;
+  padding: 10px;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
+
+.load-more-wits:hover, .load-more-btn:hover {
+  background-color: rgb(34, 67, 97) !important;
+  border: 1px solid white;
+  width: 53%;
+}
+
 .currentProfilePic {
   border-radius: 50%; /* Use 50% for a perfect circle */
   width: 180px; /* Desired width */
