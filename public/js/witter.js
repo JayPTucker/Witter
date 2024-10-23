@@ -97,7 +97,7 @@ jQuery(function() {
                         <div class="comment-section" style="display:none;" id="comment-section-${witData.id}">
                             <textarea placeholder="Add a comment" class="comment-input" maxlength="120"></textarea>
                             <div class="char-counter" id="char-counter-${witData.id}">120 characters remaining</div>
-                            <button type="button" data-wit-id="${witData.id}" class="submit-comment-btn btn btn-primary">Submit Wit</button>
+                            <button type="button" data-wit-id="${witData.id}" class="submit-comment-btn btn btn-primary">Reply</button>
                             <div class="comments-list"></div>
                         </div>
 
@@ -829,7 +829,7 @@ async function postComment(witId, commentText, username) {
         });
 
         // Once the comment is posted, append it to the comments list
-        const commentHtml = `<p class="comment"><strong class="test">${response.author}:</strong> ${response.body}</p>`;
+        const commentHtml = `<p class="comment"><strong>${response.author}:</strong> ${response.body}</p>`;
         $(`#comment-section-${witId} .comments-list`).append(commentHtml);
     } catch (error) {
         console.error('Error posting comment:', error);
