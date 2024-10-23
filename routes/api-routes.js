@@ -426,7 +426,9 @@ module.exports = function(app) {
             res.json({
                 username: req.user.username,
                 password: req.user.password,
-                profilePicture: req.user.profilePicture
+                profilePicture: req.user.profilePicture,
+                followers: req.user.followers,
+                following: req.user.following
             });
         }
     });

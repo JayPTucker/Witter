@@ -16,7 +16,7 @@ $(".home-button").css("background-color", "rgb(34, 67, 97)").css("border", "3px 
 
 jQuery(function() {
     $.get("/api/user_data").then(function(user) {
-
+    
         $(".member-name").text(user.username);
         var newWitForm = $("form.new-wit");
         var authorInput = user.username;
@@ -29,6 +29,16 @@ jQuery(function() {
         const limit = 10;  // Load 10 wits at a time
         let loading = false;  // To prevent multiple calls at once
         let allWitsLoaded = false;  // Flag to check if all wits are loaded
+
+        // FOLLOWERS AMOUNT ON PAGE
+        let followerArray = JSON.parse(user.followers);
+        let followerCount = followerArray.length;
+        $(".currentUserFollowerCount").html(`<strong>${followerCount}</strong> Followers`);
+
+        // FOLLOWING AMOUNT ON PAGE
+        let followingArray = JSON.parse(user.following)
+        let followingCount = followingArray.length;
+        $(".currentUserFollowingCount").html(`<strong>${followingCount}</strong> Following`)
 
         // =============================================
         // LOAD CURRENT PROFILE PIC

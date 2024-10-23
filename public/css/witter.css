@@ -396,8 +396,12 @@ input:focus {
 .logout-text {
   color: white;
   font-weight: bold;
-  margin-top: 10px;
+  margin: 0px !important; 
   font-size: 25px;
+}
+
+.currentUserFollowerCount, .currentUserFollowingCount {
+  color: white;
 }
 
 /* =========== */
