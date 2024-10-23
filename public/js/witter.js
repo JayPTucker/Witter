@@ -249,7 +249,14 @@ jQuery(function() {
                         } else {
                             // Otherwise, append a new "Load More" button
                             $('#wits-area').append(`<button class="load-more-btn" data-username="${username}" data-offset="${limit}">Load More Wits</button>`);
-                        }                    }
+                        }
+                    }
+
+                    var navbar = $(".nav-buttons")
+                    navbar.prepend(`<br><button class="who-am-i-viewing">${username}</button>`)
+                    $(".home-button").css("background-color", "rgba(7, 31, 53, 0.699)").css("border", "1px solid rgba(255, 255, 255, 0.116)")
+                    $(".following-button").css("background-color", "rgba(7, 31, 53, 0.699)").css("border", "1px solid rgba(255, 255, 255, 0.116)")
+                  
                 },
                 error: function (error) {
                     console.error('Error fetching wits by user:', error);
