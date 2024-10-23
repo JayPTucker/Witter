@@ -78,6 +78,7 @@ jQuery(function() {
                             <div class="followers-list">
                                 <p class="followerAmount" id="follower-count-${witData.id}"></p>
                                 <button class="follow-btn follow-btn-${witData.author}">Follow</button>
+                                <button class="view-wits-btn wits-btn-${witData.author}">View All Wits by User</button>
                             </div>
                         </div>
 
@@ -218,7 +219,80 @@ jQuery(function() {
         if (witData.image) {
             row.find(".imgAttachmentDiv").html(`<img src="${witData.image}" alt="Wit Image" class="wit-image">`);
         }
-    }
+
+        // Ensure the event is not bound multiple times
+        $(document).off('click', '.view-wits-btn').on('click', '.view-wits-btn', function () {
+
+            const username = $(this).closest('.popup').siblings('.wit-author').data('username'); // Get the username
+            const limit = 5;  // Load 5 wits at a time
+            const offset = 0; // Start from the first wit
+
+            // Make an AJAX call to fetch the first 5 wits by the user
+            $.ajax({
+                method: 'GET',
+                url: `/api/users/${username}/wits?limit=${limit}&offset=${offset}`,
+                success: function (wits) {
+                    // Clear the current wits area if it's the first load
+                    if (offset === 0) {
+                        $('#wits-area').empty();
+                    }
+                    // Loop through the fetched wits and render each wit
+                    wits.forEach(witData => {
+                        renderWitRow(witData, { username });  // Reuse your existing renderWitRow function
+                    });
+
+                    // Optional: Add a "Load More" button if there are more wits to load
+                    if (wits.length === limit) {
+                        // If the "Load More" button already exists, update its offset
+                        if ($('.load-more-btn').length) {
+                            $('.load-more-btn').data('offset', offset + limit);
+                        } else {
+                            // Otherwise, append a new "Load More" button
+                            $('#wits-area').append(`<button class="load-more-btn" data-username="${username}" data-offset="${limit}">Load More Wits</button>`);
+                        }                    }
+                },
+                error: function (error) {
+                    console.error('Error fetching wits by user:', error);
+                }
+            });
+        });
+
+        // Handle "Load More Wits" button click
+        $(document).off('click', '.load-more-btn').on('click', '.load-more-btn', function () {
+            const username = $(this).data('username');  // Get the username
+            const offset = $(this).data('offset');      // Get the current offset
+            const limit = 5;                            // Number of wits to load per batch
+
+            // Make an AJAX call to fetch the next batch of wits
+            $.ajax({
+                method: 'GET',
+                url: `/api/users/${username}/wits?limit=${limit}&offset=${offset}`,
+                success: function (wits) {
+                    
+                    // Loop through the fetched wits and render each wit
+                    wits.forEach(witData => {
+                        renderWitRow(witData, { username });  // Reuse your existing renderWitRow function
+                    });
+
+                    // Update the offset for the next batch of wits
+                    const newOffset = offset + limit;
+                    $('.load-more-btn').data('offset', newOffset);
+
+                    $('#wits-area').append($('.load-more-btn'));
+                    
+                    // If less than the limit number of wits were returned, remove the "Load More" button
+                    if (wits.length < limit) {
+                        $('.load-more-btn').remove();
+                    }
+                    
+                },
+                error: function (error) {
+                    console.error('Error fetching wits by user:', error);
+                }
+            });
+        });
+
+    };
 
     // =============================================
     // FUNCTION TO LOAD ALL WITS

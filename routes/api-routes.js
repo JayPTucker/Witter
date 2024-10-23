@@ -839,5 +839,33 @@ app.post("/api/witter", upload.single("image"), function (req, res) {
             res.status(500).json({ error: 'Could not fetch comments' });
         }
     });
+
+
+    // ============================================================
+    // GATHER ALL WITS DEPENDING ON WHAT USER YOU CLICK ON
+    // ============================================================
+    // API route to fetch all wits by a specific user
+    app.get('/api/users/:username/wits', async (req, res) => {
+        const username = req.params.username;
+        const limit = parseInt(req.query.limit) || 5; // Set default limit to 5
+        const offset = parseInt(req.query.offset) || 0; // Offset for pagination (default is 0)
+
+        console.log('Limit:', limit, 'Offset:', offset);  // For testing
+    
+        try {
+            // Sequelize query to limit the number of wits returned
+            const userWits = await db.Wit.findAll({
+                where: { author: username },
+                order: [['createdAt', 'DESC']], // Order by most recent wits
+                limit: limit,   // Only fetch the number specified by 'limit'
+                offset: offset  // Skip wits according to the 'offset'
+            });
+            res.json(userWits);
+        } catch (error) {
+            console.error(`Error fetching wits for user ${username}:`, error);
+            res.status(500).json({ error: "Failed to fetch wits" });
+        }
+    });
+
     
 };
