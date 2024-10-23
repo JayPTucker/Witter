@@ -413,6 +413,7 @@ input:focus {
   color: white;
   text-align: left !important;
   padding: 10px;
+  width: 100%;
 }
 
 .trending-title {
