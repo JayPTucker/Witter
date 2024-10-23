@@ -475,7 +475,7 @@ jQuery(function() {
                                 <div class="row">
                                     <div class="col-md-3" id="T-witProfilePic"></div>
                                     <div class="col-md-9">
-                                    <h4 class="wit-author" data-username="${witData.author}">@<span class='clickable'>${witData.author}</span></h4>
+                                    <h4 class="wit-author T-author" data-username="${witData.author}">@<span class='clickable'>${witData.author}</span></h4><br>
                                     <a class="following-status">Loading...</a>
 
                                     <div class="popup profile-popup" style="display: none;">

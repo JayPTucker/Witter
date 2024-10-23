@@ -438,9 +438,8 @@ input:focus {
   object-fit: cover; /* Maintain aspect ratio */
 }
 
-.T-wit-author {
-  font-size: 15px;
-  color: rgb(255, 251, 215);
+.T-author {
+  padding: 10px 0px;
 }
 
 .T-wit-date {
