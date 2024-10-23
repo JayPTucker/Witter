@@ -1,4 +1,8 @@
 let loggedInUser = '';  // Define globally
+let offset = 0;
+const limit = 10;  // Set limit to 10 wits per load
+let loading = false;
+let allWitsLoaded = false;
 
 // Fetch the logged-in user's username on page load
 $.get('/api/user_data', function (response) {
@@ -220,6 +224,9 @@ jQuery(function() {
             row.find(".imgAttachmentDiv").html(`<img src="${witData.image}" alt="Wit Image" class="wit-image">`);
         }
 
+        // ==================================
+        // VIEW WITS BUTTON
+        // ==================================
         // Ensure the event is not bound multiple times
         $(document).off('click', '.view-wits-btn').on('click', '.view-wits-btn', function () {
 
@@ -253,7 +260,7 @@ jQuery(function() {
                     }
 
                     var navbar = $(".nav-buttons")
-                    navbar.prepend(`<br><button class="who-am-i-viewing">${username}</button>`)
+                    navbar.prepend(`<br><button class="who-am-i-viewing">@${username}</button>`)
                     $(".home-button").css("background-color", "rgba(7, 31, 53, 0.699)").css("border", "1px solid rgba(255, 255, 255, 0.116)")
                     $(".following-button").css("background-color", "rgba(7, 31, 53, 0.699)").css("border", "1px solid rgba(255, 255, 255, 0.116)")
                   
@@ -263,6 +270,10 @@ jQuery(function() {
                 }
             });
         });
+
+        // ==================================
+        // LOAD MORE BUTTON
+        // ==================================
 
         // Handle "Load More Wits" button click
         $(document).off('click', '.load-more-btn').on('click', '.load-more-btn', function () {
@@ -302,32 +313,58 @@ jQuery(function() {
     };
 
     // =============================================
-    // FUNCTION TO LOAD ALL WITS
+    // FUNCTION TO LOAD ALL WITS WITH "Load More" BUTTON
     // =============================================
+
+
     async function loadWits(url) {
+
         if (loading || allWitsLoaded) return;
         loading = true;
 
         try {
-            const data = await $.get(`${url}`);
+            // Add limit and offset to the URL
+            const data = await $.get(`${url}?limit=${limit}&offset=${offset}`);
 
             if (data.length > 0) {
-                offset += data.length;  // Update offset
+                offset += data.length;  // Update offset for the next batch of wits
                 for (const wit of data) {
-                    await renderWitRow(wit, user);
+                    await renderWitRow(wit, user);  // Render each wit
+                }
+
+                // If the number of loaded wits equals the limit, show "Load More" button
+                if (data.length === limit) {
+                    if (!$('.load-more-wits').length) {
+                        $('#wits-area').append(`<button class="load-more-wits">Load More Wits</button>`);
+                    }
+                } else {
+                    // If fewer than the limit, no more wits to load, remove "Load More" button
+                    $('.load-more-wits').remove();
+                    allWitsLoaded = true;
                 }
             } else {
                 allWitsLoaded = true;  // No more wits to load
+                $('.load-more-wits').remove();  // Remove button if present
             }
+            
         } catch (error) {
             console.error("Error loading wits:", error);
         } finally {
+            $('#wits-area').append($('.load-more-wits'));
             loading = false;  // Allow further loading
         }
     }
 
     // CALL TO LOAD WITS INITIALLY
     loadWits('/api/all_wits');
+
+    // Handle "Load More Wits" button click
+    $(document).on('click', '.load-more-wits', function () {
+        // console.log('test')
+        loadWits('/api/all_wits');  // Call loadWits again to load the next batch of wits
+
+    });
+
 
 
     // =============================================
