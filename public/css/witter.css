@@ -195,9 +195,14 @@ input:focus {
 }
 
 .wit-image-enlarged {
-  max-width: 150px; /* Limit width */
-  max-height: auto; /* Limit height */
+  margin-top: -100px;
+  max-width: 20vw; /* Max 90% of the viewport width */
+  max-height: 20vh; /* Max 90% of the viewport height */
+  width: auto; /* Maintain aspect ratio */
+  height: auto; /* Maintain aspect ratio */
   transition: transform 0.3s ease; /* Smooth transition */
+  z-index: 10001;
+  object-fit: contain;
 }
 
 .close {
