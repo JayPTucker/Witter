@@ -3,6 +3,29 @@
     font-size: 45px;
 }
 
+.login-register-col {
+    margin-top: 35px;
+}
+
 .welcome-bio {
     font-size: 20px;
+    margin-top: 20px;
+}
+
+.witter-img {
+    width: 350px;
+    height: auto;
+}
+
+.witter-bio {
+    font-size: 25px;
+}
+
+.login-button, .signup-button  {
+    width: 300px;
+    padding: 18px;
+}
+
+.login-button:hover, .signup-button:hover {
+    width: 320px;
 }
