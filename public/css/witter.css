@@ -75,12 +75,18 @@ input:focus {
   color: rgb(170, 170, 170);
 }
 
+/* Hide Top Wits button by default; show only on mobile via media query */
+.topwits-button {
+  display: none !important;
+}
+
 .wit-button {
   float: right;
   font-weight: bold;
   padding: 5px 15px;
   background-color: rgb(255, 255, 255);
   border-radius: 10px;
+  width: 120px;
   border: 1px solid black;
   transition: all 0.2s ease-in-out;
 }
@@ -478,6 +484,15 @@ input:focus {
       margin-bottom: 10px;
   }
 
+  /* Show mobile header on small screens */
+  .mobile-top-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
   /* .menu-left-col p, button{
     transform: scale(0.7);
   } */
@@ -492,6 +507,23 @@ input:focus {
     margin: 0px !important;
     padding: 5px !important;
     font-size: 18px;
+  }
+
+  .topwits-button {
+    width: 130px !important;
+    margin: 0px !important;
+    padding: 5px !important;
+    font-size: 18px;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center;
+  }
+
+  /* Center the SVG inside the button */
+  .topwits-button .nav-icon {
+    vertical-align: middle;
+    margin-right: 8px;
   }
 
   .witterTitle {
@@ -521,9 +553,22 @@ input:focus {
 
   .pageLogo {
     margin: 0px !important;
+    width: 20%;
   }
   .wittertitle {
     font-size: 24px;
+  }
+
+  /* Mobile-top-header specific sizing to ensure centered logo + text */
+  .mobile-top-header .pageLogo {
+    width: 42px !important;
+    height: auto !important;
+    margin-top: -30px !important;
+  }
+  .mobile-top-header .witterTitle {
+    font-size: 48px !important;
+    margin-left: 6px !important;
+    color: white !important;
   }
 
 
@@ -540,7 +585,26 @@ input:focus {
   }
 
   .rightMenu {
+    display: block !important;
+    width: 100% !important;
+    margin-top: 20px !important;
+    padding-bottom: 10px;
+  }
+
+  /* Mobile-only header (logo + title) placed above content - hidden by default */
+  .mobile-top-header {
+    display: none;
+  }
+
+  /* Hide the logo/title inside rightMenu on mobile to avoid duplicate */
+  .rightMenu .pageLogo,
+  .rightMenu .witterTitle {
     display: none !important;
+  }
+
+  /* Top Wits nav button - hidden by default, shown on mobile */
+  .topwits-button {
+    display: none;
   }
 
   .wit-input {

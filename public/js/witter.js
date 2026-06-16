@@ -376,6 +376,18 @@ jQuery(function() {
         $(".following-button").css("background-color", "rgba(7, 31, 53, 0.699)").css("border", "1px solid rgba(255, 255, 255, 0.116)");
     });
 
+    // Top Wits button scroll handler
+    $(document).on('click', '.topwits-button', function () {
+        // If rightMenu is visible, scroll to it. Otherwise, toggle its visibility (mobile friendly)
+        const rightMenu = $('.rightMenu');
+        if (rightMenu.is(':visible')) {
+            $('html, body').animate({ scrollTop: rightMenu.offset().top - 10 }, 400);
+        } else {
+            rightMenu.show();
+            $('html, body').animate({ scrollTop: rightMenu.offset().top - 10 }, 400);
+        }
+    });
+
 
 
     // =============================================
