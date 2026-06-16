@@ -3,6 +3,7 @@ let offset = 0;
 const limit = 10;  // Set limit to 10 wits per load
 let loading = false;
 let allWitsLoaded = false;
+let currentFeedUrl = '/api/all_wits';  // Track which feed is currently active
 
 // Fetch the logged-in user's username on page load
 $.get('/api/user_data', function (response) {
@@ -352,13 +353,27 @@ jQuery(function() {
     }
 
     // CALL TO LOAD WITS INITIALLY
-    loadWits('/api/all_wits');
+    currentFeedUrl = '/api/all_wits';
+    loadWits(currentFeedUrl);
 
     // Handle "Load More Wits" button click
     $(document).on('click', '.load-more-wits', function () {
-        // console.log('test')
-        loadWits('/api/all_wits');  // Call loadWits again to load the next batch of wits
+        loadWits(currentFeedUrl);  // Use the current active feed URL
+    });
 
+    // =============================================
+    // HOME BUTTON CLICK HANDLER
+    // =============================================
+    $(".home-button").on('click', async function () {
+        $(".wit-row").remove();  // Clear current wits
+        $('.load-more-wits').remove();  // Remove the Load More button
+        offset = 0;  // Reset offset to start from the beginning
+        allWitsLoaded = false;  // Reset the allWitsLoaded flag
+        currentFeedUrl = '/api/all_wits';  // Set the active feed
+        await loadWits(currentFeedUrl);
+
+        $(".home-button").css("background-color", "rgb(34, 67, 97)").css("border", "3px solid white");
+        $(".following-button").css("background-color", "rgba(7, 31, 53, 0.699)").css("border", "1px solid rgba(255, 255, 255, 0.116)");
     });
 
 
@@ -368,7 +383,11 @@ jQuery(function() {
     // =============================================
     $(".following-button").on('click', async function () {
         $(".wit-row").remove();  // Clear current wits
-        await loadWits('/api/all_following_wits');
+        $('.load-more-wits').remove();  // Remove the Load More button
+        offset = 0;  // Reset offset to start from the beginning
+        allWitsLoaded = false;  // Reset the allWitsLoaded flag
+        currentFeedUrl = '/api/all_following_wits';  // Set the active feed
+        await loadWits(currentFeedUrl);
 
         $(".following-button").css("background-color", "rgb(34, 67, 97)").css("border", "3px solid white");
         $(".home-button").css("background-color", "rgba(7, 31, 53, 0.699)").css("border", "rgba(255, 255, 255, 0.116)");
@@ -505,6 +524,15 @@ jQuery(function() {
                                             </svg>
                                             ${likesCount}
                                         </button>
+                                        <button type="button" data-wit-id="${witData.id}" class="T-comment-btn btn btn-default btn-sm">
+                                            Replies (<span class="comment-count" id="T-comment-count-${witData.id}">0</span>)
+                                        </button>
+                                        <div class="comment-section" style="display:none;" id="T-comment-section-${witData.id}">
+                                            <textarea placeholder="Add a comment" class="comment-input" maxlength="120"></textarea>
+                                            <div class="char-counter" id="char-counter-${witData.id}">120 characters remaining</div>
+                                            <button type="button" data-wit-id="${witData.id}" class="submit-comment-btn btn btn-primary">Reply</button>
+                                            <div class="comments-list"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -571,6 +599,36 @@ jQuery(function() {
                                 `<img src="${witData.image}" alt="Wit Image" class="wit-image">`
                             );
                         }
+
+                        // Fetch existing comments for this top wit and populate
+                        $.ajax({
+                            method: 'GET',
+                            url: `/api/wits/${witData.id}/comments`,
+                            success: function (comments) {
+                                const commentsList = $(`#T-comment-section-${witData.id} .comments-list`);
+                                comments.forEach(comment => {
+                                    commentsList.append(`<p class="comment"><strong>@${comment.author}:</strong><br><span class="wit-date">${moment(comment.createdAt).format("h:mma on MMMM Do, YYYY")}</span><br> ${comment.body}</p>`);
+                                });
+                                // Update the comment count on the button
+                                $(`#T-comment-count-${witData.id}`).text(comments.length);
+                            },
+                            error: function (error) {
+                                console.error('Error fetching comments for top wit:', error);
+                            }
+                        });
+
+                        // Toggle comment section when Replies button is clicked
+                        row.find('.T-comment-btn').on('click', function () {
+                            row.find(`#T-comment-section-${witData.id}`).toggle();
+                        });
+
+                        // Handle submit comment functionality for top wits
+                        row.find('.submit-comment-btn').on('click', function () {
+                            const commentText = $(this).siblings('.comment-input').val();
+                            if (commentText) {
+                                postComment(this.dataset.witId, commentText, user.username);
+                            }
+                        });
                     });
                 });
             }
@@ -976,6 +1034,17 @@ async function postComment(witId, commentText, username) {
         // Once the comment is posted, append it to the comments list
         const commentHtml = `<p class="comment"><strong>${response.author}:</strong> ${response.body}</p>`;
         $(`#comment-section-${witId} .comments-list`).append(commentHtml);
+        // Update the comment count badge if present (main feed and Top Wits)
+        const countElMain = $(`#comment-count-${witId}`);
+        if (countElMain.length) {
+            const current = parseInt(countElMain.text()) || 0;
+            countElMain.text(current + 1);
+        }
+        const countElTop = $(`#T-comment-count-${witId}`);
+        if (countElTop.length) {
+            const currentT = parseInt(countElTop.text()) || 0;
+            countElTop.text(currentT + 1);
+        }
     } catch (error) {
         console.error('Error posting comment:', error);
     }

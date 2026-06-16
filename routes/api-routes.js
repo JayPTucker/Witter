@@ -6,6 +6,7 @@ const nodemailer = require('nodemailer');
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require("bcryptjs");
+const { Op } = require('sequelize');
 const app = express()
 
 // Dummy database
@@ -494,7 +495,17 @@ module.exports = function(app) {
     app.get("/api/all_following_wits", async function(req, res) {
 
         try {
-            const loggedInUserId = req.user.id; // Assuming you're using session or JWT for auth
+            // Check if user is authenticated
+            if (!req.user) {
+                console.log("User not authenticated");
+                return res.json([]); // Return empty array if not authenticated
+            }
+
+            const loggedInUserId = req.user.id; // Get logged-in user ID
+            const limit = parseInt(req.query.limit) || 10;  // Number of wits to load per request
+            const offset = parseInt(req.query.offset) || 0;  // Offset to load the next batch
+
+            console.log("Fetching following wits for user:", loggedInUserId);
 
             // Get the logged-in user and parse their following field
             const user = await db.User.findOne({
@@ -502,27 +513,44 @@ module.exports = function(app) {
                 attributes: ['following'] // Only select the following column
             });
 
-            if (!user || !user.following) {
-                return res.status(404).json({ error: "User not found or not following anyone" });
+            if (!user) {
+                console.log("User not found");
+                return res.json([]); // User not found, return empty array
             }
 
+            console.log("Following field:", user.following);
+
             // Parse the following list (assuming it's stored as a JSON array)
-            const followingArray = JSON.parse(user.following || '[]');
+            let followingArray = [];
+            if (user.following) {
+                try {
+                    followingArray = JSON.parse(user.following);
+                } catch (parseError) {
+                    console.error("Error parsing following field:", parseError);
+                    followingArray = [];
+                }
+            }
+
+            console.log("Following array:", followingArray);
 
             if (followingArray.length === 0) {
+                console.log("User is not following anyone");
                 return res.json([]); // No users followed, return empty array
             }
 
             // Fetch all wits from users the logged-in user is following
             const wits = await db.Wit.findAll({
                 where: {
-                    author: followingArray // Fetch wits where the author is in the following array
+                    author: {
+                        [Op.in]: followingArray // Use Op.in to fetch wits where the author is in the following array
+                    }
                 },
-                order: [['createdAt', 'DESC']]  // Fetch newest wits first
-                // limit: req.query.limit || 10,     // Limit the number of results
-                // offset: req.query.offset || 0     // Skip records for pagination
+                order: [['createdAt', 'DESC']],  // Fetch newest wits first
+                limit: limit,     // Limit the number of results
+                offset: offset    // Skip records for pagination
             });
 
+            console.log("Found wits:", wits.length);
             res.json(wits);
         } catch (error) {
             console.error("Error fetching wits:", error);
@@ -568,7 +596,16 @@ app.post("/api/witter", upload.single("image"), function (req, res) {
     // FETCH TOP TRENDING WITS ROUTE 
     // ============================================================
     app.get("/api/top_wits", function(req, res) {
+        // Calculate the date from 7 days ago
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
         db.Wit.findAll({
+            where: {
+                createdAt: {
+                    [Op.gte]: oneWeekAgo  // Only fetch wits from the past week
+                }
+            },
             limit: 3,
             order: [[db.Sequelize.fn('length', db.Sequelize.col('likes')), 'DESC']]  
         }).then(function(results) {
