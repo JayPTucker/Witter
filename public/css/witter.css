@@ -27,12 +27,6 @@
   overflow-y: auto; /* Add scrolling if the content overflows */
 }
 
-
-.new-wit-row {
-  background-color: rgba(7, 31, 53, 0.699);
-  border: 1px solid rgba(255, 255, 255, 0.315);
-}
-
 .wit-input {
   background-color: #56565600 !important;
   height: 150px;
@@ -142,8 +136,24 @@ input:focus {
 
 .new-wit {
   transition: all 0.3s ease-in-out;
-  margin-bottom: 0px !important; /* to fix random spacing issue */
-  padding-bottom: 15px;
+  margin-bottom: 15px !important; /* to fix random spacing issue */
+  border-radius: 10px;
+  padding: 5px 15px;
+  background-color: rgb(12, 25, 39);
+  border: 1px solid rgba(255, 255, 255, 0.315);
+}
+
+.wit-row {
+  background-color: rgb(12, 25, 39) !important;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  padding: 30px !important;
+}
+
+.middleWitterDiv {
+  background-color: rgb(4, 18, 33);
+  padding: 25px 40px !important;
+  border: 1px solid rgba(255, 255, 255, 0.13);
 }
 
 .wit-row:hover , .new-wit:hover {
@@ -278,6 +288,8 @@ input:focus {
 
 /* ======================================= */
 /* ======================================= */
+
+
 
 .wit-like-btn {
   border-radius: 20px !important;
@@ -418,13 +430,12 @@ input:focus {
 /* =========== */
 
 .trending-section {
-  background-color: rgba(41, 41, 41, 0.767);
-  border: 1px solid rgba(255, 255, 255, 0.315);
+  background-color: rgb(12, 25, 39) !important;
+  border: 1px solid rgba(255, 255, 255, 0.100);
   border-radius: 15px;
   color: white;
   text-align: left !important;
   padding: 10px;
-  width: 100%;
 }
 
 .trending-title {
@@ -436,11 +447,7 @@ input:focus {
   border-radius: 25px;
   transition: all 0.2s ease-in-out;
   border: 1px solid transparent;
-  padding: 10px !important;
-}
-
-.T-wit-row:hover {
-  background-color: rgba(110, 110, 110, 0.562);
+  padding: 5px !important;
 }
 
 .T-wit-profilePic {

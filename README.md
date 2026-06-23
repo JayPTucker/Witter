@@ -143,7 +143,6 @@ This project was built to strengthen skills in:
 
 * Real-time notifications
 * Direct messaging
-* Follow/unfollow system
 * Dark mode
 * Progressive Web App support
 * React frontend migration
